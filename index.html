@@ -4,109 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FIFA PRONOSTIC</title>
-    <!-- Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #0A0E1A;
             --bg-card: #141927;
-            --primary: #00C853; /* Vert Football */
-            --gold: #FFD700; /* Or VIP */
+            --primary: #00C853;
+            --gold: #FFD700;
             --text-white: #FFFFFF;
             --text-gray: #8B92A8;
             --danger: #EF4444;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        
-        body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 80px; overflow-x: hidden; }
-
-        /* --- UTILS --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 80px; }
         .hidden { display: none !important; }
-        .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s; }
-        .btn-primary { background: linear-gradient(135deg, #00C853, #00A844); color: white; }
-        .btn-gold { background: linear-gradient(135deg, #FFD700, #D4AF37); color: black; }
+        
+        /* Buttons & Inputs */
+        .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 5px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-gold { background: var(--gold); color: black; }
         .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
-        .input-group { margin-bottom: 15px; }
-        input, select, textarea { width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid #2A3142; border-radius: 10px; color: white; outline: none; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; display: inline-block; }
         
-        /* --- HEADER --- */
-        header { position: sticky; top: 0; z-index: 100; background: rgba(10, 14, 26, 0.95); backdrop-filter: blur(10px); padding: 15px 20px; border-bottom: 1px solid #2A3142; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 20px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        input, select { width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid #2A3142; border-radius: 10px; color: white; margin-bottom: 10px; outline: none; }
         
-        /* --- CARDS --- */
-        .card { background: var(--bg-card); border-radius: 16px; padding: 16px; margin: 15px 20px; border: 1px solid #2A3142; }
-        .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .teams { display: flex; justify-content: space-between; align-items: center; text-align: center; margin: 15px 0; }
-        .team-logo { font-size: 30px; margin-bottom: 5px; }
-        .vs { font-weight: bold; color: var(--text-gray); font-size: 12px; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .badge-free { background: rgba(0, 200, 83, 0.2); color: var(--primary); }
-        .badge-vip { background: rgba(255, 215, 0, 0.2); color: var(--gold); }
-
-        /* --- BOTTOM NAV --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid #2A3142; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 10px; background: none; border: none; cursor: pointer; min-width: 60px; }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        /* Layout */
+        header { position: sticky; top: 0; z-index: 100; background: rgba(10,14,26,0.95); padding: 15px 20px; border-bottom: 1px solid #2A3142; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(5px); }
+        .logo { font-weight: 800; color: var(--primary); font-size: 18px; }
+        
+        .card { background: var(--bg-card); border-radius: 16px; padding: 15px; margin: 15px 20px; border: 1px solid #2A3142; position: relative; }
+        
+        /* Match Display */
+        .match-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .team { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+        .team-logo { font-size: 24px; }
+        .vs-badge { background: #222; padding: 4px 8px; border-radius: 6px; font-size: 10px; color: #888; }
+        
+        /* Prediction Card */
+        .pred-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .badge-free { background: rgba(0, 200, 83, 0.2); color: var(--primary); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .badge-vip { background: rgba(255, 215, 0, 0.2); color: var(--gold); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        
+        .coupon-box { background: #000; padding: 10px; border-radius: 8px; margin-top: 10px; border-left: 3px solid var(--primary); }
+        .coupon-text { font-family: monospace; font-size: 12px; color: #ccc; word-break: break-all; }
+        
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid #2A3142; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { background: none; border: none; color: var(--text-gray); font-size: 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .nav-item i { font-size: 18px; margin-bottom: 3px; }
         .nav-item.active { color: var(--primary); }
-        .nav-admin { color: var(--danger) !important; } /* Kadna wouj */
+        .nav-admin { color: var(--danger) !important; }
 
-        /* --- PAGES --- */
-        .page { min-height: 80vh; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- SPECIFIC --- */
-        .disclaimer { font-size: 11px; color: var(--text-gray); text-align: center; padding: 20px; line-height: 1.5; }
-        
-        /* Admin Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #2A3142; }
-        th { color: var(--text-gray); }
+        /* Admin Tabs */
+        .admin-tabs { display: flex; gap: 5px; overflow-x: auto; padding: 10px 20px; background: #111; }
+        .tab-btn { background: #222; color: #888; border: none; padding: 8px 12px; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; }
+        .tab-btn.active { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header id="appHeader">
+    <header>
         <div class="logo"><i class="fas fa-futbol"></i> FIFA PRONOSTIC</div>
-        <div id="userStatus"></div>
+        <div id="userBadge"></div>
     </header>
 
-    <!-- === PAGE: HOME === -->
+    <!-- HOME -->
     <div id="homePage" class="page">
-        <div style="padding: 20px; text-align: center;">
-            <h1 style="font-size: 24px; margin-bottom: 10px;">Analyses & Pronostics</h1>
-            <p style="color: var(--text-gray); font-size: 14px;">Rejoignez les meilleurs parieurs d'Haïti.</p>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button onclick="showPage('predictions')" class="btn btn-primary">🎯 Voir Pronostics</button>
-                <button onclick="showPage('vip')" class="btn btn-gold">💎 Devenir VIP</button>
+        <div style="padding: 30px 20px; text-align: center;">
+            <h1 style="font-size: 28px; margin-bottom: 10px;">Gagne ak Nou</h1>
+            <p style="color: var(--text-gray);">Pronostics football fiables & analyses VIP.</p>
+            <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: center;">
+                <button onclick="showPage('predictions')" class="btn btn-primary" style="width: auto;">🎯 Voir Pronos</button>
+                <button onclick="showPage('vip')" class="btn btn-gold" style="width: auto;">💎 Devenir VIP</button>
             </div>
         </div>
-
-        <div class="card">
-            <div class="match-header">
-                <span class="badge badge-free">Match du Jour</span>
-                <span style="font-size: 12px; color: var(--text-gray);">Champions League</span>
-            </div>
-            <div class="teams">
-                <div><div class="team-logo">🔵</div>Man. City</div>
-                <div class="vs">VS<br>20:00</div>
-                <div><div class="team-logo">⚪</div>Real Madrid</div>
-            </div>
-        </div>
-
-        <div class="disclaimer">
-            ⚠️ <strong>Avertissement :</strong> Les pronostics sont des analyses et ne garantissent aucun résultat. Les paris comportent des risques financiers. Jouez de manière responsable.
-        </div>
+        
+        <h3 style="padding: 0 20px; margin-top: 10px;">Matchs du Jour</h3>
+        <div id="homeMatchesList"></div>
     </div>
 
-    <!-- === PAGE: MATCHES === -->
+    <!-- MATCHES -->
     <div id="matchesPage" class="page hidden">
-        <h2 style="padding: 20px 20px 0;">Matchs à venir</h2>
-        <div id="matchesList"></div>
+        <h2 style="padding: 20px;">Tous les Matchs</h2>
+        <div id="allMatchesList"></div>
     </div>
 
-    <!-- === PAGE: PREDICTIONS === -->
+    <!-- PREDICTIONS -->
     <div id="predictionsPage" class="page hidden">
         <div style="padding: 20px; display: flex; gap: 10px;">
             <button onclick="filterPreds('free')" class="btn btn-outline" style="flex:1;">FREE</button>
@@ -115,176 +98,165 @@
         <div id="predsList"></div>
     </div>
 
-    <!-- === PAGE: VIP / PAIEMENT === -->
+    <!-- VIP -->
     <div id="vipPage" class="page hidden">
         <div class="card" style="border-color: var(--gold); text-align: center;">
-            <i class="fas fa-crown" style="font-size: 40px; color: var(--gold); margin-bottom: 10px;"></i>
-            <h2 style="color: var(--gold);">Devenez Membre VIP</h2>
-            <p style="color: var(--text-gray); font-size: 13px; margin: 10px 0;">Accédez aux pronostics haute confiance et aux cotes boostées.</p>
+            <i class="fas fa-crown" style="font-size: 50px; color: var(--gold); margin-bottom: 15px;"></i>
+            <h2 style="color: var(--gold);">Abonnement VIP</h2>
+            <p style="color: #aaa; font-size: 13px; margin: 10px 0;">Accès illimité aux meilleurs coupons.</p>
             
-            <div id="vipContentUser">
-                <!-- Si pas connecté -->
-                <div id="vipNotLogged">
-                    <button onclick="showPage('profile')" class="btn btn-primary">Se connecter pour voir les offres</button>
-                </div>
+            <div id="vipNotLogged">
+                <button onclick="showPage('profile')" class="btn btn-primary">Se connecter</button>
+            </div>
 
-                <!-- Si connecté mais pas VIP -->
-                <div id="vipSubscribe" class="hidden">
-                    <div style="background: #1A1F2E; padding: 15px; border-radius: 10px; margin: 15px 0; text-align: left;">
-                        <h3 style="color: white;">Formule Mensuelle</h3>
-                        <div style="font-size: 24px; color: var(--gold); font-weight: bold;">1,500 HTG</div>
-                        <hr style="border: 0; border-top: 1px solid #333; margin: 10px 0;">
-                        <p style="font-size: 12px; color: #aaa;">Payez via MonCash :</p>
-                        <div style="background: black; padding: 10px; border-radius: 5px; margin-top: 5px;">
-                            <div>Nom: <strong>Benêche Jurgens</strong></div>
-                            <div>Numéro: <strong style="color: var(--gold); font-size: 16px;">47173504</strong></div>
-                        </div>
+            <div id="vipSubscribe" class="hidden">
+                <div style="background: #222; padding: 15px; border-radius: 10px; margin: 15px 0; text-align: left;">
+                    <div style="font-size: 20px; color: var(--gold); font-weight: bold;">1,500 HTG / Mois</div>
+                    <hr style="border: 0; border-top: 1px solid #444; margin: 10px 0;">
+                    <p style="font-size: 12px; color: #aaa;">Envoyez via MonCash :</p>
+                    <div style="background: black; padding: 10px; border-radius: 5px;">
+                        <div>Nom: <strong>Benêche Jurgens</strong></div>
+                        <div>Numéro: <strong style="color: var(--gold);">47173504</strong></div>
                     </div>
-
-                    <form onsubmit="submitPayment(event)">
-                        <div class="input-group">
-                            <input type="text" id="payTxId" placeholder="ID Transaction MonCash" required>
-                        </div>
-                        <div class="input-group">
-                            <input type="text" id="payName" placeholder="Nom du payeur" required>
-                        </div>
-                        <button type="submit" class="btn btn-gold">Envoyer la Preuve</button>
-                    </form>
                 </div>
+                <form onsubmit="submitPayment(event)">
+                    <input type="text" id="payTxId" placeholder="ID Transaction (Ex: 8H2...)" required>
+                    <input type="text" id="payName" placeholder="Votre Nom Complet" required>
+                    <button type="submit" class="btn btn-gold">Valider le Paiement</button>
+                </form>
+            </div>
 
-                <!-- Si déjà VIP -->
-                <div id="vipActive" class="hidden">
-                    <h3 style="color: var(--primary);">✅ Vous êtes VIP</h3>
-                    <p>Votre abonnement est actif.</p>
-                </div>
+            <div id="vipActive" class="hidden">
+                <h3 style="color: var(--primary);">✅ Vous êtes VIP</h3>
+                <p>Profitez de vos avantages maintenant.</p>
             </div>
         </div>
     </div>
 
-    <!-- === PAGE: LOGIN / REGISTER (Within Profile) === -->
-    <div id="authPage" class="page hidden">
-        <div class="card">
-            <h2 id="authTitle" style="text-align: center; margin-bottom: 20px;">Connexion</h2>
-            <form onsubmit="handleAuth(event)">
-                <div class="input-group">
-                    <input type="email" id="authEmail" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="authPass" placeholder="Mot de passe" required>
-                </div>
-                <button type="submit" class="btn btn-primary" id="authBtn">Se Connecter</button>
-            </form>
-            <p style="text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-gray);">
-                <span id="authSwitchText">Pas de compte ?</span> 
-                <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">Cliquez ici</a>
-            </p>
-            <!-- Note: Admin login info removed from public view for security -->
-        </div>
-    </div>
-
-    <!-- === PAGE: PROFILE === -->
+    <!-- PROFILE / AUTH -->
     <div id="profilePage" class="page hidden">
         <div id="profileContent" class="hidden">
             <div class="card" style="text-align: center;">
-                <div style="width: 80px; height: 80px; background: var(--primary); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px;">👤</div>
-                <h2 id="profileName">Utilisateur</h2>
-                <p id="profileStatus" style="color: var(--text-gray);">Membre Free</p>
-                <button onclick="logout()" class="btn btn-outline" style="margin-top: 20px; border-color: var(--danger); color: var(--danger);">Déconnexion</button>
+                <div style="width: 70px; height: 70px; background: #333; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 30px;">👤</div>
+                <h2 id="profileName">User</h2>
+                <p id="profileStatus" style="color: var(--text-gray);">Free Member</p>
+                <button onclick="logout()" class="btn btn-outline" style="border-color: var(--danger); color: var(--danger); margin-top: 15px;">Déconnexion</button>
             </div>
         </div>
         
         <div id="loginPrompt" class="card" style="text-align: center;">
             <h2>Bienvenue</h2>
-            <p style="color:var(--text-gray); margin-bottom: 20px;">Connectez-vous pour accéder à votre espace.</p>
-            <button onclick="showAuthForm()" class="btn btn-primary">Se Connecter / S'inscrire</button>
+            <p style="color:#888; margin-bottom: 20px;">Connectez-vous pour suivre vos pronostics.</p>
+            <button onclick="showAuthForm()" class="btn btn-primary">Connexion / Inscription</button>
+        </div>
+
+        <div id="authForm" class="card hidden">
+            <h3 id="authTitle">Connexion</h3>
+            <form onsubmit="handleAuth(event)">
+                <input type="email" id="authEmail" placeholder="Email" required>
+                <input type="password" id="authPass" placeholder="Mot de passe" required>
+                <button type="submit" class="btn btn-primary" id="authBtn">Entrer</button>
+            </form>
+            <p style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
+                <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">Changer mode (Inscription/Connexion)</a>
+            </p>
         </div>
     </div>
 
-    <!-- === PAGE: ADMIN === -->
+    <!-- ADMIN PANEL -->
     <div id="adminPage" class="page hidden">
         <div style="padding: 20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>🛡️ Panneau Admin</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                <h2>🛡️ Admin Panel</h2>
                 <button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:20px;">✕</button>
             </div>
             
-            <div style="display: flex; gap: 10px; margin: 15px 0; overflow-x: auto; padding-bottom: 5px;">
-                <button onclick="showAdminTab('payments')" class="btn btn-outline" style="min-width: 100px; font-size:12px;">Paiements</button>
-                <button onclick="showAdminTab('addMatch')" class="btn btn-outline" style="min-width: 100px; font-size:12px;">Ajouter Match</button>
-                <button onclick="showAdminTab('users')" class="btn btn-outline" style="min-width: 100px; font-size:12px;">Utilisateurs</button>
-            </div>
-
-            <!-- Tab: Payments -->
-            <div id="admPayments">
-                <h3>Paiements en attente</h3>
-                <div id="paymentList"></div>
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showAdminTab('addMatch')">⚽ Matchs</button>
+                <button class="tab-btn" onclick="showAdminTab('addPred')">🎯 Créer Prono</button>
+                <button class="tab-btn" onclick="showAdminTab('payments')">💰 Paiements</button>
+                <button class="tab-btn" onclick="showAdminTab('users')">👥 Users</button>
             </div>
 
             <!-- Tab: Add Match -->
-            <div id="admAddMatch" class="hidden">
-                <h3>Ajouter un Match</h3>
+            <div id="admAddMatch" class="admin-section">
+                <h3 style="margin: 15px 0;">Ajouter un Match</h3>
                 <form onsubmit="addMatch(event)">
-                    <input type="text" id="mHome" placeholder="Équipe Domicile" style="margin-bottom: 5px;" required>
-                    <input type="text" id="mAway" placeholder="Équipe Extérieure" style="margin-bottom: 5px;" required>
+                    <input type="text" id="mHome" placeholder="Équipe Domicile (Ex: Barcelona)" required>
+                    <input type="text" id="mHomeLogo" placeholder="Logo Domicile (Emoji/Lettre) Ex: 🔴">
                     
-                    <label style="font-size:12px; color:#888; display:block; margin-bottom:5px;">Quand le match se joue-t-il ?</label>
-                    <select id="mDateType" onchange="toggleDateInput()" style="margin-bottom: 5px;">
+                    <input type="text" id="mAway" placeholder="Équipe Extérieure (Ex: Real Madrid)" required>
+                    <input type="text" id="mAwayLogo" placeholder="Logo Extérieur (Emoji/Lettre) Ex: ⚪">
+                    
+                    <label style="font-size:12px; color:#888;">Date du match:</label>
+                    <select id="mDateType" onchange="toggleDateInput()">
                         <option value="today">Aujourd'hui</option>
                         <option value="tomorrow">Demain</option>
-                        <option value="custom">Choisir une date...</option>
+                        <option value="custom">Autre date...</option>
                     </select>
+                    <input type="date" id="mCustomDate" class="hidden">
                     
-                    <input type="date" id="mCustomDate" class="hidden" style="margin-bottom: 5px;">
-                    <input type="time" id="mTime" style="margin-bottom: 5px;" required>
-                    
-                    <button class="btn btn-primary">Ajouter le Match</button>
+                    <input type="time" id="mTime" required>
+                    <button class="btn btn-primary">Enregistrer le Match</button>
                 </form>
             </div>
 
-             <!-- Tab: Users -->
-             <div id="admUsers" class="hidden">
-                <h3>Gestion Utilisateurs</h3>
-                <table id="usersTable">
-                    <thead><tr><th>Nom</th><th>Statut</th><th>Action</th></tr></thead>
-                    <tbody></tbody>
+            <!-- Tab: Create Prediction -->
+            <div id="admAddPred" class="admin-section hidden">
+                <h3 style="margin: 15px 0;">Créer un Pronostic</h3>
+                <form onsubmit="addPrediction(event)">
+                    <label style="font-size:12px; color:#888;">Choisir le Match:</label>
+                    <select id="pMatchId" required></select>
+                    
+                    <input type="text" id="pType" placeholder="Type de pari (Ex: 1X2, Over 2.5)" required>
+                    <input type="text" id="pPick" placeholder="Pronostic (Ex: Victoire Barca, Oui)" required>
+                    <input type="number" step="0.01" id="pOdds" placeholder="Cote (Ex: 1.85)" required>
+                    
+                    <label style="font-size:12px; color:#888;">Catégorie:</label>
+                    <select id="pCat">
+                        <option value="FREE">🆓 FREE (Public)</option>
+                        <option value="VIP">💎 VIP (Payant)</option>
+                    </select>
+                    
+                    <button class="btn btn-gold">Publier le Pronostic</button>
+                </form>
+            </div>
+
+            <!-- Tab: Payments -->
+            <div id="admPayments" class="admin-section hidden">
+                <h3 style="margin: 15px 0;">Paiements en attente</h3>
+                <div id="paymentList"></div>
+            </div>
+
+            <!-- Tab: Users -->
+            <div id="admUsers" class="admin-section hidden">
+                <h3 style="margin: 15px 0;">Utilisateurs</h3>
+                <table style="width:100%; font-size:12px; border-collapse:collapse;">
+                    <thead><tr style="text-align:left; color:#888;"><th>Nom</th><th>Statut</th><th>Action</th></tr></thead>
+                    <tbody id="usersTableBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
-    <nav class="bottom-nav" id="mainNav">
-        <button class="nav-item active" onclick="showPage('home')">
-            <i class="fas fa-home"></i> Accueil
-        </button>
-        <button class="nav-item" onclick="showPage('matches')">
-            <i class="fas fa-futbol"></i> Matchs
-        </button>
-        <button class="nav-item" onclick="showPage('predictions')">
-            <i class="fas fa-bullseye"></i> Pronos
-        </button>
-        <button class="nav-item" onclick="showPage('vip')">
-            <i class="fas fa-crown"></i> VIP
-        </button>
-        <button class="nav-item" onclick="showPage('profile')">
-            <i class="fas fa-user"></i> Profil
-        </button>
-        <!-- IKON KADNA ADMIN (Kache pa default) -->
-        <button id="adminNavBtn" class="nav-item hidden nav-admin" onclick="showPage('admin')">
-            <i class="fas fa-lock"></i> Admin
-        </button>
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i> Accueil</button>
+        <button class="nav-item" onclick="showPage('matches')"><i class="fas fa-futbol"></i> Matchs</button>
+        <button class="nav-item" onclick="showPage('predictions')"><i class="fas fa-bullseye"></i> Pronos</button>
+        <button class="nav-item" onclick="showPage('vip')"><i class="fas fa-crown"></i> VIP</button>
+        <button class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i> Profil</button>
+        <button id="adminNavBtn" class="nav-item hidden nav-admin" onclick="showPage('admin')"><i class="fas fa-lock"></i> Admin</button>
     </nav>
 
     <script>
-        // --- DONNÉES SIMULÉES (BASE DE DONNÉE LOCALE) ---
-        // NOUVO: Efase tout vye done yo, kreye pwòp baz done a
+        // --- DATABASE INIT (Clean Slate) ---
         const DB = {
             users: JSON.parse(localStorage.getItem('fp_users')) || [
-                // SEUL COMPTE ADMIN EXISTANT (Caché)
-                { email: 'admin@fifa.com', pass: 'admin123', role: 'admin', isVip: true, name: 'Administrateur' }
+                { email: 'admin@fifa.com', pass: 'admin123', role: 'admin', isVip: true, name: 'Admin' }
             ],
-            matches: JSON.parse(localStorage.getItem('fp_matches')) || [], // Vide au début
-            predictions: JSON.parse(localStorage.getItem('fp_preds')) || [], // Vide au début
+            matches: JSON.parse(localStorage.getItem('fp_matches')) || [],
+            predictions: JSON.parse(localStorage.getItem('fp_preds')) || [],
             payments: JSON.parse(localStorage.getItem('fp_payments')) || [],
             currentUser: JSON.parse(localStorage.getItem('fp_currentUser')) || null
         };
@@ -296,47 +268,36 @@
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             document.getElementById(pageId + 'Page').classList.remove('hidden');
             
-            // Update Nav Active State
-            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            
-            const navMap = {
-                'home': 0, 'matches': 1, 'predictions': 2, 'vip': 3, 'profile': 4, 'admin': 5
-            };
-            
-            if(navMap[pageId] !== undefined) {
-                const btns = document.querySelectorAll('.nav-item');
-                if(btns[navMap[pageId]]) btns[navMap[pageId]].classList.add('active');
-            }
+            // Update Nav Icons
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            const map = {'home':0, 'matches':1, 'predictions':2, 'vip':3, 'profile':4, 'admin':5};
+            const btns = document.querySelectorAll('.nav-item');
+            if(map[pageId] !== undefined && btns[map[pageId]]) btns[map[pageId]].classList.add('active');
 
             window.scrollTo(0,0);
-            checkAuthUI();
-            renderContent();
+            checkAuth();
+            renderAll();
         }
 
-        function checkAuthUI() {
-            const user = DB.currentUser;
-            const header = document.getElementById('userStatus');
+        function checkAuth() {
+            const u = DB.currentUser;
+            const badge = document.getElementById('userBadge');
             const adminBtn = document.getElementById('adminNavBtn');
-            const profileContent = document.getElementById('profileContent');
-            const loginPrompt = document.getElementById('loginPrompt');
-
-            if (user) {
-                header.innerHTML = `<span style="font-size:12px; color:var(--gold);">${user.isVip ? '💎 VIP' : '🆓 FREE'}</span>`;
-                document.getElementById('profileName').innerText = user.name || user.email;
-                document.getElementById('profileStatus').innerText = user.isVip ? 'Membre VIP Actif' : 'Membre Gratuit';
+            
+            if(u) {
+                badge.innerHTML = u.isVip ? '<span style="color:var(--gold)">💎 VIP</span>' : '<span style="color:#888">🆓 Free</span>';
+                document.getElementById('profileName').innerText = u.name || u.email;
+                document.getElementById('profileStatus').innerText = u.isVip ? 'Membre VIP Actif' : 'Membre Gratuit';
                 
-                profileContent.classList.remove('hidden');
-                loginPrompt.classList.add('hidden');
+                document.getElementById('profileContent').classList.remove('hidden');
+                document.getElementById('loginPrompt').classList.add('hidden');
+                document.getElementById('authForm').classList.add('hidden');
 
-                // Show Admin Lock Icon ONLY if Admin
-                if(user.role === 'admin') {
-                    adminBtn.classList.remove('hidden');
-                } else {
-                    adminBtn.classList.add('hidden');
-                }
+                if(u.role === 'admin') adminBtn.classList.remove('hidden');
+                else adminBtn.classList.add('hidden');
 
-                // VIP Page Logic
-                if(user.isVip) {
+                // VIP View Logic
+                if(u.isVip) {
                     document.getElementById('vipSubscribe').classList.add('hidden');
                     document.getElementById('vipActive').classList.remove('hidden');
                     document.getElementById('vipNotLogged').classList.add('hidden');
@@ -346,30 +307,28 @@
                     document.getElementById('vipNotLogged').classList.add('hidden');
                 }
             } else {
-                header.innerHTML = '';
-                adminBtn.classList.add('hidden'); // Hide lock icon
+                badge.innerHTML = '';
+                adminBtn.classList.add('hidden');
+                document.getElementById('profileContent').classList.add('hidden');
+                document.getElementById('loginPrompt').classList.remove('hidden');
+                document.getElementById('authForm').classList.add('hidden');
                 
-                profileContent.classList.add('hidden');
-                loginPrompt.classList.remove('hidden');
-
                 document.getElementById('vipNotLogged').classList.remove('hidden');
                 document.getElementById('vipSubscribe').classList.add('hidden');
                 document.getElementById('vipActive').classList.add('hidden');
             }
         }
 
-        // --- AUTHENTICATION ---
+        // --- AUTH ---
         function showAuthForm() {
-            document.getElementById('profileContent').classList.add('hidden');
             document.getElementById('loginPrompt').classList.add('hidden');
-            document.getElementById('authPage').classList.remove('hidden');
+            document.getElementById('authForm').classList.remove('hidden');
         }
 
         function toggleAuthMode() {
             isRegistering = !isRegistering;
             document.getElementById('authTitle').innerText = isRegistering ? 'Inscription' : 'Connexion';
             document.getElementById('authBtn').innerText = isRegistering ? "S'inscrire" : 'Se Connecter';
-            document.getElementById('authSwitchText').innerText = isRegistering ? 'Déjà un compte ?' : 'Pas de compte ?';
         }
 
         function handleAuth(e) {
@@ -377,31 +336,24 @@
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPass').value;
 
-            if (isRegistering) {
-                // Inscription (Empêcher création compte admin)
-                if(email === 'admin@fifa.com') return alert('Action interdite.');
-                if(DB.users.find(u => u.email === email)) return alert('Email déjà utilisé');
-                
+            if(isRegistering) {
+                if(email === 'admin@fifa.com') return alert('Interdit.');
+                if(DB.users.find(u => u.email === email)) return alert('Email pris.');
                 const newUser = { email, pass, role: 'user', isVip: false, name: email.split('@')[0] };
                 DB.users.push(newUser);
                 saveDB();
                 login(newUser);
             } else {
-                // Connexion
                 const user = DB.users.find(u => u.email === email && u.pass === pass);
-                if (user) login(user);
-                else alert('Identifiants incorrects');
+                if(user) login(user);
+                else alert('Erreur identifiants');
             }
         }
 
         function login(user) {
             DB.currentUser = user;
             localStorage.setItem('fp_currentUser', JSON.stringify(user));
-            alert('Bienvenue ' + user.name);
-            
-            document.getElementById('authPage').classList.add('hidden');
-            document.getElementById('profileContent').classList.remove('hidden');
-            
+            alert('Bon retour ' + user.name);
             showPage('profile');
         }
 
@@ -411,255 +363,257 @@
             showPage('home');
         }
 
-        // --- RENDER CONTENT ---
-        function renderContent() {
-            // Render Matches
-            const mContainer = document.getElementById('matchesList');
-            if(DB.matches.length === 0) {
-                mContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">Aucun match programmé pour le moment.</div>';
-            } else {
-                mContainer.innerHTML = DB.matches.map(m => `
-                    <div class="card">
-                        <div class="match-header"><span class="badge badge-free">${m.comp}</span> <span style="font-size:10px; color:#888;">${m.dateStr}</span></div>
-                        <div class="teams">
-                            <div><div class="team-logo">⚽</div>${m.home}</div>
-                            <div class="vs">VS<br>${m.time}</div>
-                            <div><div class="team-logo">⚽</div>${m.away}</div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // Render Predictions (Default Free)
-            filterPreds('free');
+        // --- RENDERING ---
+        function renderAll() {
+            renderMatches();
+            filterPreds('free'); // Default view
+            populateMatchSelect();
         }
 
-        function filterPreds(type) {
-            const pContainer = document.getElementById('predsList');
-            const user = DB.currentUser;
-            
-            let preds = DB.predictions.filter(p => p.cat === type.toUpperCase());
-            
-            if (type === 'vip' && (!user || !user.isVip)) {
-                pContainer.innerHTML = `
-                    <div class="card" style="text-align:center; border-color: var(--gold);">
-                        <i class="fas fa-lock" style="font-size:30px; color:var(--gold); margin-bottom:10px;"></i>
-                        <h3>Contenu Réservé VIP</h3>
-                        <p style="color:#888; margin-bottom:15px;">Connectez-vous et abonnez-vous pour voir ces pronostics.</p>
-                        <button onclick="showPage('vip')" class="btn btn-gold">Devenir VIP</button>
+        function renderMatches() {
+            const createCard = (m) => `
+                <div class="card">
+                    <div class="match-row">
+                        <span class="vs-badge">${m.dateStr}</span>
+                        <span class="vs-badge">${m.time}</span>
                     </div>
-                `;
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="team">
+                            <span class="team-logo">${m.homeLogo || '⚽'}</span>
+                            <span>${m.home}</span>
+                        </div>
+                        <div style="font-weight:bold; color:#555;">VS</div>
+                        <div class="team" style="flex-direction:row-reverse;">
+                            <span class="team-logo">${m.awayLogo || '⚽'}</span>
+                            <span>${m.away}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const list = DB.matches.map(createCard).join('');
+            document.getElementById('homeMatchesList').innerHTML = list || '<p style="text-align:center;color:#666;">Aucun match.</p>';
+            document.getElementById('allMatchesList').innerHTML = list || '<p style="text-align:center;color:#666;">Aucun match.</p>';
+        }
+
+        function filterPreds(cat) {
+            const u = DB.currentUser;
+            const container = document.getElementById('predsList');
+            
+            // Filter predictions
+            let preds = DB.predictations || []; // Fix typo in variable name if any, using DB.predictions
+            preds = DB.predictions.filter(p => p.cat === cat);
+
+            // Check VIP Lock
+            if(cat === 'VIP' && (!u || !u.isVip)) {
+                container.innerHTML = `
+                    <div class="card" style="text-align:center; border:1px solid var(--gold);">
+                        <i class="fas fa-lock" style="font-size:40px; color:var(--gold); margin:20px 0;"></i>
+                        <h3>Zone Réservée VIP</h3>
+                        <p style="color:#888; margin-bottom:15px;">Abonnez-vous pour voir nos meilleurs coupons.</p>
+                        <button onclick="showPage('vip')" class="btn btn-gold">Devenir VIP</button>
+                    </div>`;
                 return;
             }
 
             if(preds.length === 0) {
-                 pContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">Aucun pronostic disponible.</div>';
-                 return;
-            }
-
-            pContainer.innerHTML = preds.map(p => {
-                const match = DB.matches.find(m => m.id === p.matchId) || { home: 'Match X', away: 'Match Y' };
-                return `
-                <div class="card">
-                    <div class="match-header">
-                        <span class="badge ${p.cat === 'VIP' ? 'badge-vip' : 'badge-free'}">${p.cat}</span>
-                        <span style="font-size:12px; color:#888;">${match.home} vs ${match.away}</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                        <div>
-                            <div style="font-size:12px; color:#888;">${p.type}</div>
-                            <div style="font-size:18px; font-weight:bold; color:var(--primary);">${p.pick}</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="background:#222; padding:5px 10px; border-radius:5px; color:white; font-weight:bold;">${p.odds}</div>
-                            <div style="font-size:10px; color:var(--gold); margin-top:2px;">${'★'.repeat(p.conf)}</div>
-                        </div>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-
-        // --- PAYMENT LOGIC ---
-        function submitPayment(e) {
-            e.preventDefault();
-            const txId = document.getElementById('payTxId').value;
-            const name = document.getElementById('payName').value;
-            const user = DB.currentUser;
-
-            if(DB.payments.find(p => p.txId === txId)) return alert('Ce numéro de transaction a déjà été utilisé.');
-
-            const payment = {
-                id: Date.now(),
-                userEmail: user.email,
-                userName: name,
-                txId: txId,
-                amount: 1500,
-                status: 'pending',
-                date: new Date().toLocaleDateString()
-            };
-
-            DB.payments.push(payment);
-            saveDB();
-            alert('Preuve envoyée ! En attente de validation par l\'admin.');
-            showPage('home');
-        }
-
-        // --- ADMIN LOGIC ---
-        function showAdminTab(tab) {
-            document.getElementById('admPayments').classList.add('hidden');
-            document.getElementById('admAddMatch').classList.add('hidden');
-            document.getElementById('admUsers').classList.add('hidden');
-            
-            document.getElementById('adm' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
-            
-            if(tab === 'payments') renderAdminPayments();
-            if(tab === 'users') renderAdminUsers();
-        }
-
-        function renderAdminPayments() {
-            const list = document.getElementById('paymentList');
-            const pending = DB.payments.filter(p => p.status === 'pending');
-            
-            if(pending.length === 0) {
-                list.innerHTML = '<p style="color:#888;">Aucun paiement en attente.</p>';
+                container.innerHTML = '<p style="text-align:center;padding:20px;color:#666;">Aucun pronostic disponible.</p>';
                 return;
             }
 
-            list.innerHTML = pending.map(p => `
-                <div class="card" style="margin: 10px 0; padding: 10px;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <strong>${p.userName}</strong>
-                        <span style="color:var(--gold);">${p.amount} HTG</span>
+            container.innerHTML = preds.map(p => {
+                const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'⚽', awayLogo:'⚽'};
+                // Create Coupon Text
+                const couponText = `⚽ *FIFA PRONOSTIC*\n\n🔹 *Match:* ${m.home} vs ${m.away}\n🔸 *Pari:* ${p.type}\n✅ *Pick:* ${p.pick}\n💰 *Cote:* ${p.odds}\n\n🔗 Jouez maintenant!`;
+                
+                return `
+                <div class="card">
+                    <div class="pred-header">
+                        <span class="${p.cat === 'VIP' ? 'badge-vip' : 'badge-free'}">${p.cat}</span>
+                        <span style="font-size:10px; color:#666;">${m.dateStr}</span>
                     </div>
-                    <div style="font-size:12px; color:#888;">TX: ${p.txId} | ${p.date}</div>
-                    <div style="margin-top:10px; display:flex; gap:5px;">
-                        <button onclick="approvePayment(${p.id})" class="btn btn-primary" style="padding:5px; font-size:12px;">Approuver</button>
-                        <button onclick="rejectPayment(${p.id})" class="btn btn-outline" style="padding:5px; font-size:12px; border-color:red; color:red;">Rejeter</button>
+                    
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <div class="team"><span class="team-logo">${m.homeLogo}</span> ${m.home}</div>
+                        <div class="team" style="flex-direction:row-reverse;"><span class="team-logo">${m.awayLogo}</span> ${m.away}</div>
                     </div>
-                </div>
-            `).join('');
+
+                    <div class="coupon-box">
+                        <div style="display:flex; justify-content:space-between; color:white; margin-bottom:5px;">
+                            <span>${p.type}</span>
+                            <span style="color:var(--gold); font-weight:bold;">${p.odds}</span>
+                        </div>
+                        <div style="color:var(--primary); font-weight:bold; font-size:16px;">${p.pick}</div>
+                    </div>
+
+                    <button onclick="copyCoupon('${couponText.replace(/\n/g, '\\n')}')" class="btn btn-outline btn-sm" style="margin-top:10px; width:100%;">
+                        <i class="fas fa-copy"></i> Copier le Coupon
+                    </button>
+                </div>`;
+            }).join('');
         }
 
-        function approvePayment(id) {
-            const pay = DB.payments.find(p => p.id === id);
-            if(pay) {
-                pay.status = 'approved';
-                const user = DB.users.find(u => u.email === pay.userEmail);
-                if(user) user.isVip = true;
-                saveDB();
-                renderAdminPayments();
-                alert('Utilisateur passé en VIP !');
-            }
+        function copyCoupon(text) {
+            // Decode escaped newlines for actual copying
+            const cleanText = text.replace(/\\n/g, '\n');
+            navigator.clipboard.writeText(cleanText).then(() => {
+                alert('Coupon copié ! Prêt à coller sur WhatsApp.');
+            });
         }
 
-        function rejectPayment(id) {
-            const idx = DB.payments.findIndex(p => p.id === id);
-            if(idx > -1) {
-                DB.payments[idx].status = 'rejected';
-                saveDB();
-                renderAdminPayments();
-            }
+        // --- ADMIN FUNCTIONS ---
+        function showAdminTab(tabId) {
+            document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('adm' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
+            
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if(tabId === 'payments') renderPayments();
+            if(tabId === 'users') renderUsers();
         }
 
-        // --- ADD MATCH WITH DATE OPTION ---
         function toggleDateInput() {
-            const type = document.getElementById('mDateType').value;
-            const customInput = document.getElementById('mCustomDate');
-            if(type === 'custom') {
-                customInput.classList.remove('hidden');
-                customInput.required = true;
-            } else {
-                customInput.classList.add('hidden');
-                customInput.required = false;
-            }
+            const val = document.getElementById('mDateType').value;
+            const input = document.getElementById('mCustomDate');
+            if(val === 'custom') { input.classList.remove('hidden'); input.required = true; }
+            else { input.classList.add('hidden'); input.required = false; }
         }
 
         function addMatch(e) {
             e.preventDefault();
             const home = document.getElementById('mHome').value;
             const away = document.getElementById('mAway').value;
+            const hLogo = document.getElementById('mHomeLogo').value || '⚽';
+            const aLogo = document.getElementById('mAwayLogo').value || '⚽';
             const time = document.getElementById('mTime').value;
-            const dateType = document.getElementById('mDateType').value;
+            const dType = document.getElementById('mDateType').value;
             
-            let dateStr = "";
-            const today = new Date();
-            
-            if(dateType === 'today') {
-                dateStr = "Aujourd'hui";
-            } else if (dateType === 'tomorrow') {
-                dateStr = "Demain";
-            } else {
-                const val = document.getElementById('mCustomDate').value;
-                if(val) {
-                    const d = new Date(val);
-                    dateStr = d.toLocaleDateString('fr-FR');
-                } else {
-                    dateStr = "Date inconnue";
-                }
-            }
+            let dateStr = "Aujourd'hui";
+            if(dType === 'tomorrow') dateStr = "Demain";
+            if(dType === 'custom') dateStr = new Date(document.getElementById('mCustomDate').value).toLocaleDateString();
 
-            DB.matches.push({ 
-                id: Date.now(), 
-                home, 
-                away, 
-                time, 
-                comp: 'Ligue 1', 
-                dateStr 
+            DB.matches.push({
+                id: Date.now(),
+                home, away, homeLogo: hLogo, awayLogo: aLogo,
+                time, dateStr
             });
             saveDB();
-            alert('Match ajouté avec succès !');
-            
-            // Reset form
-            document.getElementById('mHome').value = '';
-            document.getElementById('mAway').value = '';
-            document.getElementById('mTime').value = '';
-            document.getElementById('mDateType').value = 'today';
-            toggleDateInput();
+            alert('Match ajouté !');
+            e.target.reset();
+            renderAll();
         }
 
-        function renderAdminUsers() {
-            const tbody = document.querySelector('#usersTable tbody');
-            // Filter out admin from the list so regular users don't see it
-            const regularUsers = DB.users.filter(u => u.role !== 'admin');
-            
-            if(regularUsers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888;">Aucun utilisateur inscrit.</td></tr>';
-                return;
-            }
+        function populateMatchSelect() {
+            const sel = document.getElementById('pMatchId');
+            sel.innerHTML = '<option value="">-- Choisir un match --</option>';
+            DB.matches.forEach(m => {
+                sel.innerHTML += `<option value="${m.id}">${m.home} vs ${m.away} (${m.time})</option>`;
+            });
+        }
 
-            tbody.innerHTML = regularUsers.map(u => `
-                <tr>
-                    <td>${u.name || u.email}</td>
-                    <td><span class="badge ${u.isVip ? 'badge-vip' : 'badge-free'}">${u.isVip ? 'VIP' : 'Free'}</span></td>
-                    <td>
-                        <button onclick="toggleUserVip('${u.email}')" style="font-size:10px; padding:2px 5px;">Toggle VIP</button>
-                    </td>
+        function addPrediction(e) {
+            e.preventDefault();
+            const matchId = document.getElementById('pMatchId').value;
+            if(!matchId) return alert('Choisissez un match !');
+
+            const newPred = {
+                id: Date.now(),
+                matchId: parseInt(matchId),
+                type: document.getElementById('pType').value,
+                pick: document.getElementById('pPick').value,
+                odds: document.getElementById('pOdds').value,
+                cat: document.getElementById('pCat').value
+            };
+
+            DB.predictions.push(newPred);
+            saveDB();
+            alert('Pronostic publié !');
+            e.target.reset();
+            renderAll();
+        }
+
+        function submitPayment(e) {
+            e.preventDefault();
+            const tx = document.getElementById('payTxId').value;
+            if(DB.payments.find(p => p.txId === tx)) return alert('Transaction déjà utilisée.');
+            
+            DB.payments.push({
+                id: Date.now(),
+                userEmail: DB.currentUser.email,
+                userName: document.getElementById('payName').value,
+                txId: tx,
+                amount: 1500,
+                status: 'pending'
+            });
+            saveDB();
+            alert('Demande envoyée ! Attendez la validation.');
+            showPage('home');
+        }
+
+        function renderPayments() {
+            const list = document.getElementById('paymentList');
+            const pending = DB.payments.filter(p => p.status === 'pending');
+            if(pending.length === 0) list.innerHTML = '<p style="color:#666">Rien en attente.</p>';
+            
+            list.innerHTML = pending.map(p => `
+                <div class="card" style="padding:10px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <b>${p.userName}</b>
+                        <span style="color:var(--gold)">${p.amount} HTG</span>
+                    </div>
+                    <div style="font-size:12px; color:#888;">TX: ${p.txId}</div>
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+                        <button onclick="approvePay(${p.id})" class="btn btn-primary btn-sm">Approuver</button>
+                        <button onclick="rejectPay(${p.id})" class="btn btn-outline btn-sm" style="border-color:red; color:red;">Rejeter</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function approvePay(id) {
+            const p = DB.payments.find(x => x.id === id);
+            if(p) {
+                p.status = 'approved';
+                const u = DB.users.find(x => x.email === p.userEmail);
+                if(u) u.isVip = true;
+                saveDB();
+                renderPayments();
+                alert('VIP Activé pour l\'utilisateur.');
+            }
+        }
+
+        function rejectPay(id) {
+            const idx = DB.payments.findIndex(x => x.id === id);
+            if(idx > -1) { DB.payments[idx].status = 'rejected'; saveDB(); renderPayments(); }
+        }
+
+        function renderUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = DB.users.filter(u => u.role !== 'admin').map(u => `
+                <tr style="border-bottom:1px solid #222;">
+                    <td style="padding:8px;">${u.name}</td>
+                    <td style="padding:8px;"><span style="color:${u.isVip ? 'var(--gold)' : '#888'}">${u.isVip ? 'VIP' : 'Free'}</span></td>
+                    <td style="padding:8px;"><button onclick="toggleVip('${u.email}')" style="font-size:10px;">Switch</button></td>
                 </tr>
             `).join('');
         }
 
-        function toggleUserVip(email) {
+        function toggleVip(email) {
             const u = DB.users.find(x => x.email === email);
-            if(u) {
-                u.isVip = !u.isVip;
-                saveDB();
-                renderAdminUsers();
-            }
+            if(u) { u.isVip = !u.isVip; saveDB(); renderUsers(); }
         }
 
-        // --- UTILS ---
         function saveDB() {
             localStorage.setItem('fp_users', JSON.stringify(DB.users));
             localStorage.setItem('fp_matches', JSON.stringify(DB.matches));
-            localStorage.setItem('fp_preds', JSON.stringify(DB.predictions));
+            localStorage.setItem('fp_predictions', JSON.stringify(DB.predictions)); // Fixed key
             localStorage.setItem('fp_payments', JSON.stringify(DB.payments));
         }
 
         // Init
-        renderContent();
-        checkAuthUI();
-
+        renderAll();
+        checkAuth();
     </script>
 </body>
 </html>
