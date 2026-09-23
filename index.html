@@ -178,9 +178,7 @@
                 <span id="authSwitchText">Pas de compte ?</span> 
                 <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">Cliquez ici</a>
             </p>
-            <div style="margin-top: 20px; padding: 10px; background: #222; border-radius: 8px; font-size: 11px; color: #888;">
-                <strong>Démo Admin:</strong> admin@fifa.com / admin123
-            </div>
+            <!-- Note: Admin login info removed from public view for security -->
         </div>
     </div>
 
@@ -228,8 +226,18 @@
                 <form onsubmit="addMatch(event)">
                     <input type="text" id="mHome" placeholder="Équipe Domicile" style="margin-bottom: 5px;" required>
                     <input type="text" id="mAway" placeholder="Équipe Extérieure" style="margin-bottom: 5px;" required>
+                    
+                    <label style="font-size:12px; color:#888; display:block; margin-bottom:5px;">Quand le match se joue-t-il ?</label>
+                    <select id="mDateType" onchange="toggleDateInput()" style="margin-bottom: 5px;">
+                        <option value="today">Aujourd'hui</option>
+                        <option value="tomorrow">Demain</option>
+                        <option value="custom">Choisir une date...</option>
+                    </select>
+                    
+                    <input type="date" id="mCustomDate" class="hidden" style="margin-bottom: 5px;">
                     <input type="time" id="mTime" style="margin-bottom: 5px;" required>
-                    <button class="btn btn-primary">Ajouter</button>
+                    
+                    <button class="btn btn-primary">Ajouter le Match</button>
                 </form>
             </div>
 
@@ -269,20 +277,14 @@
 
     <script>
         // --- DONNÉES SIMULÉES (BASE DE DONNÉE LOCALE) ---
+        // NOUVO: Efase tout vye done yo, kreye pwòp baz done a
         const DB = {
             users: JSON.parse(localStorage.getItem('fp_users')) || [
-                { email: 'admin@fifa.com', pass: 'admin123', role: 'admin', isVip: true, name: 'Administrateur' },
-                { email: 'user@test.com', pass: '123456', role: 'user', isVip: false, name: 'Jean Test' }
+                // SEUL COMPTE ADMIN EXISTANT (Caché)
+                { email: 'admin@fifa.com', pass: 'admin123', role: 'admin', isVip: true, name: 'Administrateur' }
             ],
-            matches: JSON.parse(localStorage.getItem('fp_matches')) || [
-                { id: 1, home: 'Barcelona', away: 'PSG', time: '21:00', comp: 'UCL' },
-                { id: 2, home: 'Arsenal', away: 'Chelsea', time: '17:30', comp: 'PL' }
-            ],
-            predictions: JSON.parse(localStorage.getItem('fp_preds')) || [
-                { id: 1, matchId: 1, type: 'Victoire', pick: 'Barcelona', odds: 2.10, conf: 4, cat: 'FREE' },
-                { id: 2, matchId: 1, type: 'Score Exact', pick: '2-1', odds: 8.50, conf: 3, cat: 'VIP' },
-                { id: 3, matchId: 2, type: 'Over 2.5', pick: 'Oui', odds: 1.85, conf: 5, cat: 'FREE' }
-            ],
+            matches: JSON.parse(localStorage.getItem('fp_matches')) || [], // Vide au début
+            predictions: JSON.parse(localStorage.getItem('fp_preds')) || [], // Vide au début
             payments: JSON.parse(localStorage.getItem('fp_payments')) || [],
             currentUser: JSON.parse(localStorage.getItem('fp_currentUser')) || null
         };
@@ -297,7 +299,6 @@
             // Update Nav Active State
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             
-            // Logic pou highlight bouton aktif la
             const navMap = {
                 'home': 0, 'matches': 1, 'predictions': 2, 'vip': 3, 'profile': 4, 'admin': 5
             };
@@ -320,7 +321,6 @@
             const loginPrompt = document.getElementById('loginPrompt');
 
             if (user) {
-                // User logged in
                 header.innerHTML = `<span style="font-size:12px; color:var(--gold);">${user.isVip ? '💎 VIP' : '🆓 FREE'}</span>`;
                 document.getElementById('profileName').innerText = user.name || user.email;
                 document.getElementById('profileStatus').innerText = user.isVip ? 'Membre VIP Actif' : 'Membre Gratuit';
@@ -346,7 +346,6 @@
                     document.getElementById('vipNotLogged').classList.add('hidden');
                 }
             } else {
-                // User NOT logged in
                 header.innerHTML = '';
                 adminBtn.classList.add('hidden'); // Hide lock icon
                 
@@ -379,8 +378,10 @@
             const pass = document.getElementById('authPass').value;
 
             if (isRegistering) {
-                // Inscription
+                // Inscription (Empêcher création compte admin)
+                if(email === 'admin@fifa.com') return alert('Action interdite.');
                 if(DB.users.find(u => u.email === email)) return alert('Email déjà utilisé');
+                
                 const newUser = { email, pass, role: 'user', isVip: false, name: email.split('@')[0] };
                 DB.users.push(newUser);
                 saveDB();
@@ -398,7 +399,6 @@
             localStorage.setItem('fp_currentUser', JSON.stringify(user));
             alert('Bienvenue ' + user.name);
             
-            // Reset view
             document.getElementById('authPage').classList.add('hidden');
             document.getElementById('profileContent').classList.remove('hidden');
             
@@ -415,16 +415,20 @@
         function renderContent() {
             // Render Matches
             const mContainer = document.getElementById('matchesList');
-            mContainer.innerHTML = DB.matches.map(m => `
-                <div class="card">
-                    <div class="match-header"><span class="badge badge-free">${m.comp}</span></div>
-                    <div class="teams">
-                        <div><div class="team-logo">⚽</div>${m.home}</div>
-                        <div class="vs">VS<br>${m.time}</div>
-                        <div><div class="team-logo">⚽</div>${m.away}</div>
+            if(DB.matches.length === 0) {
+                mContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">Aucun match programmé pour le moment.</div>';
+            } else {
+                mContainer.innerHTML = DB.matches.map(m => `
+                    <div class="card">
+                        <div class="match-header"><span class="badge badge-free">${m.comp}</span> <span style="font-size:10px; color:#888;">${m.dateStr}</span></div>
+                        <div class="teams">
+                            <div><div class="team-logo">⚽</div>${m.home}</div>
+                            <div class="vs">VS<br>${m.time}</div>
+                            <div><div class="team-logo">⚽</div>${m.away}</div>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
             // Render Predictions (Default Free)
             filterPreds('free');
@@ -446,6 +450,11 @@
                     </div>
                 `;
                 return;
+            }
+
+            if(preds.length === 0) {
+                 pContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">Aucun pronostic disponible.</div>';
+                 return;
             }
 
             pContainer.innerHTML = preds.map(p => {
@@ -478,7 +487,6 @@
             const name = document.getElementById('payName').value;
             const user = DB.currentUser;
 
-            // Check duplicate
             if(DB.payments.find(p => p.txId === txId)) return alert('Ce numéro de transaction a déjà été utilisé.');
 
             const payment = {
@@ -537,7 +545,6 @@
             const pay = DB.payments.find(p => p.id === id);
             if(pay) {
                 pay.status = 'approved';
-                // Make User VIP
                 const user = DB.users.find(u => u.email === pay.userEmail);
                 if(user) user.isVip = true;
                 saveDB();
@@ -555,22 +562,73 @@
             }
         }
 
+        // --- ADD MATCH WITH DATE OPTION ---
+        function toggleDateInput() {
+            const type = document.getElementById('mDateType').value;
+            const customInput = document.getElementById('mCustomDate');
+            if(type === 'custom') {
+                customInput.classList.remove('hidden');
+                customInput.required = true;
+            } else {
+                customInput.classList.add('hidden');
+                customInput.required = false;
+            }
+        }
+
         function addMatch(e) {
             e.preventDefault();
             const home = document.getElementById('mHome').value;
             const away = document.getElementById('mAway').value;
             const time = document.getElementById('mTime').value;
+            const dateType = document.getElementById('mDateType').value;
             
-            DB.matches.push({ id: Date.now(), home, away, time, comp: 'Ligue 1' });
+            let dateStr = "";
+            const today = new Date();
+            
+            if(dateType === 'today') {
+                dateStr = "Aujourd'hui";
+            } else if (dateType === 'tomorrow') {
+                dateStr = "Demain";
+            } else {
+                const val = document.getElementById('mCustomDate').value;
+                if(val) {
+                    const d = new Date(val);
+                    dateStr = d.toLocaleDateString('fr-FR');
+                } else {
+                    dateStr = "Date inconnue";
+                }
+            }
+
+            DB.matches.push({ 
+                id: Date.now(), 
+                home, 
+                away, 
+                time, 
+                comp: 'Ligue 1', 
+                dateStr 
+            });
             saveDB();
-            alert('Match ajouté !');
+            alert('Match ajouté avec succès !');
+            
+            // Reset form
             document.getElementById('mHome').value = '';
             document.getElementById('mAway').value = '';
+            document.getElementById('mTime').value = '';
+            document.getElementById('mDateType').value = 'today';
+            toggleDateInput();
         }
 
         function renderAdminUsers() {
             const tbody = document.querySelector('#usersTable tbody');
-            tbody.innerHTML = DB.users.map(u => `
+            // Filter out admin from the list so regular users don't see it
+            const regularUsers = DB.users.filter(u => u.role !== 'admin');
+            
+            if(regularUsers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888;">Aucun utilisateur inscrit.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = regularUsers.map(u => `
                 <tr>
                     <td>${u.name || u.email}</td>
                     <td><span class="badge ${u.isVip ? 'badge-vip' : 'badge-free'}">${u.isVip ? 'VIP' : 'Free'}</span></td>
