@@ -1,1744 +1,577 @@
-import React, { useState, useEffect, useContext, createContext, useMemo, useCallback } from 'react';
-import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { motion, AnimatePresence } from 'framer-motion';
-
-/* ============================================================
-   FIFA PRONOSTIC - Application complète de pronostics football
-   ============================================================ */
-
-// ============ THÈME ============
-const T = {
-  black: '#0A0E1A',
-  blackLight: '#141927',
-  blackCard: '#1A1F2E',
-  green: '#00C853',
-  greenDark: '#00A844',
-  greenLight: '#4ADE80',
-  gold: '#FFD700',
-  goldDark: '#D4AF37',
-  white: '#FFFFFF',
-  gray: '#8B92A8',
-  grayLight: '#E5E7EB',
-  grayDark: '#2A3142',
-  red: '#EF4444',
-  blue: '#3B82F6',
-  orange: '#F59E0B',
-};
-
-// ============ HELPERS STORAGE ============
-const load = (k, fb) => { try { const r = localStorage.getItem(`fp_${k}`); return r ? JSON.parse(r) : fb; } catch { return fb; } };
-const save = (k, v) => { try { localStorage.setItem(`fp_${k}`, JSON.stringify(v)); } catch {} };
-const uid = (p = 'id') => `${p}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-const fmtDate = d => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-const fmtDateTime = d => new Date(d).toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-const fmtTime = d => new Date(d).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-const daysBetween = (a, b) => Math.ceil((b - a) / 86400000);
-
-// ============ SEED DATA ============
-const seed = () => {
-  if (!load('settings', null)) {
-    save('settings', {
-      appName: 'FIFA PRONOSTIC',
-      tagline: 'Analyses et pronostics football',
-      logo: '⚽',
-      primaryColor: T.green,
-      vipColor: T.gold,
-      moncashNumber: '47173504',
-      moncashName: 'Benêche Jurgens',
-      welcomeText: 'Bienvenue sur FIFA PRONOSTIC - Votre expert en analyses et pronostics football.',
-      disclaimer: 'Les pronostics sont des analyses et ne garantissent aucun résultat. Les paris comportent des risques.',
-      whatsapp: '+50900000000',
-      facebook: 'https://facebook.com/fipronostic',
-      instagram: 'https://instagram.com/fipronostic',
-      telegram: 'https://t.me/fipronostic',
-      terms: 'Conditions d\'utilisation de FIFA PRONOSTIC...',
-      privacy: 'Politique de confidentialité de FIFA PRONOSTIC...',
-    });
-  }
-  if (!load('vipPlans', null)) {
-    save('vipPlans', [
-      { id: 'vip_1', name: 'VIP 1 jour', duration: 1, price: 100, description: 'Accès 24h aux pronostics premium' },
-      { id: 'vip_7', name: 'VIP 7 jours', duration: 7, price: 500, description: 'Accès 1 semaine aux pronostics premium' },
-      { id: 'vip_30', name: 'VIP 30 jours', duration: 30, price: 1500, description: 'Accès 1 mois aux pronostics premium' },
-    ]);
-  }
-  if (!load('users', null)) {
-    save('users', [{
-      id: uid('usr'), fullName: 'Administrateur', email: 'admin@fipronostic.com', phone: '+50900000000', password: 'admin123', role: 'admin', status: 'active', vip: true, vipExpiresAt: null, createdAt: Date.now(),
-    }]);
-  }
-  if (!load('matches', null)) {
-    const now = Date.now();
-    save('matches', [
-      { id: uid('m'), home: 'Manchester City', away: 'Real Madrid', homeLogo: '🔵', awayLogo: '⚪', date: now + 86400000, time: '20:00', competition: 'UEFA Champions League', country: 'Europe', status: 'upcoming' },
-      { id: uid('m'), home: 'Barcelona', away: 'PSG', homeLogo: '🔴', awayLogo: '🔵', date: now + 86400000*2, time: '21:00', competition: 'UEFA Champions League', country: 'Europe', status: 'upcoming' },
-      { id: uid('m'), home: 'Arsenal', away: 'Chelsea', homeLogo: '🔴', awayLogo: '🔵', date: now + 86400000*3, time: '17:30', competition: 'Premier League', country: 'Angleterre', status: 'upcoming' },
-      { id: uid('m'), home: 'PSG', away: 'Marseille', homeLogo: '🔵', awayLogo: '⚪', date: now - 86400000, time: '20:45', competition: 'Ligue 1', country: 'France', status: 'finished', result: { home: 2, away: 1 } },
-    ]);
-  }
-  if (!load('predictions', null)) {
-    const matches = load('matches', []);
-    save('predictions', [
-      { id: uid('p'), matchId: matches[0].id, type: 'Over/Under', prediction: 'Plus de 2.5 buts', odds: 1.75, confidence: 4, analysis: 'Les deux équipes ont une attaque puissante. City marque en moyenne 2.8 buts à domicile.', category: 'FREE', publishedAt: Date.now(), status: 'pending' },
-      { id: uid('p'), matchId: matches[1].id, type: '1X2', prediction: 'Victoire Barcelona', odds: 2.10, confidence: 3, analysis: 'Barcelona est en grande forme à Camp Nou cette saison.', category: 'VIP', publishedAt: Date.now(), status: 'pending' },
-      { id: uid('p'), matchId: matches[2].id, type: 'Les deux équipes marquent', prediction: 'Oui', odds: 1.65, confidence: 5, analysis: 'Historique récent montre que les deux équipes marquent dans 80% des confrontations.', category: 'FREE', publishedAt: Date.now(), status: 'pending' },
-      { id: uid('p'), matchId: matches[3].id, type: '1X2', prediction: 'Victoire PSG', odds: 1.80, confidence: 4, analysis: 'PSG a dominé le match à domicile.', category: 'VIP', publishedAt: Date.now() - 86400000, status: 'won' },
-    ]);
-  }
-  ['payments', 'notifications', 'adminLogs'].forEach(k => { if (!load(k, null)) save(k, []); });
-};
-
-// ============ AUTH CONTEXT ============
-const AuthCtx = createContext(null);
-const useAuth = () => useContext(AuthCtx);
-
-const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => load('currentUser', null));
-
-  useEffect(() => {
-    if (user) save('currentUser', user);
-    else localStorage.removeItem('fp_currentUser');
-  }, [user]);
-
-  const refresh = () => {
-    if (!user) return;
-    const users = load('users', []);
-    const fresh = users.find(u => u.id === user.id);
-    if (fresh) setUser(fresh);
-  };
-
-  const login = (email, password) => {
-    const users = load('users', []);
-    const u = users.find(x => (x.email === email || x.phone === email) && x.password === password);
-    if (!u) throw new Error('Identifiants invalides');
-    if (u.status === 'blocked') throw new Error('Compte bloqué');
-    setUser(u);
-    return u;
-  };
-
-  const register = (data) => {
-    const users = load('users', []);
-    if (users.find(u => u.email === data.email)) throw new Error('Email déjà utilisé');
-    const nu = {
-      id: uid('usr'), fullName: data.fullName, email: data.email, phone: data.phone || '', password: data.password,
-      role: 'user', status: 'active', vip: false, vipExpiresAt: null, createdAt: Date.now(),
-    };
-    users.push(nu);
-    save('users', users);
-    setUser(nu);
-    addNotif(nu.id, 'Bienvenue !', 'Votre compte a été créé avec succès.');
-    return nu;
-  };
-
-  const logout = () => setUser(null);
-
-  const updateUser = (updates) => {
-    const users = load('users', []);
-    const idx = users.findIndex(u => u.id === user.id);
-    if (idx === -1) return;
-    users[idx] = { ...users[idx], ...updates };
-    save('users', users);
-    setUser(users[idx]);
-  };
-
-  return <AuthCtx.Provider value={{ user, login, register, logout, updateUser, refresh }}>{children}</AuthCtx.Provider>;
-};
-
-// ============ NOTIFICATIONS ============
-const addNotif = (userId, title, message, type = 'info') => {
-  const all = load('notifications', []);
-  all.unshift({ id: uid('n'), userId, title, message, type, read: false, createdAt: Date.now() });
-  save('notifications', all);
-};
-
-const logAdmin = (action, details) => {
-  const logs = load('adminLogs', []);
-  logs.unshift({ id: uid('l'), action, details, at: Date.now() });
-  if (logs.length > 500) logs.length = 500;
-  save('adminLogs', logs);
-};
-
-// ============ UI PRIMITIVES ============
-const Button = ({ children, onClick, variant = 'primary', size = 'md', style = {}, disabled, full }) => {
-  const variants = {
-    primary: { background: `linear-gradient(135deg, ${T.green}, ${T.greenDark})`, color: T.white },
-    gold: { background: `linear-gradient(135deg, ${T.gold}, ${T.goldDark})`, color: T.black },
-    outline: { background: 'transparent', color: T.green, border: `1.5px solid ${T.green}` },
-    outlineGold: { background: 'transparent', color: T.gold, border: `1.5px solid ${T.gold}` },
-    ghost: { background: 'transparent', color: T.grayLight },
-    danger: { background: T.red, color: T.white },
-    dark: { background: T.blackCard, color: T.white, border: `1px solid ${T.grayDark}` },
-  };
-  const sizes = { sm: { padding: '8px 14px', fontSize: 13 }, md: { padding: '12px 20px', fontSize: 14 }, lg: { padding: '14px 24px', fontSize: 15 } };
-  return (
-    <motion.button whileHover={{ scale: disabled ? 1 : 1.02 }} whileTap={{ scale: disabled ? 1 : 0.97 }} onClick={onClick} disabled={disabled}
-      style={{ ...variants[variant], ...sizes[size], borderRadius: 12, border: variants[variant].border || 'none', fontWeight: 600, cursor: disabled ? 'not-allowed' : 'pointer', fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: disabled ? 0.5 : 1, width: full ? '100%' : 'auto', ...style }}>
-      {children}
-    </motion.button>
-  );
-};
-
-const Input = ({ label, error, icon, ...props }) => (
-  <div style={{ marginBottom: 14 }}>
-    {label && <label style={{ display: 'block', fontSize: 13, color: T.gray, marginBottom: 6, fontWeight: 500 }}>{label}</label>}
-    <div style={{ position: 'relative' }}>
-      {icon && <div style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 16 }}>{icon}</div>}
-      <input {...props} style={{ width: '100%', padding: icon ? '12px 14px 12px 42px' : '12px 14px', background: T.blackLight, border: `1px solid ${error ? T.red : T.grayDark}`, borderRadius: 10, color: T.white, fontSize: 14, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', ...(props.style || {}) }} />
-    </div>
-    {error && <div style={{ color: T.red, fontSize: 12, marginTop: 4 }}>{error}</div>}
-  </div>
-);
-
-const TextArea = ({ label, ...props }) => (
-  <div style={{ marginBottom: 14 }}>
-    {label && <label style={{ display: 'block', fontSize: 13, color: T.gray, marginBottom: 6, fontWeight: 500 }}>{label}</label>}
-    <textarea {...props} style={{ width: '100%', padding: '12px 14px', background: T.blackLight, border: `1px solid ${T.grayDark}`, borderRadius: 10, color: T.white, fontSize: 14, fontFamily: 'inherit', outline: 'none', minHeight: 90, resize: 'vertical', boxSizing: 'border-box' }} />
-  </div>
-);
-
-const Select = ({ label, options, ...props }) => (
-  <div style={{ marginBottom: 14 }}>
-    {label && <label style={{ display: 'block', fontSize: 13, color: T.gray, marginBottom: 6, fontWeight: 500 }}>{label}</label>}
-    <select {...props} style={{ width: '100%', padding: '12px 14px', background: T.blackLight, border: `1px solid ${T.grayDark}`, borderRadius: 10, color: T.white, fontSize: 14, fontFamily: 'inherit', outline: 'none', cursor: 'pointer' }}>
-      {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-    </select>
-  </div>
-);
-
-const Card = ({ children, style = {}, onClick, gold }) => (
-  <motion.div whileHover={onClick ? { y: -2 } : {}} onClick={onClick}
-    style={{ background: gold ? `linear-gradient(135deg, ${T.gold}15, ${T.blackCard})` : T.blackCard, borderRadius: 16, padding: 18, border: `1px solid ${gold ? T.gold + '44' : T.grayDark}`, cursor: onClick ? 'pointer' : 'default', ...style }}>
-    {children}
-  </motion.div>
-);
-
-const Badge = ({ children, color = T.green, small }) => (
-  <span style={{ display: 'inline-block', padding: small ? '2px 8px' : '4px 10px', background: `${color}22`, color, borderRadius: 20, fontSize: small ? 10 : 11, fontWeight: 600, border: `1px solid ${color}44` }}>
-    {children}
-  </span>
-);
-
-const Modal = ({ open, onClose, title, children, size = 'md' }) => (
-  <AnimatePresence>
-    {open && (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backdropFilter: 'blur(8px)' }}>
-        <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} onClick={e => e.stopPropagation()}
-          style={{ background: T.black, borderRadius: 20, padding: 24, maxWidth: size === 'lg' ? 720 : size === 'sm' ? 380 : 500, width: '100%', maxHeight: '90vh', overflowY: 'auto', border: `1px solid ${T.grayDark}` }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-            <h3 style={{ margin: 0, color: T.green, fontSize: 18 }}>{title}</h3>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', color: T.gray, fontSize: 26, cursor: 'pointer', lineHeight: 1 }}>×</button>
-          </div>
-          {children}
-        </motion.div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-);
-
-// ============ BOTTOM NAVIGATION ============
-const BottomNav = ({ page, setPage }) => {
-  const { user } = useAuth();
-  const items = [
-    { id: 'home', label: 'Accueil', icon: '🏠' },
-    { id: 'matches', label: 'Matchs', icon: '⚽' },
-    { id: 'predictions', label: 'Pronostics', icon: '🎯' },
-    { id: 'vip', label: 'VIP', icon: '💎' },
-    { id: 'profile', label: 'Profil', icon: '👤' },
-  ];
-  return (
-    <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: T.black, borderTop: `1px solid ${T.grayDark}`, padding: '8px 0 calc(8px + env(safe-area-inset-bottom))', zIndex: 90, display: 'flex', justifyContent: 'space-around' }}>
-      {items.map(it => (
-        <button key={it.id} onClick={() => setPage(it.id)} style={{ background: 'none', border: 'none', color: page === it.id ? T.green : T.gray, padding: '6px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, fontFamily: 'inherit', minWidth: 56 }}>
-          <span style={{ fontSize: 22 }}>{it.icon}</span>
-          <span style={{ fontSize: 10, fontWeight: page === it.id ? 700 : 500 }}>{it.label}</span>
-          {page === it.id && <div style={{ width: 4, height: 4, borderRadius: '50%', background: T.green, marginTop: 2 }} />}
-        </button>
-      ))}
-    </nav>
-  );
-};
-
-// ============ TOP BAR ============
-const TopBar = ({ title, right, onBack }) => (
-  <div style={{ position: 'sticky', top: 0, zIndex: 50, background: `${T.black}ee`, backdropFilter: 'blur(12px)', borderBottom: `1px solid ${T.grayDark}`, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      {onBack && <button onClick={onBack} style={{ background: 'none', border: 'none', color: T.white, fontSize: 20, cursor: 'pointer' }}>←</button>}
-      <div style={{ fontWeight: 700, color: T.white, fontSize: 17 }}>{title}</div>
-    </div>
-    {right}
-  </div>
-);
-
-// ============ HOME PAGE ============
-const HomePage = ({ setPage }) => {
-  const settings = load('settings', {});
-  const matches = load('matches', []).filter(m => m.status === 'upcoming').slice(0, 3);
-  const predictions = load('predictions', []);
-  const freePreds = predictions.filter(p => p.category === 'FREE').slice(0, 2);
-  const users = load('users', []);
-  const won = predictions.filter(p => p.status === 'won').length;
-  const total = predictions.filter(p => p.status !== 'pending').length;
-
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      {/* HERO */}
-      <div style={{ background: `linear-gradient(135deg, ${T.black}, ${T.blackLight})`, padding: '30px 20px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, background: `radial-gradient(circle, ${T.green}20, transparent 70%)`, borderRadius: '50%' }} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <div style={{ width: 52, height: 52, borderRadius: 14, background: `linear-gradient(135deg, ${T.green}, ${T.greenDark})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, boxShadow: `0 4px 20px ${T.green}40` }}>
-              {settings.logo}
-            </div>
-            <div>
-              <div style={{ color: T.white, fontSize: 20, fontWeight: 800, letterSpacing: 0.5 }}>{settings.appName}</div>
-              <div style={{ color: T.gray, fontSize: 12 }}>{settings.tagline}</div>
-            </div>
-          </div>
-          <p style={{ color: T.grayLight, fontSize: 14, lineHeight: 1.6, margin: '16px 0 20px' }}>{settings.welcomeText}</p>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <Button onClick={() => setPage('predictions')}>🎯 Voir les pronostics</Button>
-            <Button variant="gold" onClick={() => setPage('vip')}>💎 Devenir VIP</Button>
-          </div>
-        </div>
-      </div>
-
-      {/* STATS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, padding: '0 16px', marginTop: 20 }}>
-        <Card style={{ padding: 14, textAlign: 'center' }}>
-          <div style={{ color: T.green, fontSize: 22, fontWeight: 800 }}>{users.length}</div>
-          <div style={{ color: T.gray, fontSize: 11 }}>Membres</div>
-        </Card>
-        <Card style={{ padding: 14, textAlign: 'center' }}>
-          <div style={{ color: T.green, fontSize: 22, fontWeight: 800 }}>{predictions.length}</div>
-          <div style={{ color: T.gray, fontSize: 11 }}>Pronostics</div>
-        </Card>
-        <Card style={{ padding: 14, textAlign: 'center' }}>
-          <div style={{ color: T.green, fontSize: 22, fontWeight: 800 }}>{total > 0 ? Math.round((won / total) * 100) : 0}%</div>
-          <div style={{ color: T.gray, fontSize: 11 }}>Réussite</div>
-        </Card>
-      </div>
-
-      {/* MATCHS DU JOUR */}
-      <div style={{ padding: '24px 16px 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <h2 style={{ color: T.white, fontSize: 18, fontWeight: 700, margin: 0 }}>⚽ Matchs à venir</h2>
-          <button onClick={() => setPage('matches')} style={{ background: 'none', border: 'none', color: T.green, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>Voir tout →</button>
-        </div>
-        {matches.length === 0 ? (
-          <Card><div style={{ color: T.gray, textAlign: 'center', padding: 20 }}>Aucun match programmé</div></Card>
-        ) : matches.map(m => <MatchCard key={m.id} match={m} />)}
-      </div>
-
-      {/* PRONOSTICS FREE */}
-      <div style={{ padding: '24px 16px 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <h2 style={{ color: T.white, fontSize: 18, fontWeight: 700, margin: 0 }}>🎯 Pronostics FREE</h2>
-          <button onClick={() => setPage('predictions')} style={{ background: 'none', border: 'none', color: T.green, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>Voir tout →</button>
-        </div>
-        {freePreds.map(p => <PredictionCard key={p.id} pred={p} />)}
-      </div>
-
-      {/* VIP BANNER */}
-      <div style={{ padding: '24px 16px 0' }}>
-        <Card gold onClick={() => setPage('vip')} style={{ padding: 24, textAlign: 'center' }}>
-          <div style={{ fontSize: 40, marginBottom: 10 }}>💎</div>
-          <h3 style={{ color: T.gold, fontSize: 20, margin: '0 0 8px' }}>Passez en mode VIP</h3>
-          <p style={{ color: T.grayLight, fontSize: 13, margin: '0 0 16px' }}>Accédez aux pronostics premium avec un taux de réussite supérieur</p>
-          <Button variant="gold">Devenir VIP →</Button>
-        </Card>
-      </div>
-
-      {/* DISCLAIMER */}
-      <div style={{ padding: '24px 16px 0' }}>
-        <Card style={{ background: `${T.orange}15`, borderColor: `${T.orange}44` }}>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-            <div style={{ fontSize: 24 }}>⚠️</div>
-            <div>
-              <div style={{ color: T.orange, fontWeight: 600, fontSize: 13, marginBottom: 4 }}>Avertissement</div>
-              <div style={{ color: T.grayLight, fontSize: 12, lineHeight: 1.5 }}>{settings.disclaimer}</div>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </div>
-  );
-};
-
-// ============ MATCH CARD ============
-const MatchCard = ({ match, compact }) => {
-  const pred = load('predictions', []).find(p => p.matchId === match.id);
-  return (
-    <Card style={{ marginBottom: 12, padding: 16 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <Badge small>{match.competition}</Badge>
-        <Badge small color={match.status === 'finished' ? T.gray : match.status === 'upcoming' ? T.green : T.red}>
-          {match.status === 'finished' ? 'Terminé' : match.status === 'upcoming' ? 'À venir' : 'Annulé'}
-        </Badge>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 10, alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 36, marginBottom: 6 }}>{match.homeLogo}</div>
-          <div style={{ color: T.white, fontSize: 13, fontWeight: 600 }}>{match.home}</div>
-        </div>
-        <div style={{ textAlign: 'center', padding: '0 8px' }}>
-          {match.status === 'finished' && match.result ? (
-            <div style={{ color: T.green, fontSize: 22, fontWeight: 800 }}>{match.result.home} - {match.result.away}</div>
-          ) : (
-            <div style={{ color: T.gray, fontSize: 14, fontWeight: 600 }}>VS</div>
-          )}
-          <div style={{ color: T.gray, fontSize: 11, marginTop: 4 }}>{fmtDate(match.date)}</div>
-          <div style={{ color: T.green, fontSize: 12, fontWeight: 600 }}>{match.time}</div>
-        </div>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 36, marginBottom: 6 }}>{match.awayLogo}</div>
-          <div style={{ color: T.white, fontSize: 13, fontWeight: 600 }}>{match.away}</div>
-        </div>
-      </div>
-      {pred && pred.status !== 'pending' && (
-        <div style={{ padding: '10px 12px', background: T.blackLight, borderRadius: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ color: T.grayLight, fontSize: 12 }}>Pronostic: <strong style={{ color: T.white }}>{pred.prediction}</strong></div>
-          <Badge color={pred.status === 'won' ? T.green : pred.status === 'lost' ? T.red : T.gray}>{pred.status === 'won' ? '✅ Gagné' : pred.status === 'lost' ? '❌ Perdu' : '⏸️ Annulé'}</Badge>
-        </div>
-      )}
-    </Card>
-  );
-};
-
-// ============ PREDICTION CARD ============
-const PredictionCard = ({ pred, locked, onUnlock }) => {
-  const matches = load('matches', []);
-  const match = matches.find(m => m.id === pred.matchId);
-  if (!match) return null;
-
-  return (
-    <Card style={{ marginBottom: 12, padding: 16, opacity: locked ? 0.7 : 1 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <Badge color={pred.category === 'VIP' ? T.gold : T.green}>{pred.category === 'VIP' ? '💎 VIP' : '🆓 FREE'}</Badge>
-          <Badge small>{pred.type}</Badge>
-        </div>
-        {pred.status !== 'pending' && (
-          <Badge color={pred.status === 'won' ? T.green : pred.status === 'lost' ? T.red : T.gray}>
-            {pred.status === 'won' ? '✅' : pred.status === 'lost' ? '❌' : '⏸️'}
-          </Badge>
-        )}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-        <span style={{ fontSize: 22 }}>{match.homeLogo}</span>
-        <div style={{ color: T.white, fontSize: 14, fontWeight: 600, flex: 1 }}>{match.home} vs {match.away}</div>
-        <span style={{ fontSize: 22 }}>{match.awayLogo}</span>
-      </div>
-      {locked ? (
-        <div style={{ textAlign: 'center', padding: '16px 0' }}>
-          <div style={{ fontSize: 36, marginBottom: 8 }}>🔒</div>
-          <div style={{ color: T.gold, fontWeight: 600, marginBottom: 4 }}>PRONOSTIC VIP</div>
-          <div style={{ color: T.gray, fontSize: 12, marginBottom: 12 }}>Réservé aux membres VIP</div>
-          <Button variant="gold" size="sm" onClick={onUnlock}>💎 Devenir VIP</Button>
-        </div>
-      ) : (
-        <>
-          <div style={{ background: T.blackLight, padding: 12, borderRadius: 10, marginBottom: 10 }}>
-            <div style={{ color: T.gray, fontSize: 11, marginBottom: 4 }}>Pronostic</div>
-            <div style={{ color: T.green, fontSize: 16, fontWeight: 700 }}>{pred.prediction}</div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
-            <div style={{ background: T.blackLight, padding: 10, borderRadius: 8 }}>
-              <div style={{ color: T.gray, fontSize: 10 }}>Cote</div>
-              <div style={{ color: T.white, fontSize: 15, fontWeight: 700 }}>{pred.odds}</div>
-            </div>
-            <div style={{ background: T.blackLight, padding: 10, borderRadius: 8 }}>
-              <div style={{ color: T.gray, fontSize: 10 }}>Confiance</div>
-              <div style={{ color: T.gold, fontSize: 15, fontWeight: 700 }}>{'★'.repeat(pred.confidence)}{'☆'.repeat(5 - pred.confidence)}</div>
-            </div>
-          </div>
-          <div style={{ color: T.grayLight, fontSize: 13, lineHeight: 1.5 }}>
-            <strong style={{ color: T.white }}>Analyse:</strong> {pred.analysis}
-          </div>
-          <div style={{ color: T.gray, fontSize: 11, marginTop: 10 }}>📅 {fmtDateTime(pred.publishedAt)}</div>
-        </>
-      )}
-    </Card>
-  );
-};
-
-// ============ MATCHES PAGE ============
-const MatchesPage = () => {
-  const matches = load('matches', []).sort((a, b) => a.date - b.date);
-  const [filter, setFilter] = useState('all');
-  const filtered = matches.filter(m => filter === 'all' || m.status === filter);
-
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      <TopBar title="⚽ Matchs" />
-      <div style={{ padding: 16 }}>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16, overflowX: 'auto' }}>
-          {[['all', 'Tous'], ['upcoming', 'À venir'], ['finished', 'Terminés']].map(([v, l]) => (
-            <Button key={v} size="sm" variant={filter === v ? 'primary' : 'dark'} onClick={() => setFilter(v)}>{l}</Button>
-          ))}
-        </div>
-        {filtered.length === 0 ? (
-          <Card><div style={{ color: T.gray, textAlign: 'center', padding: 30 }}>Aucun match</div></Card>
-        ) : filtered.map(m => <MatchCard key={m.id} match={m} />)}
-      </div>
-    </div>
-  );
-};
-
-// ============ PREDICTIONS PAGE ============
-const PredictionsPage = ({ setPage }) => {
-  const { user } = useAuth();
-  const [tab, setTab] = useState('free');
-  const predictions = load('predictions', []);
-  const isVip = user?.vip && (!user.vipExpiresAt || user.vipExpiresAt > Date.now());
-
-  const free = predictions.filter(p => p.category === 'FREE').sort((a, b) => b.publishedAt - a.publishedAt);
-  const vip = predictions.filter(p => p.category === 'VIP').sort((a, b) => b.publishedAt - a.publishedAt);
-
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      <TopBar title="🎯 Pronostics" />
-      <div style={{ padding: 16 }}>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16, background: T.blackLight, padding: 4, borderRadius: 12 }}>
-          <button onClick={() => setTab('free')} style={{ flex: 1, padding: '10px 0', background: tab === 'free' ? T.green : 'transparent', color: tab === 'free' ? T.white : T.gray, border: 'none', borderRadius: 10, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>🆓 FREE</button>
-          <button onClick={() => setTab('vip')} style={{ flex: 1, padding: '10px 0', background: tab === 'vip' ? T.gold : 'transparent', color: tab === 'vip' ? T.black : T.gray, border: 'none', borderRadius: 10, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>💎 VIP</button>
-        </div>
-        {tab === 'free' ? (
-          free.length === 0 ? <Card><div style={{ color: T.gray, textAlign: 'center', padding: 30 }}>Aucun pronostic FREE</div></Card> :
-          free.map(p => <PredictionCard key={p.id} pred={p} />)
-        ) : (
-          vip.length === 0 ? <Card><div style={{ color: T.gray, textAlign: 'center', padding: 30 }}>Aucun pronostic VIP</div></Card> :
-          vip.map(p => <PredictionCard key={p.id} pred={p} locked={!isVip} onUnlock={() => setPage('vip')} />)
-        )}
-      </div>
-    </div>
-  );
-};
-
-// ============ VIP PAGE ============
-const VIPPage = ({ setPage }) => {
-  const { user } = useAuth();
-  const plans = load('vipPlans', []);
-  const settings = load('settings', {});
-  const [selected, setSelected] = useState(null);
-  const [form, setForm] = useState({ txNumber: '', payerName: '' });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-
-  const isVip = user?.vip && (!user.vipExpiresAt || user.vipExpiresAt > Date.now());
-  const daysLeft = user?.vipExpiresAt ? Math.max(0, daysBetween(Date.now(), user.vipExpiresAt)) : 0;
-
-  const submit = () => {
-    setError('');
-    if (!user) { setPage('login'); return; }
-    if (!form.txNumber.trim()) return setError('Numéro de transaction requis');
-    if (!form.payerName.trim()) return setError('Nom du payeur requis');
-    const payments = load('payments', []);
-    if (payments.find(p => p.txNumber === form.txNumber)) return setError('Ce numéro de transaction a déjà été utilisé');
-    payments.push({
-      id: uid('pay'), userId: user.id, userName: user.fullName, userEmail: user.email, userPhone: user.phone,
-      planId: selected.id, planName: selected.name, planDuration: selected.duration, amount: selected.price,
-      method: 'MonCash', txNumber: form.txNumber, payerName: form.payerName, status: 'pending', createdAt: Date.now(),
-    });
-    save('payments', payments);
-    const admins = load('users', []).filter(u => u.role === 'admin');
-    admins.forEach(a => addNotif(a.id, 'Nouveau paiement VIP', `${user.fullName} a soumis un paiement de ${selected.price} HTG`));
-    addNotif(user.id, 'Paiement reçu', 'Votre paiement est en cours de vérification.');
-    logAdmin('payment_submitted', `${user.fullName} - ${selected.name}`);
-    setSuccess(true);
-  };
-
-  if (!user) {
-    return (
-      <div style={{ paddingBottom: 100 }}>
-        <TopBar title="💎 VIP" />
-        <div style={{ padding: 20, textAlign: 'center' }}>
-          <div style={{ fontSize: 60, marginBottom: 16 }}>💎</div>
-          <h2 style={{ color: T.gold, marginBottom: 10 }}>Devenez VIP</h2>
-          <p style={{ color: T.gray, marginBottom: 20 }}>Connectez-vous pour accéder aux pronostics premium</p>
-          <Button onClick={() => setPage('login')}>Se connecter</Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (success) {
-    return (
-      <div style={{ paddingBottom: 100 }}>
-        <TopBar title="💎 VIP" />
-        <div style={{ padding: 30, textAlign: 'center' }}>
-          <div style={{ fontSize: 60, marginBottom: 16 }}>✅</div>
-          <h2 style={{ color: T.gold, marginBottom: 10 }}>Paiement soumis !</h2>
-          <p style={{ color: T.grayLight, marginBottom: 20 }}>Votre paiement est en cours de vérification. Vous serez notifié dès validation.</p>
-          <Button onClick={() => { setSuccess(false); setSelected(null); setForm({ txNumber: '', payerName: '' }); }}>Retour</Button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      <TopBar title="💎 VIP" />
-      <div style={{ padding: 16 }}>
-        {isVip ? (
-          <Card gold style={{ marginBottom: 20, textAlign: 'center' }}>
-            <div style={{ fontSize: 50, marginBottom: 10 }}>💎</div>
-            <h2 style={{ color: T.gold, margin: '0 0 8px' }}>Vous êtes VIP</h2>
-            <div style={{ color: T.grayLight, marginBottom: 6 }}>Jours restants : <strong style={{ color: T.gold }}>{daysLeft}</strong></div>
-            <div style={{ color: T.gray, fontSize: 12 }}>Expire le {fmtDate(user.vipExpiresAt)}</div>
-          </Card>
-        ) : (
-          <Card gold style={{ marginBottom: 20, textAlign: 'center' }}>
-            <div style={{ fontSize: 50, marginBottom: 10 }}>💎</div>
-            <h2 style={{ color: T.gold, margin: '0 0 8px' }}>Devenez VIP</h2>
-            <p style={{ color: T.grayLight, fontSize: 13, margin: 0 }}>Accédez aux pronostics premium exclusifs</p>
-          </Card>
-        )}
-
-        {!isVip && (
-          <>
-            <h3 style={{ color: T.white, fontSize: 16, marginBottom: 12 }}>Choisissez votre formule</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
-              {plans.map(p => (
-                <Card key={p.id} onClick={() => setSelected(p)} style={{ cursor: 'pointer', borderColor: selected?.id === p.id ? T.gold : T.grayDark, background: selected?.id === p.id ? `${T.gold}15` : T.blackCard }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ color: T.gold, fontSize: 17, fontWeight: 700 }}>{p.name}</div>
-                      <div style={{ color: T.gray, fontSize: 12, marginTop: 4 }}>{p.description}</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ color: T.gold, fontSize: 22, fontWeight: 800 }}>{p.price}</div>
-                      <div style={{ color: T.gray, fontSize: 11 }}>HTG</div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-
-            {selected && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                <Card style={{ background: `${T.green}15`, borderColor: `${T.green}44`, marginBottom: 20 }}>
-                  <div style={{ color: T.green, fontWeight: 600, marginBottom: 10 }}>💵 Informations MonCash</div>
-                  <div style={{ color: T.grayLight, fontSize: 14, marginBottom: 6 }}>
-                    <strong>Nom:</strong> {settings.moncashName}
-                  </div>
-                  <div style={{ color: T.grayLight, fontSize: 14, marginBottom: 6 }}>
-                    <strong>Numéro:</strong> <span style={{ color: T.gold, fontSize: 18, fontWeight: 700 }}>{settings.moncashNumber}</span>
-                  </div>
-                  <div style={{ color: T.grayLight, fontSize: 14 }}>
-                    <strong>Montant:</strong> <span style={{ color: T.gold, fontWeight: 700 }}>{selected.price} HTG</span>
-                  </div>
-                  <div style={{ marginTop: 12, padding: 10, background: T.blackLight, borderRadius: 8, color: T.gray, fontSize: 12 }}>
-                    📝 Envoyez {selected.price} HTG au numéro ci-dessus, puis remplissez le formulaire ci-dessous.
-                  </div>
-                </Card>
-
-                <h3 style={{ color: T.white, fontSize: 16, marginBottom: 12 }}>📸 Preuve de paiement</h3>
-                <Input label="Numéro de transaction" value={form.txNumber} onChange={e => setForm({ ...form, txNumber: e.target.value })} placeholder="Ex: TXN123456789" />
-                <Input label="Nom du payeur" value={form.payerName} onChange={e => setForm({ ...form, payerName: e.target.value })} placeholder="Votre nom complet" />
-                {error && <div style={{ color: T.red, fontSize: 13, marginBottom: 12, padding: 10, background: `${T.red}22`, borderRadius: 8 }}>{error}</div>}
-                <Button full onClick={submit}>Envoyer la demande</Button>
-              </motion.div>
-            )}
-          </>
-        )}
-
-        {/* Avantages VIP */}
-        <div style={{ marginTop: 30 }}>
-          <h3 style={{ color: T.white, fontSize: 16, marginBottom: 14 }}>✨ Avantages VIP</h3>
-          {[
-            ['🎯', 'Pronostics premium exclusifs'],
-            ['📊', 'Analyses détaillées'],
-            ['⭐', 'Taux de confiance élevé'],
-            ['🔔', 'Notifications prioritaires'],
-            ['💎', 'Badge VIP sur le profil'],
-          ].map(([i, t], idx) => (
-            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: `1px solid ${T.grayDark}` }}>
-              <span style={{ fontSize: 20 }}>{i}</span>
-              <span style={{ color: T.grayLight, fontSize: 14 }}>{t}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ============ PROFILE PAGE ============
-const ProfilePage = ({ setPage }) => {
-  const { user, logout, updateUser } = useAuth();
-  const [edit, setEdit] = useState(false);
-  const [form, setForm] = useState(user ? { fullName: user.fullName, email: user.email, phone: user.phone } : {});
-  const [msg, setMsg] = useState('');
-
-  if (!user) {
-    return (
-      <div style={{ paddingBottom: 100 }}>
-        <TopBar title="👤 Profil" />
-        <div style={{ padding: 30, textAlign: 'center' }}>
-          <div style={{ fontSize: 60, marginBottom: 16 }}>👤</div>
-          <h2 style={{ color: T.white, marginBottom: 10 }}>Connectez-vous</h2>
-          <p style={{ color: T.gray, marginBottom: 20 }}>Accédez à votre compte</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <Button onClick={() => setPage('login')}>Se connecter</Button>
-            <Button variant="outline" onClick={() => setPage('register')}>Créer un compte</Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const isVip = user.vip && (!user.vipExpiresAt || user.vipExpiresAt > Date.now());
-  const daysLeft = user.vipExpiresAt ? Math.max(0, daysBetween(Date.now(), user.vipExpiresAt)) : 0;
-
-  const save = () => {
-    updateUser(form);
-    setMsg('Profil mis à jour ✓');
-    setEdit(false);
-    setTimeout(() => setMsg(''), 2000);
-  };
-
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      <TopBar title="👤 Profil" right={user.role === 'admin' && <Button size="sm" variant="gold" onClick={() => setPage('admin')}>🛡️ Admin</Button>} />
-      <div style={{ padding: 16 }}>
-        {/* Header */}
-        <Card style={{ textAlign: 'center', marginBottom: 16, padding: 24 }}>
-          <div style={{ width: 80, height: 80, borderRadius: '50%', background: isVip ? `linear-gradient(135deg, ${T.gold}, ${T.goldDark})` : `linear-gradient(135deg, ${T.green}, ${T.greenDark})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, color: isVip ? T.black : T.white, fontWeight: 800, margin: '0 auto 14px', boxShadow: isVip ? `0 4px 20px ${T.gold}40` : `0 4px 20px ${T.green}40` }}>
-            {user.fullName.charAt(0).toUpperCase()}
-          </div>
-          <h2 style={{ color: T.white, margin: '0 0 6px' }}>{user.fullName}</h2>
-          <div style={{ color: T.gray, fontSize: 13, marginBottom: 10 }}>{user.email}</div>
-          {isVip ? (
-            <Badge color={T.gold}>💎 VIP • {daysLeft} jours restants</Badge>
-          ) : (
-            <Badge color={T.gray}>🆓 FREE</Badge>
-          )}
-        </Card>
-
-        {msg && <div style={{ color: T.green, fontSize: 13, marginBottom: 12, padding: 10, background: `${T.green}22`, borderRadius: 8 }}>{msg}</div>}
-
-        {!edit ? (
-          <>
-            <Card style={{ marginBottom: 16 }}>
-              <h3 style={{ color: T.white, fontSize: 15, margin: '0 0 14px' }}>Mes informations</h3>
-              <div style={{ display: 'grid', gap: 10 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${T.grayDark}` }}>
-                  <span style={{ color: T.gray, fontSize: 13 }}>Nom</span>
-                  <span style={{ color: T.white, fontSize: 13 }}>{user.fullName}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${T.grayDark}` }}>
-                  <span style={{ color: T.gray, fontSize: 13 }}>Email</span>
-                  <span style={{ color: T.white, fontSize: 13 }}>{user.email}</span>
-                </div>
-                {user.phone && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${T.grayDark}` }}>
-                  <span style={{ color: T.gray, fontSize: 13 }}>Téléphone</span>
-                  <span style={{ color: T.white, fontSize: 13 }}>{user.phone}</span>
-                </div>}
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                  <span style={{ color: T.gray, fontSize: 13 }}>Membre depuis</span>
-                  <span style={{ color: T.white, fontSize: 13 }}>{fmtDate(user.createdAt)}</span>
-                </div>
-              </div>
-            </Card>
-
-            <Button full onClick={() => { setForm({ fullName: user.fullName, email: user.email, phone: user.phone }); setEdit(true); }}>✏️ Modifier le profil</Button>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
-              <Button variant="dark" full onClick={() => setPage('notifications')}>🔔 Notifications</Button>
-              <Button variant="dark" full onClick={() => setPage('history')}>📜 Historique</Button>
-              <Button variant="dark" full onClick={() => setPage('terms')}>📄 Conditions d'utilisation</Button>
-              <Button variant="dark" full onClick={() => setPage('privacy')}>🔒 Politique de confidentialité</Button>
-              <Button variant="danger" full onClick={() => { logout(); setPage('home'); }}>🚪 Déconnexion</Button>
-            </div>
-          </>
-        ) : (
-          <Card>
-            <Input label="Nom complet" value={form.fullName} onChange={e => setForm({ ...form, fullName: e.target.value })} />
-            <Input label="Email" type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-            <Input label="Téléphone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
-            <div style={{ display: 'flex', gap: 10 }}>
-              <Button variant="ghost" onClick={() => setEdit(false)}>Annuler</Button>
-              <Button full onClick={save}>Enregistrer</Button>
-            </div>
-          </Card>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// ============ LOGIN PAGE ============
-const LoginPage = ({ setPage }) => {
-  const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [forgot, setForgot] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
-  const [resetMsg, setResetMsg] = useState('');
-
-  const submit = (e) => {
-    e.preventDefault();
-    setError('');
-    try {
-      const u = login(email, password);
-      setPage(u.role === 'admin' ? 'admin' : 'home');
-    } catch (err) { setError(err.message); }
-  };
-
-  const handleReset = () => {
-    const users = load('users', []);
-    const u = users.find(x => x.email === resetEmail || x.phone === resetEmail);
-    if (u) setResetMsg(`Mot de passe pour ${resetEmail}: ${u.password} (démo)`);
-    else setResetMsg('Compte introuvable.');
-  };
-
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      <TopBar title={forgot ? '🔑 Mot de passe oublié' : '🔐 Connexion'} onBack={() => setPage('home')} />
-      <div style={{ padding: 20 }}>
-        <Card>
-          {!forgot ? (
-            <form onSubmit={submit}>
-              <div style={{ textAlign: 'center', marginBottom: 20 }}>
-                <div style={{ fontSize: 50, marginBottom: 10 }}>⚽</div>
-                <h2 style={{ color: T.green, margin: '0 0 6px' }}>Bon retour !</h2>
-                <p style={{ color: T.gray, fontSize: 13, margin: 0 }}>Connectez-vous à votre compte</p>
-              </div>
-              <Input label="Email ou téléphone" value={email} onChange={e => setEmail(e.target.value)} required icon="📧" />
-              <Input label="Mot de passe" type="password" value={password} onChange={e => setPassword(e.target.value)} required icon="🔒" />
-              {error && <div style={{ color: T.red, fontSize: 13, marginBottom: 12, padding: 10, background: `${T.red}22`, borderRadius: 8 }}>{error}</div>}
-              <Button type="submit" full>Se connecter</Button>
-              <div style={{ textAlign: 'center', marginTop: 14 }}>
-                <button type="button" onClick={() => setForgot(true)} style={{ background: 'none', border: 'none', color: T.gray, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>Mot de passe oublié ?</button>
-              </div>
-              <div style={{ textAlign: 'center', marginTop: 20, color: T.gray, fontSize: 13 }}>
-                Pas de compte ? <span style={{ color: T.green, cursor: 'pointer', fontWeight: 600 }} onClick={() => setPage('register')}>Créer un compte</span>
-              </div>
-              <div style={{ marginTop: 20, padding: 12, background: T.blackLight, borderRadius: 10, fontSize: 12, color: T.gray }}>
-                <div style={{ color: T.gold, marginBottom: 4, fontWeight: 600 }}>🛡️ Compte admin démo :</div>
-                <div>Email: admin@fipronostic.com</div>
-                <div>Mot de passe: admin123</div>
-              </div>
-            </form>
-          ) : (
-            <div>
-              <Input label="Votre email ou téléphone" value={resetEmail} onChange={e => setResetEmail(e.target.value)} />
-              {resetMsg && <div style={{ padding: 12, background: T.blackLight, borderRadius: 8, color: T.grayLight, fontSize: 13, marginBottom: 12 }}>{resetMsg}</div>}
-              <Button full onClick={handleReset}>Réinitialiser</Button>
-              <div style={{ textAlign: 'center', marginTop: 14 }}>
-                <button onClick={() => { setForgot(false); setResetMsg(''); }} style={{ background: 'none', border: 'none', color: T.gray, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>← Retour</button>
-              </div>
-            </div>
-          )}
-        </Card>
-      </div>
-    </div>
-  );
-};
-
-// ============ REGISTER PAGE ============
-const RegisterPage = ({ setPage }) => {
-  const { register } = useAuth();
-  const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '', confirm: '' });
-  const [error, setError] = useState('');
-
-  const submit = (e) => {
-    e.preventDefault();
-    setError('');
-    if (form.password !== form.confirm) return setError('Les mots de passe ne correspondent pas');
-    if (form.password.length < 6) return setError('Le mot de passe doit faire au moins 6 caractères');
-    try {
-      register(form);
-      setPage('home');
-    } catch (err) { setError(err.message); }
-  };
-
-  const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
-
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      <TopBar title="📝 Inscription" onBack={() => setPage('home')} />
-      <div style={{ padding: 20 }}>
-        <Card>
-          <div style={{ textAlign: 'center', marginBottom: 20 }}>
-            <div style={{ fontSize: 50, marginBottom: 10 }}>⚽</div>
-            <h2 style={{ color: T.green, margin: '0 0 6px' }}>Créer un compte</h2>
-            <p style={{ color: T.gray, fontSize: 13, margin: 0 }}>Rejoignez FIFA PRONOSTIC</p>
-          </div>
-          <Input label="Nom complet" value={form.fullName} onChange={e => upd('fullName', e.target.value)} required icon="👤" />
-          <Input label="Email" type="email" value={form.email} onChange={e => upd('email', e.target.value)} required icon="📧" />
-          <Input label="Téléphone (optionnel)" value={form.phone} onChange={e => upd('phone', e.target.value)} icon="📱" />
-          <Input label="Mot de passe" type="password" value={form.password} onChange={e => upd('password', e.target.value)} required icon="🔒" />
-          <Input label="Confirmer mot de passe" type="password" value={form.confirm} onChange={e => upd('confirm', e.target.value)} required icon="🔒" />
-          {error && <div style={{ color: T.red, fontSize: 13, marginBottom: 12, padding: 10, background: `${T.red}22`, borderRadius: 8 }}>{error}</div>}
-          <Button type="submit" full onClick={submit}>Créer mon compte</Button>
-          <div style={{ textAlign: 'center', marginTop: 20, color: T.gray, fontSize: 13 }}>
-            Déjà inscrit ? <span style={{ color: T.green, cursor: 'pointer', fontWeight: 600 }} onClick={() => setPage('login')}>Se connecter</span>
-          </div>
-        </Card>
-      </div>
-    </div>
-  );
-};
-
-// ============ NOTIFICATIONS PAGE ============
-const NotificationsPage = ({ setPage }) => {
-  const { user } = useAuth();
-  const [notifs, setNotifs] = useState(load('notifications', []).filter(n => n.userId === user?.id).sort((a, b) => b.createdAt - a.createdAt));
-
-  const markAll = () => {
-    const all = load('notifications', []);
-    all.forEach(n => { if (n.userId === user.id) n.read = true; });
-    save('notifications', all);
-    setNotifs(notifs.map(n => ({ ...n, read: true })));
-  };
-
-  if (!user) { setPage('login'); return null; }
-
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      <TopBar title="🔔 Notifications" onBack={() => setPage('profile')} right={<Button size="sm" variant="ghost" onClick={markAll}>Tout lire</Button>} />
-      <div style={{ padding: 16 }}>
-        {notifs.length === 0 ? (
-          <Card><div style={{ color: T.gray, textAlign: 'center', padding: 30 }}>Aucune notification</div></Card>
-        ) : notifs.map(n => (
-          <Card key={n.id} style={{ marginBottom: 10, borderLeft: n.read ? 'none' : `3px solid ${T.green}`, opacity: n.read ? 0.7 : 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ color: T.white, fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{n.title}</div>
-                <div style={{ color: T.grayLight, fontSize: 13 }}>{n.message}</div>
-                <div style={{ color: T.gray, fontSize: 11, marginTop: 6 }}>{fmtDateTime(n.createdAt)}</div>
-              </div>
-              {!n.read && <Badge color={T.green}>Nouveau</Badge>}
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// ============ HISTORY PAGE ============
-const HistoryPage = ({ setPage }) => {
-  const { user } = useAuth();
-  const predictions = load('predictions', []).filter(p => p.status !== 'pending').sort((a, b) => b.publishedAt - a.publishedAt);
-  const matches = load('matches', []);
-
-  if (!user) { setPage('login'); return null; }
-
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      <TopBar title="📜 Historique" onBack={() => setPage('profile')} />
-      <div style={{ padding: 16 }}>
-        {predictions.length === 0 ? (
-          <Card><div style={{ color: T.gray, textAlign: 'center', padding: 30 }}>Aucun historique</div></Card>
-        ) : predictions.map(p => {
-          const m = matches.find(x => x.id === p.matchId);
-          if (!m) return null;
-          return (
-            <Card key={p.id} style={{ marginBottom: 10 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <Badge small color={p.category === 'VIP' ? T.gold : T.green}>{p.category}</Badge>
-                <Badge color={p.status === 'won' ? T.green : p.status === 'lost' ? T.red : T.gray}>
-                  {p.status === 'won' ? '✅ Gagné' : p.status === 'lost' ? '❌ Perdu' : '⏸️ Annulé'}
-                </Badge>
-              </div>
-              <div style={{ color: T.white, fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{m.home} vs {m.away}</div>
-              <div style={{ color: T.grayLight, fontSize: 13 }}>Pronostic: <strong>{p.prediction}</strong></div>
-              <div style={{ color: T.gray, fontSize: 11, marginTop: 6 }}>{fmtDate(p.publishedAt)}</div>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-// ============ TERMS & PRIVACY ============
-const TermsPage = ({ setPage }) => {
-  const s = load('settings', {});
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      <TopBar title="📄 Conditions" onBack={() => setPage('profile')} />
-      <div style={{ padding: 16 }}>
-        <Card>
-          <h2 style={{ color: T.green, margin: '0 0 14px' }}>Conditions d'utilisation</h2>
-          <div style={{ color: T.grayLight, fontSize: 14, lineHeight: 1.7 }}>{s.terms}</div>
-          <div style={{ marginTop: 20, padding: 14, background: `${T.orange}15`, borderRadius: 10, border: `1px solid ${T.orange}44` }}>
-            <div style={{ color: T.orange, fontWeight: 600, fontSize: 13, marginBottom: 6 }}>⚠️ Avertissement important</div>
-            <div style={{ color: T.grayLight, fontSize: 13, lineHeight: 1.6 }}>
-              Les pronostics présentés dans cette application sont des analyses sportives et ne garantissent pas les résultats des matchs. Les paris sportifs comportent des risques financiers. L'utilisateur est seul responsable de ses décisions.
-            </div>
-          </div>
-        </Card>
-      </div>
-    </div>
-  );
-};
-
-const PrivacyPage = ({ setPage }) => {
-  const s = load('settings', {});
-  return (
-    <div style={{ paddingBottom: 100 }}>
-      <TopBar title="🔒 Confidentialité" onBack={() => setPage('profile')} />
-      <div style={{ padding: 16 }}>
-        <Card>
-          <h2 style={{ color: T.green, margin: '0 0 14px' }}>Politique de confidentialité</h2>
-          <div style={{ color: T.grayLight, fontSize: 14, lineHeight: 1.7 }}>{s.privacy}</div>
-        </Card>
-      </div>
-    </div>
-  );
-};
-
-// ============================================================
-// ADMIN PANEL
-// ============================================================
-const AdminPanel = ({ setPage }) => {
-  const { user } = useAuth();
-  const [section, setSection] = useState('dashboard');
-  const [mobileMenu, setMobileMenu] = useState(false);
-
-  if (!user || user.role !== 'admin') { setPage('home'); return null; }
-
-  const menu = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'matches', label: 'Matchs', icon: '⚽' },
-    { id: 'predictions', label: 'Pronostics', icon: '🎯' },
-    { id: 'users', label: 'Utilisateurs', icon: '👥' },
-    { id: 'payments', label: 'Paiements', icon: '💳' },
-    { id: 'vip', label: 'Membres VIP', icon: '⭐' },
-    { id: 'plans', label: 'Formules VIP', icon: '💎' },
-    { id: 'notifications', label: 'Notifications', icon: '📢' },
-    { id: 'settings', label: 'Paramètres', icon: '⚙️' },
-    { id: 'logs', label: 'Logs', icon: '📜' },
-  ];
-
-  return (
-    <div style={{ paddingBottom: 80 }}>
-      <TopBar title="🛡️ Admin Panel" onBack={() => setPage('home')} />
-      <div style={{ padding: 16 }}>
-        {/* Mobile menu */}
-        <Button full variant="dark" onClick={() => setMobileMenu(!mobileMenu)} style={{ marginBottom: 16 }}>
-          ☰ Menu Admin ({section})
-        </Button>
-        {mobileMenu && (
-          <Card style={{ marginBottom: 16, padding: 10 }}>
-            {menu.map(m => (
-              <button key={m.id} onClick={() => { setSection(m.id); setMobileMenu(false); }}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 12px', background: section === m.id ? `${T.green}22` : 'transparent', border: 'none', color: section === m.id ? T.green : T.grayLight, borderRadius: 8, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', textAlign: 'left', marginBottom: 2 }}>
-                <span>{m.icon}</span> {m.label}
-              </button>
-            ))}
-          </Card>
-        )}
-
-        {section === 'dashboard' && <AdminDashboard />}
-        {section === 'matches' && <AdminMatches />}
-        {section === 'predictions' && <AdminPredictions />}
-        {section === 'users' && <AdminUsers />}
-        {section === 'payments' && <AdminPayments />}
-        {section === 'vip' && <AdminVIP />}
-        {section === 'plans' && <AdminPlans />}
-        {section === 'notifications' && <AdminNotifications />}
-        {section === 'settings' && <AdminSettings />}
-        {section === 'logs' && <AdminLogs />}
-      </div>
-    </div>
-  );
-};
-
-// ============ ADMIN DASHBOARD ============
-const AdminDashboard = () => {
-  const users = load('users', []);
-  const matches = load('matches', []);
-  const preds = load('predictions', []);
-  const payments = load('payments', []);
-
-  const vipUsers = users.filter(u => u.vip && (!u.vipExpiresAt || u.vipExpiresAt > Date.now()));
-  const won = preds.filter(p => p.status === 'won').length;
-  const lost = preds.filter(p => p.status === 'lost').length;
-  const pending = preds.filter(p => p.status === 'pending').length;
-  const pendingPayments = payments.filter(p => p.status === 'pending');
-  const revenue = payments.filter(p => p.status === 'approved').reduce((s, p) => s + p.amount, 0);
-
-  const chartData = useMemo(() => {
-    const days = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(); d.setDate(d.getDate() - i);
-      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      const end = start + 86400000;
-      const count = users.filter(u => u.createdAt >= start && u.createdAt < end).length;
-      days.push({ day: d.toLocaleDateString('fr-FR', { weekday: 'short' }), users: count });
-    }
-    return days;
-  }, []);
-
-  const pieData = [
-    { name: 'Gagnés', value: won, color: T.green },
-    { name: 'Perdus', value: lost, color: T.red },
-    { name: 'En cours', value: pending, color: T.orange },
-  ].filter(d => d.value > 0);
-
-  return (
-    <div>
-      <h2 style={{ color: T.white, fontSize: 20, margin: '0 0 16px' }}>📊 Dashboard</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 20 }}>
-        <Card style={{ padding: 14 }}>
-          <div style={{ color: T.gray, fontSize: 11 }}>Utilisateurs</div>
-          <div style={{ color: T.white, fontSize: 24, fontWeight: 800 }}>{users.length}</div>
-        </Card>
-        <Card style={{ padding: 14 }}>
-          <div style={{ color: T.gray, fontSize: 11 }}>VIP actifs</div>
-          <div style={{ color: T.gold, fontSize: 24, fontWeight: 800 }}>{vipUsers.length}</div>
-        </Card>
-        <Card style={{ padding: 14 }}>
-          <div style={{ color: T.gray, fontSize: 11 }}>Matchs</div>
-          <div style={{ color: T.white, fontSize: 24, fontWeight: 800 }}>{matches.length}</div>
-        </Card>
-        <Card style={{ padding: 14 }}>
-          <div style={{ color: T.gray, fontSize: 11 }}>Pronostics</div>
-          <div style={{ color: T.white, fontSize: 24, fontWeight: 800 }}>{preds.length}</div>
-        </Card>
-        <Card style={{ padding: 14 }}>
-          <div style={{ color: T.gray, fontSize: 11 }}>Paiements en attente</div>
-          <div style={{ color: T.orange, fontSize: 24, fontWeight: 800 }}>{pendingPayments.length}</div>
-        </Card>
-        <Card style={{ padding: 14 }}>
-          <div style={{ color: T.gray, fontSize: 11 }}>Revenus VIP</div>
-          <div style={{ color: T.green, fontSize: 24, fontWeight: 800 }}>{revenue}</div>
-        </Card>
-      </div>
-
-      <Card style={{ marginBottom: 16 }}>
-        <h3 style={{ color: T.green, margin: '0 0 14px', fontSize: 15 }}>📈 Nouveaux utilisateurs (7 jours)</h3>
-        <ResponsiveContainer width="100%" height={180}>
-          <AreaChart data={chartData}>
-            <defs>
-              <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={T.green} stopOpacity={0.5} />
-                <stop offset="100%" stopColor={T.green} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke={T.grayDark} />
-            <XAxis dataKey="day" stroke={T.gray} fontSize={11} />
-            <YAxis stroke={T.gray} fontSize={11} />
-            <Tooltip contentStyle={{ background: T.black, border: `1px solid ${T.grayDark}`, borderRadius: 8 }} />
-            <Area type="monotone" dataKey="users" stroke={T.green} fill="url(#g1)" strokeWidth={2} />
-          </AreaChart>
-        </ResponsiveContainer>
-      </Card>
-
-      {pieData.length > 0 && (
-        <Card>
-          <h3 style={{ color: T.green, margin: '0 0 14px', fontSize: 15 }}>🎯 Statistiques pronostics</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie data={pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
-                {pieData.map((e, i) => <Cell key={i} fill={e.color} />)}
-              </Pie>
-              <Tooltip contentStyle={{ background: T.black, border: `1px solid ${T.grayDark}`, borderRadius: 8 }} />
-            </PieChart>
-          </ResponsiveContainer>
-          <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 10 }}>
-            {pieData.map(d => (
-              <div key={d.name} style={{ textAlign: 'center' }}>
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: d.color, margin: '0 auto 4px' }} />
-                <div style={{ color: T.gray, fontSize: 11 }}>{d.name}: {d.value}</div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
-    </div>
-  );
-};
-
-// ============ ADMIN MATCHES ============
-const AdminMatches = () => {
-  const [matches, setMatches] = useState(load('matches', []));
-  const [editing, setEditing] = useState(null);
-  const [isNew, setIsNew] = useState(false);
-
-  const save = (m) => {
-    const all = load('matches', []);
-    const idx = all.findIndex(x => x.id === m.id);
-    if (idx >= 0) all[idx] = m; else all.push({ ...m, id: uid('m') });
-    save('matches', all);
-    setMatches(all);
-    setEditing(null);
-    logAdmin('match_update', m.home + ' vs ' + m.away);
-  };
-
-  const remove = (id) => {
-    if (!confirm('Supprimer ce match ?')) return;
-    const all = load('matches', []).filter(x => x.id !== id);
-    save('matches', all);
-    setMatches(all);
-  };
-
-  return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ color: T.white, fontSize: 20, margin: 0 }}>⚽ Matchs ({matches.length})</h2>
-        <Button size="sm" onClick={() => { setIsNew(true); setEditing({ home: '', away: '', homeLogo: '⚽', awayLogo: '⚽', date: Date.now() + 86400000, time: '20:00', competition: '', country: '', status: 'upcoming' }); }}>+ Ajouter</Button>
-      </div>
-      {matches.map(m => (
-        <Card key={m.id} style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ color: T.white, fontSize: 15, fontWeight: 600 }}>{m.homeLogo} {m.home} vs {m.away} {m.awayLogo}</div>
-              <div style={{ color: T.gray, fontSize: 12, marginTop: 4 }}>{m.competition} • {fmtDate(m.date)} {m.time}</div>
-            </div>
-            <Badge small color={m.status === 'finished' ? T.gray : m.status === 'upcoming' ? T.green : T.red}>{m.status}</Badge>
-          </div>
-          {m.status === 'finished' && m.result && (
-            <div style={{ color: T.green, fontSize: 14, fontWeight: 700, marginBottom: 10 }}>Résultat: {m.result.home} - {m.result.away}</div>
-          )}
-          <div style={{ display: 'flex', gap: 8 }}>
-            <Button size="sm" variant="outline" onClick={() => { setEditing(m); setIsNew(false); }}>Modifier</Button>
-            <Button size="sm" variant="danger" onClick={() => remove(m.id)}>🗑</Button>
-          </div>
-        </Card>
-      ))}
-      <Modal open={!!editing} onClose={() => { setEditing(null); setIsNew(false); }} title={isNew ? 'Nouveau match' : 'Modifier match'}>
-        {editing && <MatchEditor match={editing} onSave={save} />}
-      </Modal>
-    </div>
-  );
-};
-
-const MatchEditor = ({ match, onSave }) => {
-  const [m, setM] = useState(match);
-  const [hasResult, setHasResult] = useState(!!match.result);
-  const [result, setResult] = useState(match.result || { home: 0, away: 0 });
-
-  return (
-    <div>
-      <Input label="Équipe domicile" value={m.home} onChange={e => setM({ ...m, home: e.target.value })} />
-      <Input label="Logo domicile (emoji)" value={m.homeLogo} onChange={e => setM({ ...m, homeLogo: e.target.value })} />
-      <Input label="Équipe extérieure" value={m.away} onChange={e => setM({ ...m, away: e.target.value })} />
-      <Input label="Logo extérieure (emoji)" value={m.awayLogo} onChange={e => setM({ ...m, awayLogo: e.target.value })} />
-      <Input label="Compétition" value={m.competition} onChange={e => setM({ ...m, competition: e.target.value })} />
-      <Input label="Pays" value={m.country} onChange={e => setM({ ...m, country: e.target.value })} />
-      <Input label="Heure" value={m.time} onChange={e => setM({ ...m, time: e.target.value })} placeholder="20:00" />
-      <div style={{ marginBottom: 14 }}>
-        <label style={{ display: 'block', fontSize: 13, color: T.gray, marginBottom: 6 }}>Date</label>
-        <input type="date" value={new Date(m.date).toISOString().split('T')[0]} onChange={e => setM({ ...m, date: new Date(e.target.value).getTime() })} style={{ width: '100%', padding: '12px 14px', background: T.blackLight, border: `1px solid ${T.grayDark}`, borderRadius: 10, color: T.white, fontSize: 14, boxSizing: 'border-box' }} />
-      </div>
-      <Select label="Statut" value={m.status} onChange={e => setM({ ...m, status: e.target.value })} options={[
-        { value: 'upcoming', label: 'À venir' }, { value: 'finished', label: 'Terminé' }, { value: 'cancelled', label: 'Annulé' },
-      ]} />
-      {m.status === 'finished' && (
-        <Card style={{ marginBottom: 14, background: T.blackLight }}>
-          <div style={{ color: T.green, fontSize: 13, marginBottom: 10, fontWeight: 600 }}>Résultat final</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <Input label={`Buts ${m.home}`} type="number" value={result.home} onChange={e => setResult({ ...result, home: parseInt(e.target.value) || 0 })} />
-            <Input label={`Buts ${m.away}`} type="number" value={result.away} onChange={e => setResult({ ...result, away: parseInt(e.target.value) || 0 })} />
-          </div>
-        </Card>
-      )}
-      <Button full onClick={() => onSave({ ...m, result: m.status === 'finished' ? result : null })}>Enregistrer</Button>
-    </div>
-  );
-};
-
-// ============ ADMIN PREDICTIONS ============
-const AdminPredictions = () => {
-  const [preds, setPreds] = useState(load('predictions', []));
-  const matches = load('matches', []);
-  const [editing, setEditing] = useState(null);
-  const [isNew, setIsNew] = useState(false);
-  const [filter, setFilter] = useState('all');
-
-  const filtered = preds.filter(p => filter === 'all' || p.category === filter).sort((a, b) => b.publishedAt - a.publishedAt);
-
-  const save = (p) => {
-    const all = load('predictions', []);
-    const idx = all.findIndex(x => x.id === p.id);
-    if (idx >= 0) all[idx] = p; else all.push({ ...p, id: uid('p'), publishedAt: Date.now() });
-    save('predictions', all);
-    setPreds(all);
-    setEditing(null);
-    logAdmin('prediction_update', `${p.prediction} - ${p.category}`);
-    // Notify users if new
-    if (idx < 0) {
-      const users = load('users', []);
-      users.forEach(u => {
-        if (p.category === 'FREE' || (u.vip && (!u.vipExpiresAt || u.vipExpiresAt > Date.now()))) {
-          addNotif(u.id, 'Nouveau pronostic', `Nouveau pronostic ${p.category} disponible !`);
+Men yon vèsyon **HTML + CSS + JavaScript** konplè nan yon sèl dosye. Ou ka kopye kòd sa a, sove l anba non `index.html`, epi ouvri l dirèkteman nan navigatè w (Chrome, Safari, elatriye) sou telefòn ou oswa òdinatè w.
+
+Li gen tout fonksyonalite debaz yo:
+1.  **Design Mobile** (Sanble ak yon App).
+2.  **Sistèm Login/Inscription** (Similye ak baz done).
+3.  **Pronostics Free & VIP** (VIP bloke si w pa peye).
+4.  **Admin Panel** (Pou ajoute match, valide peman).
+5.  **Peman MonCash** (Fòmilè ak verifikasyon).
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FIFA PRONOSTIC</title>
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0A0E1A;
+            --bg-card: #141927;
+            --primary: #00C853; /* Vert Football */
+            --gold: #FFD700; /* Or VIP */
+            --text-white: #FFFFFF;
+            --text-gray: #8B92A8;
+            --danger: #EF4444;
         }
-      });
-    }
-  };
 
-  const setStatus = (id, status) => {
-    const all = load('predictions', []);
-    const p = all.find(x => x.id === id);
-    if (p) { p.status = status; save('predictions', all); setPreds([...all]); logAdmin('prediction_result', `${p.prediction} → ${status}`); }
-  };
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        
+        body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 70px; overflow-x: hidden; }
 
-  const remove = (id) => {
-    if (!confirm('Supprimer ?')) return;
-    const all = load('predictions', []).filter(x => x.id !== id);
-    save('predictions', all);
-    setPreds(all);
-  };
+        /* --- UTILS --- */
+        .hidden { display: none !important; }
+        .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #00C853, #00A844); color: white; }
+        .btn-gold { background: linear-gradient(135deg, #FFD700, #D4AF37); color: black; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .input-group { margin-bottom: 15px; }
+        input, select, textarea { width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid #2A3142; border-radius: 10px; color: white; outline: none; }
+        
+        /* --- HEADER --- */
+        header { position: sticky; top: 0; z-index: 100; background: rgba(10, 14, 26, 0.95); backdrop-filter: blur(10px); padding: 15px 20px; border-bottom: 1px solid #2A3142; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        
+        /* --- CARDS --- */
+        .card { background: var(--bg-card); border-radius: 16px; padding: 16px; margin: 15px 20px; border: 1px solid #2A3142; }
+        .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .teams { display: flex; justify-content: space-between; align-items: center; text-align: center; margin: 15px 0; }
+        .team-logo { font-size: 30px; margin-bottom: 5px; }
+        .vs { font-weight: bold; color: var(--text-gray); font-size: 12px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .badge-free { background: rgba(0, 200, 83, 0.2); color: var(--primary); }
+        .badge-vip { background: rgba(255, 215, 0, 0.2); color: var(--gold); }
 
-  return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
-        <h2 style={{ color: T.white, fontSize: 20, margin: 0 }}>🎯 Pronostics ({preds.length})</h2>
-        <Button size="sm" onClick={() => { setIsNew(true); setEditing({ matchId: matches[0]?.id || '', type: '1X2', prediction: '', odds: 1.5, confidence: 3, analysis: '', category: 'FREE', status: 'pending' }); }}>+ Ajouter</Button>
-      </div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        {[['all', 'Tous'], ['FREE', 'FREE'], ['VIP', 'VIP']].map(([v, l]) => (
-          <Button key={v} size="sm" variant={filter === v ? 'primary' : 'dark'} onClick={() => setFilter(v)}>{l}</Button>
-        ))}
-      </div>
-      {filtered.map(p => {
-        const m = matches.find(x => x.id === p.matchId);
-        return (
-          <Card key={p.id} style={{ marginBottom: 10 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <Badge small color={p.category === 'VIP' ? T.gold : T.green}>{p.category}</Badge>
-                <Badge small>{p.type}</Badge>
-              </div>
-              <Badge small color={p.status === 'won' ? T.green : p.status === 'lost' ? T.red : p.status === 'cancelled' ? T.gray : T.orange}>
-                {p.status === 'won' ? '✅' : p.status === 'lost' ? '❌' : p.status === 'cancelled' ? '⏸️' : '⏳'}
-              </Badge>
+        /* --- BOTTOM NAV --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid #2A3142; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 10px; background: none; border: none; cursor: pointer; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); }
+
+        /* --- PAGES --- */
+        .page { min-height: 80vh; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- SPECIFIC --- */
+        .vip-lock { text-align: center; padding: 20px; filter: blur(4px); opacity: 0.5; pointer-events: none; }
+        .disclaimer { font-size: 11px; color: var(--text-gray); text-align: center; padding: 20px; line-height: 1.5; }
+        
+        /* Admin Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #2A3142; }
+        th { color: var(--text-gray); }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header id="appHeader">
+        <div class="logo"><i class="fas fa-futbol"></i> FIFA PRONOSTIC</div>
+        <div id="userStatus"></div>
+    </header>
+
+    <!-- === PAGE: HOME === -->
+    <div id="homePage" class="page">
+        <div style="padding: 20px; text-align: center;">
+            <h1 style="font-size: 24px; margin-bottom: 10px;">Analyses & Pronostics</h1>
+            <p style="color: var(--text-gray); font-size: 14px;">Rejoignez les meilleurs parieurs d'Haïti.</p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="showPage('predictions')" class="btn btn-primary">🎯 Voir Pronostics</button>
+                <button onclick="showPage('vip')" class="btn btn-gold">💎 Devenir VIP</button>
             </div>
-            {m && <div style={{ color: T.white, fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{m.home} vs {m.away}</div>}
-            <div style={{ color: T.green, fontSize: 14, marginBottom: 6 }}><strong>{p.prediction}</strong> • Cote: {p.odds}</div>
-            <div style={{ color: T.gray, fontSize: 12, marginBottom: 10 }}>{'★'.repeat(p.confidence)} • {fmtDate(p.publishedAt)}</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              <Button size="sm" variant="outline" onClick={() => { setEditing(p); setIsNew(false); }}>Modifier</Button>
-              {p.status === 'pending' && (
-                <>
-                  <Button size="sm" onClick={() => setStatus(p.id, 'won')} style={{ background: T.green }}>✅ Gagné</Button>
-                  <Button size="sm" onClick={() => setStatus(p.id, 'lost')} style={{ background: T.red }}>❌ Perdu</Button>
-                  <Button size="sm" variant="dark" onClick={() => setStatus(p.id, 'cancelled')}>⏸️ Annulé</Button>
-                </>
-              )}
-              <Button size="sm" variant="danger" onClick={() => remove(p.id)}>🗑</Button>
+        </div>
+
+        <div class="card">
+            <div class="match-header">
+                <span class="badge badge-free">Match du Jour</span>
+                <span style="font-size: 12px; color: var(--text-gray);">Champions League</span>
             </div>
-          </Card>
-        );
-      })}
-      <Modal open={!!editing} onClose={() => { setEditing(null); setIsNew(false); }} title={isNew ? 'Nouveau pronostic' : 'Modifier'} size="lg">
-        {editing && <PredictionEditor pred={editing} matches={matches} onSave={save} />}
-      </Modal>
-    </div>
-  );
-};
-
-const PredictionEditor = ({ pred, matches, onSave }) => {
-  const [p, setP] = useState(pred);
-  return (
-    <div>
-      <Select label="Match" value={p.matchId} onChange={e => setP({ ...p, matchId: e.target.value })} options={matches.map(m => ({ value: m.id, label: `${m.home} vs ${m.away}` }))} />
-      <Select label="Type" value={p.type} onChange={e => setP({ ...p, type: e.target.value })} options={[
-        { value: '1X2', label: '1X2 (Résultat)' }, { value: 'Double chance', label: 'Double chance' }, { value: 'Over/Under', label: 'Over/Under' },
-        { value: 'Les deux équipes marquent', label: 'Les deux équipes marquent' }, { value: 'Score exact', label: 'Score exact' }, { value: 'Handicap', label: 'Handicap' },
-      ]} />
-      <Input label="Pronostic" value={p.prediction} onChange={e => setP({ ...p, prediction: e.target.value })} />
-      <Input label="Cote" type="number" step="0.01" value={p.odds} onChange={e => setP({ ...p, odds: parseFloat(e.target.value) || 0 })} />
-      <Select label="Confiance (1-5)" value={p.confidence} onChange={e => setP({ ...p, confidence: parseInt(e.target.value) })} options={[1,2,3,4,5].map(n => ({ value: n, label: '★'.repeat(n) }))} />
-      <TextArea label="Analyse" value={p.analysis} onChange={e => setP({ ...p, analysis: e.target.value })} />
-      <Select label="Catégorie" value={p.category} onChange={e => setP({ ...p, category: e.target.value })} options={[{ value: 'FREE', label: '🆓 FREE' }, { value: 'VIP', label: '💎 VIP' }]} />
-      <Button full onClick={() => onSave(p)}>Enregistrer</Button>
-    </div>
-  );
-};
-
-// ============ ADMIN USERS ============
-const AdminUsers = () => {
-  const [users, setUsers] = useState(load('users', []));
-  const [search, setSearch] = useState('');
-  const filtered = users.filter(u => u.fullName.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase()));
-
-  const toggleBlock = (id) => {
-    const all = load('users', []);
-    const u = all.find(x => x.id === id);
-    if (!u) return;
-    u.status = u.status === 'active' ? 'blocked' : 'active';
-    save('users', all);
-    setUsers([...all]);
-    logAdmin('user_block', `${u.fullName} → ${u.status}`);
-  };
-
-  const toggleVip = (id) => {
-    const all = load('users', []);
-    const u = all.find(x => x.id === id);
-    if (!u) return;
-    u.vip = !u.vip;
-    if (u.vip && !u.vipExpiresAt) u.vipExpiresAt = Date.now() + 30 * 86400000;
-    save('users', all);
-    setUsers([...all]);
-    addNotif(u.id, u.vip ? 'VIP activé' : 'VIP révoqué', u.vip ? 'Votre compte est maintenant VIP !' : 'Votre statut VIP a été révoqué.');
-    logAdmin('user_vip', `${u.fullName} → ${u.vip ? 'VIP' : 'FREE'}`);
-  };
-
-  const extendVip = (id, days) => {
-    const all = load('users', []);
-    const u = all.find(x => x.id === id);
-    if (!u) return;
-    const base = u.vipExpiresAt && u.vipExpiresAt > Date.now() ? u.vipExpiresAt : Date.now();
-    u.vipExpiresAt = base + days * 86400000;
-    u.vip = true;
-    save('users', all);
-    setUsers([...all]);
-    addNotif(u.id, 'VIP prolongé', `Votre VIP a été prolongé de ${days} jours.`);
-    logAdmin('vip_extend', `${u.fullName} +${days} jours`);
-  };
-
-  return (
-    <div>
-      <h2 style={{ color: T.white, fontSize: 20, margin: '0 0 16px' }}>👥 Utilisateurs ({users.length})</h2>
-      <Input placeholder="🔍 Rechercher..." value={search} onChange={e => setSearch(e.target.value)} />
-      {filtered.map(u => (
-        <Card key={u.id} style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ color: T.white, fontWeight: 600, marginBottom: 4 }}>{u.fullName}</div>
-              <div style={{ color: T.gray, fontSize: 12 }}>{u.email}</div>
-              {u.phone && <div style={{ color: T.gray, fontSize: 12 }}>{u.phone}</div>}
-              <div style={{ color: T.gray, fontSize: 11, marginTop: 4 }}>Inscrit le {fmtDate(u.createdAt)}</div>
+            <div class="teams">
+                <div><div class="team-logo">🔵</div>Man. City</div>
+                <div class="vs">VS<br>20:00</div>
+                <div><div class="team-logo">⚪</div>Real Madrid</div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
-              <Badge color={u.vip ? T.gold : T.gray}>{u.vip ? '💎 VIP' : '🆓 FREE'}</Badge>
-              <Badge color={u.status === 'active' ? T.green : T.red}>{u.status}</Badge>
-              {u.role === 'admin' && <Badge color={T.blue}>🛡️ Admin</Badge>}
+        </div>
+
+        <div class="disclaimer">
+            ⚠️ <strong>Avertissement :</strong> Les pronostics sont des analyses et ne garantissent aucun résultat. Les paris comportent des risques financiers. Jouez de manière responsable.
+        </div>
+    </div>
+
+    <!-- === PAGE: MATCHES === -->
+    <div id="matchesPage" class="page hidden">
+        <h2 style="padding: 20px 20px 0;">Matchs à venir</h2>
+        <div id="matchesList"></div>
+    </div>
+
+    <!-- === PAGE: PREDICTIONS === -->
+    <div id="predictionsPage" class="page hidden">
+        <div style="padding: 20px; display: flex; gap: 10px;">
+            <button onclick="filterPreds('free')" class="btn btn-outline" style="flex:1;">FREE</button>
+            <button onclick="filterPreds('vip')" class="btn btn-outline" style="flex:1; border-color: var(--gold); color: var(--gold);">VIP</button>
+        </div>
+        <div id="predsList"></div>
+    </div>
+
+    <!-- === PAGE: VIP / PAIEMENT === -->
+    <div id="vipPage" class="page hidden">
+        <div class="card" style="border-color: var(--gold); text-align: center;">
+            <i class="fas fa-crown" style="font-size: 40px; color: var(--gold); margin-bottom: 10px;"></i>
+            <h2 style="color: var(--gold);">Devenez Membre VIP</h2>
+            <p style="color: var(--text-gray); font-size: 13px; margin: 10px 0;">Accédez aux pronostics haute confiance et aux cotes boostées.</p>
+            
+            <div id="vipContentUser">
+                <!-- Si pas connecté -->
+                <div id="vipNotLogged">
+                    <button onclick="showPage('login')" class="btn btn-primary">Se connecter pour voir les offres</button>
+                </div>
+
+                <!-- Si connecté mais pas VIP -->
+                <div id="vipSubscribe" class="hidden">
+                    <div style="background: #1A1F2E; padding: 15px; border-radius: 10px; margin: 15px 0; text-align: left;">
+                        <h3 style="color: white;">Formule Mensuelle</h3>
+                        <div style="font-size: 24px; color: var(--gold); font-weight: bold;">1,500 HTG</div>
+                        <hr style="border: 0; border-top: 1px solid #333; margin: 10px 0;">
+                        <p style="font-size: 12px; color: #aaa;">Payez via MonCash :</p>
+                        <div style="background: black; padding: 10px; border-radius: 5px; margin-top: 5px;">
+                            <div>Nom: <strong>Benêche Jurgens</strong></div>
+                            <div>Numéro: <strong style="color: var(--gold); font-size: 16px;">47173504</strong></div>
+                        </div>
+                    </div>
+
+                    <form onsubmit="submitPayment(event)">
+                        <div class="input-group">
+                            <input type="text" id="payTxId" placeholder="ID Transaction MonCash" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="payName" placeholder="Nom du payeur" required>
+                        </div>
+                        <button type="submit" class="btn btn-gold">Envoyer la Preuve</button>
+                    </form>
+                </div>
+
+                <!-- Si déjà VIP -->
+                <div id="vipActive" class="hidden">
+                    <h3 style="color: var(--primary);">✅ Vous êtes VIP</h3>
+                    <p>Votre abonnement est actif.</p>
+                </div>
             </div>
-          </div>
-          {u.vip && u.vipExpiresAt && <div style={{ color: T.gray, fontSize: 11, marginBottom: 8 }}>Expire: {fmtDate(u.vipExpiresAt)}</div>}
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {u.role !== 'admin' && (
-              <>
-                <Button size="sm" variant="outline" onClick={() => toggleBlock(u.id)}>{u.status === 'active' ? '🚫 Bloquer' : '✅ Débloquer'}</Button>
-                <Button size="sm" variant={u.vip ? 'dark' : 'gold'} onClick={() => toggleVip(u.id)}>{u.vip ? 'Révoquer VIP' : 'Activer VIP'}</Button>
-                {u.vip && <Button size="sm" variant="outlineGold" onClick={() => extendVip(u.id, 7)}>+7j</Button>}
-                {u.vip && <Button size="sm" variant="outlineGold" onClick={() => extendVip(u.id, 30)}>+30j</Button>}
-              </>
-            )}
-          </div>
-        </Card>
-      ))}
+        </div>
     </div>
-  );
-};
 
-// ============ ADMIN PAYMENTS ============
-const AdminPayments = () => {
-  const [payments, setPayments] = useState(load('payments', []).sort((a, b) => b.createdAt - a.createdAt));
-  const [selected, setSelected] = useState(null);
-
-  const update = (id, status) => {
-    const all = load('payments', []);
-    const p = all.find(x => x.id === id);
-    if (!p) return;
-    p.status = status;
-    save('payments', all);
-    setPayments([...all]);
-
-    if (status === 'approved') {
-      const users = load('users', []);
-      const u = users.find(x => x.id === p.userId);
-      if (u) {
-        const base = u.vipExpiresAt && u.vipExpiresAt > Date.now() ? u.vipExpiresAt : Date.now();
-        u.vip = true;
-        u.vipExpiresAt = base + p.planDuration * 86400000;
-        save('users', users);
-        addNotif(u.id, '✅ Paiement approuvé', `Votre abonnement ${p.planName} est activé !`);
-      }
-    } else if (status === 'rejected') {
-      addNotif(p.userId, '❌ Paiement refusé', 'Votre paiement a été refusé. Contactez le support.');
-    }
-    logAdmin('payment_status', `${p.userName} - ${p.planName} → ${status}`);
-    setSelected(null);
-  };
-
-  return (
-    <div>
-      <h2 style={{ color: T.white, fontSize: 20, margin: '0 0 16px' }}>💳 Paiements ({payments.length})</h2>
-      {payments.length === 0 ? <Card><div style={{ color: T.gray, textAlign: 'center', padding: 30 }}>Aucun paiement</div></Card> :
-      payments.map(p => (
-        <Card key={p.id} style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-            <div>
-              <div style={{ color: T.white, fontWeight: 600 }}>{p.userName}</div>
-              <div style={{ color: T.gray, fontSize: 12 }}>{p.planName} • {fmtDate(p.createdAt)}</div>
+    <!-- === PAGE: LOGIN / REGISTER === -->
+    <div id="authPage" class="page hidden">
+        <div class="card">
+            <h2 id="authTitle" style="text-align: center; margin-bottom: 20px;">Connexion</h2>
+            <form onsubmit="handleAuth(event)">
+                <div class="input-group">
+                    <input type="email" id="authEmail" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="authPass" placeholder="Mot de passe" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="authBtn">Se Connecter</button>
+            </form>
+            <p style="text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-gray);">
+                <span id="authSwitchText">Pas de compte ?</span> 
+                <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">Cliquez ici</a>
+            </p>
+            <div style="margin-top: 20px; padding: 10px; background: #222; border-radius: 8px; font-size: 11px; color: #888;">
+                <strong>Démo Admin:</strong> admin@fifa.com / admin123
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ color: T.gold, fontSize: 18, fontWeight: 700 }}>{p.amount} HTG</div>
-              <Badge color={p.status === 'approved' ? T.green : p.status === 'rejected' ? T.red : T.orange}>{p.status}</Badge>
+        </div>
+    </div>
+
+    <!-- === PAGE: PROFILE === -->
+    <div id="profilePage" class="page hidden">
+        <div class="card" style="text-align: center;">
+            <div style="width: 80px; height: 80px; background: var(--primary); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px;">👤</div>
+            <h2 id="profileName">Utilisateur</h2>
+            <p id="profileStatus" style="color: var(--text-gray);">Membre Free</p>
+            <button onclick="logout()" class="btn btn-outline" style="margin-top: 20px; border-color: var(--danger); color: var(--danger);">Déconnexion</button>
+        </div>
+        <div id="adminLink" class="hidden" style="padding: 0 20px;">
+            <button onclick="showPage('admin')" class="btn btn-primary" style="background: #333;">🛡️ Accéder au Panneau Admin</button>
+        </div>
+    </div>
+
+    <!-- === PAGE: ADMIN === -->
+    <div id="adminPage" class="page hidden">
+        <div style="padding: 20px;">
+            <h2>🛡️ Panneau Admin</h2>
+            <div style="display: flex; gap: 10px; margin: 15px 0; overflow-x: auto;">
+                <button onclick="showAdminTab('payments')" class="btn btn-outline" style="min-width: 100px;">Paiements</button>
+                <button onclick="showAdminTab('addMatch')" class="btn btn-outline" style="min-width: 100px;">Ajouter Match</button>
+                <button onclick="showAdminTab('users')" class="btn btn-outline" style="min-width: 100px;">Utilisateurs</button>
             </div>
-          </div>
-          <Button size="sm" variant="outline" full onClick={() => setSelected(p)}>Voir détails</Button>
-        </Card>
-      ))}
-      <Modal open={!!selected} onClose={() => setSelected(null)} title="Détails paiement">
-        {selected && (
-          <div>
-            <div style={{ display: 'grid', gap: 10, marginBottom: 16 }}>
-              <div><span style={{ color: T.gray }}>Utilisateur:</span> <span style={{ color: T.white }}>{selected.userName}</span></div>
-              <div><span style={{ color: T.gray }}>Email:</span> <span style={{ color: T.white }}>{selected.userEmail}</span></div>
-              <div><span style={{ color: T.gray }}>Téléphone:</span> <span style={{ color: T.white }}>{selected.userPhone}</span></div>
-              <div><span style={{ color: T.gray }}>Formule:</span> <span style={{ color: T.gold }}>{selected.planName}</span></div>
-              <div><span style={{ color: T.gray }}>Montant:</span> <span style={{ color: T.gold, fontWeight: 700 }}>{selected.amount} HTG</span></div>
-              <div><span style={{ color: T.gray }}>Méthode:</span> <span style={{ color: T.white }}>{selected.method}</span></div>
-              <div><span style={{ color: T.gray }}>N° transaction:</span> <span style={{ color: T.white, fontFamily: 'monospace' }}>{selected.txNumber}</span></div>
-              <div><span style={{ color: T.gray }}>Payeur:</span> <span style={{ color: T.white }}>{selected.payerName}</span></div>
-              <div><span style={{ color: T.gray }}>Date:</span> <span style={{ color: T.white }}>{fmtDateTime(selected.createdAt)}</span></div>
+
+            <!-- Tab: Payments -->
+            <div id="admPayments">
+                <h3>Paiements en attente</h3>
+                <div id="paymentList"></div>
             </div>
-            {selected.status === 'pending' && (
-              <div style={{ display: 'grid', gap: 10 }}>
-                <Button onClick={() => update(selected.id, 'approved')} style={{ background: T.green }}>✅ Approuver</Button>
-                <Button onClick={() => update(selected.id, 'rejected')} style={{ background: T.red }}>❌ Refuser</Button>
-              </div>
-            )}
-          </div>
-        )}
-      </Modal>
-    </div>
-  );
-};
 
-// ============ ADMIN VIP ============
-const AdminVIP = () => {
-  const users = load('users', []).filter(u => u.vip);
-  return (
-    <div>
-      <h2 style={{ color: T.white, fontSize: 20, margin: '0 0 16px' }}>⭐ Membres VIP ({users.length})</h2>
-      {users.length === 0 ? <Card><div style={{ color: T.gray, textAlign: 'center', padding: 30 }}>Aucun membre VIP</div></Card> :
-      users.map(u => {
-        const daysLeft = u.vipExpiresAt ? Math.max(0, daysBetween(Date.now(), u.vipExpiresAt)) : '∞';
-        return (
-          <Card key={u.id} gold style={{ marginBottom: 10 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div style={{ color: T.gold, fontWeight: 600 }}>{u.fullName}</div>
-                <div style={{ color: T.gray, fontSize: 12 }}>{u.email}</div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <Badge color={T.gold}>💎 VIP</Badge>
-                <div style={{ color: T.gray, fontSize: 11, marginTop: 4 }}>{daysLeft === '∞' ? 'Illimité' : `${daysLeft} jours restants`}</div>
-              </div>
+            <!-- Tab: Add Match -->
+            <div id="admAddMatch" class="hidden">
+                <h3>Ajouter un Match</h3>
+                <form onsubmit="addMatch(event)">
+                    <input type="text" id="mHome" placeholder="Équipe Domicile" style="margin-bottom: 5px;" required>
+                    <input type="text" id="mAway" placeholder="Équipe Extérieure" style="margin-bottom: 5px;" required>
+                    <input type="time" id="mTime" style="margin-bottom: 5px;" required>
+                    <button class="btn btn-primary">Ajouter</button>
+                </form>
             </div>
-          </Card>
-        );
-      })}
-    </div>
-  );
-};
 
-// ============ ADMIN PLANS ============
-const AdminPlans = () => {
-  const [plans, setPlans] = useState(load('vipPlans', []));
-  const [editing, setEditing] = useState(null);
-
-  const save = (p) => {
-    const all = load('vipPlans', []);
-    const idx = all.findIndex(x => x.id === p.id);
-    if (idx >= 0) all[idx] = p; else all.push({ ...p, id: uid('plan') });
-    save('vipPlans', all);
-    setPlans(all);
-    setEditing(null);
-    logAdmin('plan_update', p.name);
-  };
-
-  const remove = (id) => {
-    if (!confirm('Supprimer ?')) return;
-    const all = load('vipPlans', []).filter(x => x.id !== id);
-    save('vipPlans', all);
-    setPlans(all);
-  };
-
-  return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ color: T.white, fontSize: 20, margin: 0 }}>💎 Formules VIP</h2>
-        <Button size="sm" onClick={() => setEditing({ name: '', duration: 1, price: 0, description: '' })}>+ Ajouter</Button>
-      </div>
-      {plans.map(p => (
-        <Card key={p.id} gold style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-            <div>
-              <div style={{ color: T.gold, fontSize: 17, fontWeight: 700 }}>{p.name}</div>
-              <div style={{ color: T.gray, fontSize: 12, marginTop: 4 }}>{p.description}</div>
-              <div style={{ color: T.gray, fontSize: 11, marginTop: 4 }}>Durée: {p.duration} jour(s)</div>
+             <!-- Tab: Users -->
+             <div id="admUsers" class="hidden">
+                <h3>Gestion Utilisateurs</h3>
+                <table id="usersTable">
+                    <thead><tr><th>Nom</th><th>Statut</th><th>Action</th></tr></thead>
+                    <tbody></tbody>
+                </table>
             </div>
-            <div style={{ color: T.gold, fontSize: 22, fontWeight: 800 }}>{p.price} HTG</div>
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <Button size="sm" variant="outlineGold" onClick={() => setEditing(p)}>Modifier</Button>
-            <Button size="sm" variant="danger" onClick={() => remove(p.id)}>🗑</Button>
-          </div>
-        </Card>
-      ))}
-      <Modal open={!!editing} onClose={() => setEditing(null)} title="Formule VIP">
-        {editing && (
-          <div>
-            <Input label="Nom" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value })} />
-            <Input label="Durée (jours)" type="number" value={editing.duration} onChange={e => setEditing({ ...editing, duration: parseInt(e.target.value) || 0 })} />
-            <Input label="Prix (HTG)" type="number" value={editing.price} onChange={e => setEditing({ ...editing, price: parseFloat(e.target.value) || 0 })} />
-            <TextArea label="Description" value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} />
-            <Button full onClick={() => save(editing)}>Enregistrer</Button>
-          </div>
-        )}
-      </Modal>
+        </div>
     </div>
-  );
-};
 
-// ============ ADMIN NOTIFICATIONS ============
-const AdminNotifications = () => {
-  const [form, setForm] = useState({ title: '', message: '', target: 'all' });
-  const [msg, setMsg] = useState('');
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav" id="mainNav">
+        <button class="nav-item active" onclick="showPage('home')">
+            <i class="fas fa-home"></i> Accueil
+        </button>
+        <button class="nav-item" onclick="showPage('matches')">
+            <i class="fas fa-futbol"></i> Matchs
+        </button>
+        <button class="nav-item" onclick="showPage('predictions')">
+            <i class="fas fa-bullseye"></i> Pronos
+        </button>
+        <button class="nav-item" onclick="showPage('vip')">
+            <i class="fas fa-crown"></i> VIP
+        </button>
+        <button class="nav-item" onclick="showPage('profile')">
+            <i class="fas fa-user"></i> Profil
+        </button>
+    </nav>
 
-  const send = () => {
-    if (!form.title || !form.message) return;
-    const users = load('users', []);
-    const targets = form.target === 'all' ? users : form.target === 'vip' ? users.filter(u => u.vip) : users.filter(u => !u.vip);
-    targets.forEach(u => addNotif(u.id, form.title, form.message));
-    setMsg(`Notification envoyée à ${targets.length} utilisateur(s)`);
-    setForm({ title: '', message: '', target: 'all' });
-    logAdmin('notification_broadcast', `"${form.title}" → ${targets.length} users`);
-    setTimeout(() => setMsg(''), 3000);
-  };
+    <script>
+        // --- DONNÉES SIMULÉES (BASE DE DONNÉE LOCALE) ---
+        const DB = {
+            users: JSON.parse(localStorage.getItem('fp_users')) || [
+                { email: 'admin@fifa.com', pass: 'admin123', role: 'admin', isVip: true, name: 'Administrateur' },
+                { email: 'user@test.com', pass: '123456', role: 'user', isVip: false, name: 'Jean Test' }
+            ],
+            matches: JSON.parse(localStorage.getItem('fp_matches')) || [
+                { id: 1, home: 'Barcelona', away: 'PSG', time: '21:00', comp: 'UCL' },
+                { id: 2, home: 'Arsenal', away: 'Chelsea', time: '17:30', comp: 'PL' }
+            ],
+            predictions: JSON.parse(localStorage.getItem('fp_preds')) || [
+                { id: 1, matchId: 1, type: 'Victoire', pick: 'Barcelona', odds: 2.10, conf: 4, cat: 'FREE' },
+                { id: 2, matchId: 1, type: 'Score Exact', pick: '2-1', odds: 8.50, conf: 3, cat: 'VIP' },
+                { id: 3, matchId: 2, type: 'Over 2.5', pick: 'Oui', odds: 1.85, conf: 5, cat: 'FREE' }
+            ],
+            payments: JSON.parse(localStorage.getItem('fp_payments')) || [],
+            currentUser: JSON.parse(localStorage.getItem('fp_currentUser')) || null
+        };
 
-  return (
-    <div>
-      <h2 style={{ color: T.white, fontSize: 20, margin: '0 0 16px' }}>📢 Notifications</h2>
-      <Card>
-        <Select label="Destinataires" value={form.target} onChange={e => setForm({ ...form, target: e.target.value })} options={[
-          { value: 'all', label: 'Tous les utilisateurs' }, { value: 'vip', label: 'VIP uniquement' }, { value: 'free', label: 'FREE uniquement' },
-        ]} />
-        <Input label="Titre" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
-        <TextArea label="Message" value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} />
-        {msg && <div style={{ color: T.green, fontSize: 13, marginBottom: 12, padding: 10, background: `${T.green}22`, borderRadius: 8 }}>{msg}</div>}
-        <Button full onClick={send}>Envoyer</Button>
-      </Card>
-    </div>
-  );
-};
+        let isRegistering = false;
 
-// ============ ADMIN SETTINGS ============
-const AdminSettings = () => {
-  const [s, setS] = useState(load('settings', {}));
-  const [msg, setMsg] = useState('');
+        // --- NAVIGATION ---
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(pageId + 'Page').classList.remove('hidden');
+            
+            // Update Nav Active State
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            // Simple logic to highlight nav (can be improved)
+            if(pageId === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
+            if(pageId === 'matches') document.querySelectorAll('.nav-item')[1].classList.add('active');
+            if(pageId === 'predictions') document.querySelectorAll('.nav-item')[2].classList.add('active');
+            if(pageId === 'vip') document.querySelectorAll('.nav-item')[3].classList.add('active');
+            if(pageId === 'profile') document.querySelectorAll('.nav-item')[4].classList.add('active');
 
-  const save = () => {
-    save('settings', s);
-    setMsg('Paramètres enregistrés ✓');
-    logAdmin('settings_update', 'Paramètres mis à jour');
-    setTimeout(() => setMsg(''), 3000);
-  };
+            window.scrollTo(0,0);
+            checkAuthUI();
+            renderContent();
+        }
 
-  const upd = (k, v) => setS({ ...s, [k]: v });
+        function checkAuthUI() {
+            const user = DB.currentUser;
+            const nav = document.getElementById('mainNav');
+            const header = document.getElementById('userStatus');
 
-  return (
-    <div>
-      <h2 style={{ color: T.white, fontSize: 20, margin: '0 0 16px' }}>⚙️ Paramètres</h2>
-      <Card style={{ marginBottom: 14 }}>
-        <h3 style={{ color: T.green, margin: '0 0 12px', fontSize: 15 }}>Identité</h3>
-        <Input label="Nom de l'application" value={s.appName} onChange={e => upd('appName', e.target.value)} />
-        <Input label="Slogan" value={s.tagline} onChange={e => upd('tagline', e.target.value)} />
-        <Input label="Logo (emoji)" value={s.logo} onChange={e => upd('logo', e.target.value)} />
-      </Card>
-      <Card style={{ marginBottom: 14 }}>
-        <h3 style={{ color: T.green, margin: '0 0 12px', fontSize: 15 }}>💵 MonCash</h3>
-        <Input label="Nom du bénéficiaire" value={s.moncashName} onChange={e => upd('moncashName', e.target.value)} />
-        <Input label="Numéro MonCash" value={s.moncashNumber} onChange={e => upd('moncashNumber', e.target.value)} />
-      </Card>
-      <Card style={{ marginBottom: 14 }}>
-        <h3 style={{ color: T.green, margin: '0 0 12px', fontSize: 15 }}>Textes</h3>
-        <TextArea label="Message d'accueil" value={s.welcomeText} onChange={e => upd('welcomeText', e.target.value)} />
-        <TextArea label="Avertissement" value={s.disclaimer} onChange={e => upd('disclaimer', e.target.value)} />
-      </Card>
-      <Card style={{ marginBottom: 14 }}>
-        <h3 style={{ color: T.green, margin: '0 0 12px', fontSize: 15 }}>Contact & Réseaux</h3>
-        <Input label="WhatsApp" value={s.whatsapp} onChange={e => upd('whatsapp', e.target.value)} />
-        <Input label="Facebook" value={s.facebook} onChange={e => upd('facebook', e.target.value)} />
-        <Input label="Instagram" value={s.instagram} onChange={e => upd('instagram', e.target.value)} />
-        <Input label="Telegram" value={s.telegram} onChange={e => upd('telegram', e.target.value)} />
-      </Card>
-      <Card style={{ marginBottom: 14 }}>
-        <h3 style={{ color: T.green, margin: '0 0 12px', fontSize: 15 }}>Légal</h3>
-        <TextArea label="Conditions d'utilisation" value={s.terms} onChange={e => upd('terms', e.target.value)} />
-        <TextArea label="Politique de confidentialité" value={s.privacy} onChange={e => upd('privacy', e.target.value)} />
-      </Card>
-      {msg && <div style={{ color: T.green, fontSize: 13, marginBottom: 12, padding: 10, background: `${T.green}22`, borderRadius: 8 }}>{msg}</div>}
-      <Button full onClick={save}>Enregistrer</Button>
-    </div>
-  );
-};
+            if (user) {
+                header.innerHTML = `<span style="font-size:12px; color:var(--gold);">${user.isVip ? '💎 VIP' : '🆓 FREE'}</span>`;
+                document.getElementById('profileName').innerText = user.name || user.email;
+                document.getElementById('profileStatus').innerText = user.isVip ? 'Membre VIP Actif' : 'Membre Gratuit';
+                
+                if(user.role === 'admin') {
+                    document.getElementById('adminLink').classList.remove('hidden');
+                } else {
+                    document.getElementById('adminLink').classList.add('hidden');
+                }
 
-// ============ ADMIN LOGS ============
-const AdminLogs = () => {
-  const logs = load('adminLogs', []);
-  return (
-    <div>
-      <h2 style={{ color: T.white, fontSize: 20, margin: '0 0 16px' }}>📜 Activity Logs ({logs.length})</h2>
-      {logs.length === 0 ? <Card><div style={{ color: T.gray, textAlign: 'center', padding: 30 }}>Aucun log</div></Card> :
-      logs.slice(0, 100).map(l => (
-        <Card key={l.id} style={{ marginBottom: 8, padding: 12 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <Badge small>{l.action}</Badge>
-              <div style={{ color: T.grayLight, fontSize: 13, marginTop: 6 }}>{l.details}</div>
-            </div>
-            <div style={{ color: T.gray, fontSize: 11 }}>{fmtDateTime(l.at)}</div>
-          </div>
-        </Card>
-      ))}
-    </div>
-  );
-};
+                // VIP Page Logic
+                if(user.isVip) {
+                    document.getElementById('vipSubscribe').classList.add('hidden');
+                    document.getElementById('vipActive').classList.remove('hidden');
+                    document.getElementById('vipNotLogged').classList.add('hidden');
+                } else {
+                    document.getElementById('vipSubscribe').classList.remove('hidden');
+                    document.getElementById('vipActive').classList.add('hidden');
+                    document.getElementById('vipNotLogged').classList.add('hidden');
+                }
+            } else {
+                header.innerHTML = '';
+                document.getElementById('vipNotLogged').classList.remove('hidden');
+                document.getElementById('vipSubscribe').classList.add('hidden');
+                document.getElementById('vipActive').classList.add('hidden');
+            }
+        }
 
-// ============================================================
-// MAIN APP
-// ============================================================
-const App = () => {
-  const [page, setPage] = useState('home');
-  const { user } = useAuth();
+        // --- AUTHENTICATION ---
+        function toggleAuthMode() {
+            isRegistering = !isRegistering;
+            document.getElementById('authTitle').innerText = isRegistering ? 'Inscription' : 'Connexion';
+            document.getElementById('authBtn').innerText = isRegistering ? "S'inscrire" : 'Se Connecter';
+            document.getElementById('authSwitchText').innerText = isRegistering ? 'Déjà un compte ?' : 'Pas de compte ?';
+        }
 
-  useEffect(() => { seed(); }, []);
+        function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPass').value;
 
-  const nav = useCallback((p) => { setPage(p); window.scrollTo(0, 0); }, []);
+            if (isRegistering) {
+                // Inscription
+                if(DB.users.find(u => u.email === email)) return alert('Email déjà utilisé');
+                const newUser = { email, pass, role: 'user', isVip: false, name: email.split('@')[0] };
+                DB.users.push(newUser);
+                saveDB();
+                login(newUser);
+            } else {
+                // Connexion
+                const user = DB.users.find(u => u.email === email && u.pass === pass);
+                if (user) login(user);
+                else alert('Identifiants incorrects');
+            }
+        }
 
-  const publicPages = ['home', 'matches', 'predictions', 'vip', 'profile', 'login', 'register', 'notifications', 'history', 'terms', 'privacy'];
-  const showBottom = publicPages.includes(page) && user && page !== 'login' && page !== 'register';
-  const showAuthNav = !user && ['home', 'matches', 'predictions', 'vip', 'profile'].includes(page);
+        function login(user) {
+            DB.currentUser = user;
+            localStorage.setItem('fp_currentUser', JSON.stringify(user));
+            alert('Bienvenue ' + user.name);
+            showPage('home');
+        }
 
-  return (
-    <div style={{ minHeight: '100vh', background: T.black, color: T.white, fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', maxWidth: 500, margin: '0 auto', position: 'relative' }}>
-      {page === 'home' && <HomePage setPage={nav} />}
-      {page === 'matches' && <MatchesPage />}
-      {page === 'predictions' && <PredictionsPage setPage={nav} />}
-      {page === 'vip' && <VIPPage setPage={nav} />}
-      {page === 'profile' && <ProfilePage setPage={nav} />}
-      {page === 'login' && <LoginPage setPage={nav} />}
-      {page === 'register' && <RegisterPage setPage={nav} />}
-      {page === 'notifications' && <NotificationsPage setPage={nav} />}
-      {page === 'history' && <HistoryPage setPage={nav} />}
-      {page === 'terms' && <TermsPage setPage={nav} />}
-      {page === 'privacy' && <PrivacyPage setPage={nav} />}
-      {page === 'admin' && <AdminPanel setPage={nav} />}
+        function logout() {
+            DB.currentUser = null;
+            localStorage.removeItem('fp_currentUser');
+            showPage('home');
+        }
 
-      {showBottom && <BottomNav page={page} setPage={nav} />}
-      {showAuthNav && <BottomNav page={page} setPage={nav} />}
-    </div>
-  );
-};
+        // --- RENDER CONTENT ---
+        function renderContent() {
+            // Render Matches
+            const mContainer = document.getElementById('matchesList');
+            mContainer.innerHTML = DB.matches.map(m => `
+                <div class="card">
+                    <div class="match-header"><span class="badge badge-free">${m.comp}</span></div>
+                    <div class="teams">
+                        <div><div class="team-logo">⚽</div>${m.home}</div>
+                        <div class="vs">VS<br>${m.time}</div>
+                        <div><div class="team-logo">⚽</div>${m.away}</div>
+                    </div>
+                </div>
+            `).join('');
 
-const Root = () => (
-  <AuthProvider>
-    <App />
-  </AuthProvider>
-);
+            // Render Predictions (Default Free)
+            filterPreds('free');
+        }
 
-export default Root;
+        function filterPreds(type) {
+            const pContainer = document.getElementById('predsList');
+            const user = DB.currentUser;
+            
+            let preds = DB.predictions.filter(p => p.cat === type.toUpperCase());
+            
+            if (type === 'vip' && (!user || !user.isVip)) {
+                pContainer.innerHTML = `
+                    <div class="card" style="text-align:center; border-color: var(--gold);">
+                        <i class="fas fa-lock" style="font-size:30px; color:var(--gold); margin-bottom:10px;"></i>
+                        <h3>Contenu Réservé VIP</h3>
+                        <p style="color:#888; margin-bottom:15px;">Connectez-vous et abonnez-vous pour voir ces pronostics.</p>
+                        <button onclick="showPage('vip')" class="btn btn-gold">Devenir VIP</button>
+                    </div>
+                `;
+                return;
+            }
+
+            pContainer.innerHTML = preds.map(p => {
+                const match = DB.matches.find(m => m.id === p.matchId) || { home: 'Match X', away: 'Match Y' };
+                return `
+                <div class="card">
+                    <div class="match-header">
+                        <span class="badge ${p.cat === 'VIP' ? 'badge-vip' : 'badge-free'}">${p.cat}</span>
+                        <span style="font-size:12px; color:#888;">${match.home} vs ${match.away}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                        <div>
+                            <div style="font-size:12px; color:#888;">${p.type}</div>
+                            <div style="font-size:18px; font-weight:bold; color:var(--primary);">${p.pick}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="background:#222; padding:5px 10px; border-radius:5px; color:white; font-weight:bold;">${p.odds}</div>
+                            <div style="font-size:10px; color:var(--gold); margin-top:2px;">${'★'.repeat(p.conf)}</div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // --- PAYMENT LOGIC ---
+        function submitPayment(e) {
+            e.preventDefault();
+            const txId = document.getElementById('payTxId').value;
+            const name = document.getElementById('payName').value;
+            const user = DB.currentUser;
+
+            // Check duplicate
+            if(DB.payments.find(p => p.txId === txId)) return alert('Ce numéro de transaction a déjà été utilisé.');
+
+            const payment = {
+                id: Date.now(),
+                userEmail: user.email,
+                userName: name,
+                txId: txId,
+                amount: 1500,
+                status: 'pending',
+                date: new Date().toLocaleDateString()
+            };
+
+            DB.payments.push(payment);
+            saveDB();
+            alert('Preuve envoyée ! En attente de validation par l\'admin.');
+            showPage('home');
+        }
+
+        // --- ADMIN LOGIC ---
+        function showAdminTab(tab) {
+            document.getElementById('admPayments').classList.add('hidden');
+            document.getElementById('admAddMatch').classList.add('hidden');
+            document.getElementById('admUsers').classList.add('hidden');
+            
+            document.getElementById('adm' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
+            
+            if(tab === 'payments') renderAdminPayments();
+            if(tab === 'users') renderAdminUsers();
+        }
+
+        function renderAdminPayments() {
+            const list = document.getElementById('paymentList');
+            const pending = DB.payments.filter(p => p.status === 'pending');
+            
+            if(pending.length === 0) {
+                list.innerHTML = '<p style="color:#888;">Aucun paiement en attente.</p>';
+                return;
+            }
+
+            list.innerHTML = pending.map(p => `
+                <div class="card" style="margin: 10px 0; padding: 10px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <strong>${p.userName}</strong>
+                        <span style="color:var(--gold);">${p.amount} HTG</span>
+                    </div>
+                    <div style="font-size:12px; color:#888;">TX: ${p.txId} | ${p.date}</div>
+                    <div style="margin-top:10px; display:flex; gap:5px;">
+                        <button onclick="approvePayment(${p.id})" class="btn btn-primary" style="padding:5px; font-size:12px;">Approuver</button>
+                        <button onclick="rejectPayment(${p.id})" class="btn btn-outline" style="padding:5px; font-size:12px; border-color:red; color:red;">Rejeter</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function approvePayment(id) {
+            const pay = DB.payments.find(p => p.id === id);
+            if(pay) {
+                pay.status = 'approved';
+                // Make User VIP
+                const user = DB.users.find(u => u.email === pay.userEmail);
+                if(user) user.isVip = true;
+                saveDB();
+                renderAdminPayments();
+                alert('Utilisateur passé en VIP !');
+            }
+        }
+
+        function rejectPayment(id) {
+            const idx = DB.payments.findIndex(p => p.id === id);
+            if(idx > -1) {
+                DB.payments[idx].status = 'rejected';
+                saveDB();
+                renderAdminPayments();
+            }
+        }
+
+        function addMatch(e) {
+            e.preventDefault();
+            const home = document.getElementById('mHome').value;
+            const away = document.getElementById('mAway').value;
+            const time = document.getElementById('mTime').value;
+            
+            DB.matches.push({ id: Date.now(), home, away, time, comp: 'Ligue 1' });
+            saveDB();
+            alert('Match ajouté !');
+            document.getElementById('mHome').value = '';
+            document.getElementById('mAway').value = '';
+        }
+
+        function renderAdminUsers() {
+            const tbody = document.querySelector('#usersTable tbody');
+            tbody.innerHTML = DB.users.map(u => `
+                <tr>
+                    <td>${u.name || u.email}</td>
+                    <td><span class="badge ${u.isVip ? 'badge-vip' : 'badge-free'}">${u.isVip ? 'VIP' : 'Free'}</span></td>
+                    <td>
+                        <button onclick="toggleUserVip('${u.email}')" style="font-size:10px; padding:2px 5px;">Toggle VIP</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleUserVip(email) {
+            const u = DB.users.find(x => x.email === email);
+            if(u) {
+                u.isVip = !u.isVip;
+                saveDB();
+                renderAdminUsers();
+            }
+        }
+
+        // --- UTILS ---
+        function saveDB() {
+            localStorage.setItem('fp_users', JSON.stringify(DB.users));
+            localStorage.setItem('fp_matches', JSON.stringify(DB.matches));
+            localStorage.setItem('fp_preds', JSON.stringify(DB.predictions));
+            localStorage.setItem('fp_payments', JSON.stringify(DB.payments));
+        }
+
+        // Init
+        renderContent();
+        checkAuthUI();
+
+    </script>
+</body>
+</html>
+```
