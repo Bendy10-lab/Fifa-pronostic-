@@ -1,13 +1,3 @@
-Men yon vèsyon **HTML + CSS + JavaScript** konplè nan yon sèl dosye. Ou ka kopye kòd sa a, sove l anba non `index.html`, epi ouvri l dirèkteman nan navigatè w (Chrome, Safari, elatriye) sou telefòn ou oswa òdinatè w.
-
-Li gen tout fonksyonalite debaz yo:
-1.  **Design Mobile** (Sanble ak yon App).
-2.  **Sistèm Login/Inscription** (Similye ak baz done).
-3.  **Pronostics Free & VIP** (VIP bloke si w pa peye).
-4.  **Admin Panel** (Pou ajoute match, valide peman).
-5.  **Peman MonCash** (Fòmilè ak verifikasyon).
-
-```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -29,7 +19,7 @@ Li gen tout fonksyonalite debaz yo:
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         
-        body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 70px; overflow-x: hidden; }
+        body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 80px; overflow-x: hidden; }
 
         /* --- UTILS --- */
         .hidden { display: none !important; }
@@ -56,16 +46,16 @@ Li gen tout fonksyonalite debaz yo:
 
         /* --- BOTTOM NAV --- */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid #2A3142; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 10px; background: none; border: none; cursor: pointer; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 10px; background: none; border: none; cursor: pointer; min-width: 60px; }
         .nav-item i { font-size: 20px; margin-bottom: 4px; }
         .nav-item.active { color: var(--primary); }
+        .nav-admin { color: var(--danger) !important; } /* Kadna wouj */
 
         /* --- PAGES --- */
         .page { min-height: 80vh; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- SPECIFIC --- */
-        .vip-lock { text-align: center; padding: 20px; filter: blur(4px); opacity: 0.5; pointer-events: none; }
         .disclaimer { font-size: 11px; color: var(--text-gray); text-align: center; padding: 20px; line-height: 1.5; }
         
         /* Admin Table */
@@ -135,7 +125,7 @@ Li gen tout fonksyonalite debaz yo:
             <div id="vipContentUser">
                 <!-- Si pas connecté -->
                 <div id="vipNotLogged">
-                    <button onclick="showPage('login')" class="btn btn-primary">Se connecter pour voir les offres</button>
+                    <button onclick="showPage('profile')" class="btn btn-primary">Se connecter pour voir les offres</button>
                 </div>
 
                 <!-- Si connecté mais pas VIP -->
@@ -171,7 +161,7 @@ Li gen tout fonksyonalite debaz yo:
         </div>
     </div>
 
-    <!-- === PAGE: LOGIN / REGISTER === -->
+    <!-- === PAGE: LOGIN / REGISTER (Within Profile) === -->
     <div id="authPage" class="page hidden">
         <div class="card">
             <h2 id="authTitle" style="text-align: center; margin-bottom: 20px;">Connexion</h2>
@@ -196,25 +186,34 @@ Li gen tout fonksyonalite debaz yo:
 
     <!-- === PAGE: PROFILE === -->
     <div id="profilePage" class="page hidden">
-        <div class="card" style="text-align: center;">
-            <div style="width: 80px; height: 80px; background: var(--primary); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px;">👤</div>
-            <h2 id="profileName">Utilisateur</h2>
-            <p id="profileStatus" style="color: var(--text-gray);">Membre Free</p>
-            <button onclick="logout()" class="btn btn-outline" style="margin-top: 20px; border-color: var(--danger); color: var(--danger);">Déconnexion</button>
+        <div id="profileContent" class="hidden">
+            <div class="card" style="text-align: center;">
+                <div style="width: 80px; height: 80px; background: var(--primary); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px;">👤</div>
+                <h2 id="profileName">Utilisateur</h2>
+                <p id="profileStatus" style="color: var(--text-gray);">Membre Free</p>
+                <button onclick="logout()" class="btn btn-outline" style="margin-top: 20px; border-color: var(--danger); color: var(--danger);">Déconnexion</button>
+            </div>
         </div>
-        <div id="adminLink" class="hidden" style="padding: 0 20px;">
-            <button onclick="showPage('admin')" class="btn btn-primary" style="background: #333;">🛡️ Accéder au Panneau Admin</button>
+        
+        <div id="loginPrompt" class="card" style="text-align: center;">
+            <h2>Bienvenue</h2>
+            <p style="color:var(--text-gray); margin-bottom: 20px;">Connectez-vous pour accéder à votre espace.</p>
+            <button onclick="showAuthForm()" class="btn btn-primary">Se Connecter / S'inscrire</button>
         </div>
     </div>
 
     <!-- === PAGE: ADMIN === -->
     <div id="adminPage" class="page hidden">
         <div style="padding: 20px;">
-            <h2>🛡️ Panneau Admin</h2>
-            <div style="display: flex; gap: 10px; margin: 15px 0; overflow-x: auto;">
-                <button onclick="showAdminTab('payments')" class="btn btn-outline" style="min-width: 100px;">Paiements</button>
-                <button onclick="showAdminTab('addMatch')" class="btn btn-outline" style="min-width: 100px;">Ajouter Match</button>
-                <button onclick="showAdminTab('users')" class="btn btn-outline" style="min-width: 100px;">Utilisateurs</button>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>🛡️ Panneau Admin</h2>
+                <button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:20px;">✕</button>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin: 15px 0; overflow-x: auto; padding-bottom: 5px;">
+                <button onclick="showAdminTab('payments')" class="btn btn-outline" style="min-width: 100px; font-size:12px;">Paiements</button>
+                <button onclick="showAdminTab('addMatch')" class="btn btn-outline" style="min-width: 100px; font-size:12px;">Ajouter Match</button>
+                <button onclick="showAdminTab('users')" class="btn btn-outline" style="min-width: 100px; font-size:12px;">Utilisateurs</button>
             </div>
 
             <!-- Tab: Payments -->
@@ -262,6 +261,10 @@ Li gen tout fonksyonalite debaz yo:
         <button class="nav-item" onclick="showPage('profile')">
             <i class="fas fa-user"></i> Profil
         </button>
+        <!-- IKON KADNA ADMIN (Kache pa default) -->
+        <button id="adminNavBtn" class="nav-item hidden nav-admin" onclick="showPage('admin')">
+            <i class="fas fa-lock"></i> Admin
+        </button>
     </nav>
 
     <script>
@@ -293,12 +296,16 @@ Li gen tout fonksyonalite debaz yo:
             
             // Update Nav Active State
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            // Simple logic to highlight nav (can be improved)
-            if(pageId === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
-            if(pageId === 'matches') document.querySelectorAll('.nav-item')[1].classList.add('active');
-            if(pageId === 'predictions') document.querySelectorAll('.nav-item')[2].classList.add('active');
-            if(pageId === 'vip') document.querySelectorAll('.nav-item')[3].classList.add('active');
-            if(pageId === 'profile') document.querySelectorAll('.nav-item')[4].classList.add('active');
+            
+            // Logic pou highlight bouton aktif la
+            const navMap = {
+                'home': 0, 'matches': 1, 'predictions': 2, 'vip': 3, 'profile': 4, 'admin': 5
+            };
+            
+            if(navMap[pageId] !== undefined) {
+                const btns = document.querySelectorAll('.nav-item');
+                if(btns[navMap[pageId]]) btns[navMap[pageId]].classList.add('active');
+            }
 
             window.scrollTo(0,0);
             checkAuthUI();
@@ -307,18 +314,25 @@ Li gen tout fonksyonalite debaz yo:
 
         function checkAuthUI() {
             const user = DB.currentUser;
-            const nav = document.getElementById('mainNav');
             const header = document.getElementById('userStatus');
+            const adminBtn = document.getElementById('adminNavBtn');
+            const profileContent = document.getElementById('profileContent');
+            const loginPrompt = document.getElementById('loginPrompt');
 
             if (user) {
+                // User logged in
                 header.innerHTML = `<span style="font-size:12px; color:var(--gold);">${user.isVip ? '💎 VIP' : '🆓 FREE'}</span>`;
                 document.getElementById('profileName').innerText = user.name || user.email;
                 document.getElementById('profileStatus').innerText = user.isVip ? 'Membre VIP Actif' : 'Membre Gratuit';
                 
+                profileContent.classList.remove('hidden');
+                loginPrompt.classList.add('hidden');
+
+                // Show Admin Lock Icon ONLY if Admin
                 if(user.role === 'admin') {
-                    document.getElementById('adminLink').classList.remove('hidden');
+                    adminBtn.classList.remove('hidden');
                 } else {
-                    document.getElementById('adminLink').classList.add('hidden');
+                    adminBtn.classList.add('hidden');
                 }
 
                 // VIP Page Logic
@@ -332,7 +346,13 @@ Li gen tout fonksyonalite debaz yo:
                     document.getElementById('vipNotLogged').classList.add('hidden');
                 }
             } else {
+                // User NOT logged in
                 header.innerHTML = '';
+                adminBtn.classList.add('hidden'); // Hide lock icon
+                
+                profileContent.classList.add('hidden');
+                loginPrompt.classList.remove('hidden');
+
                 document.getElementById('vipNotLogged').classList.remove('hidden');
                 document.getElementById('vipSubscribe').classList.add('hidden');
                 document.getElementById('vipActive').classList.add('hidden');
@@ -340,6 +360,12 @@ Li gen tout fonksyonalite debaz yo:
         }
 
         // --- AUTHENTICATION ---
+        function showAuthForm() {
+            document.getElementById('profileContent').classList.add('hidden');
+            document.getElementById('loginPrompt').classList.add('hidden');
+            document.getElementById('authPage').classList.remove('hidden');
+        }
+
         function toggleAuthMode() {
             isRegistering = !isRegistering;
             document.getElementById('authTitle').innerText = isRegistering ? 'Inscription' : 'Connexion';
@@ -371,7 +397,12 @@ Li gen tout fonksyonalite debaz yo:
             DB.currentUser = user;
             localStorage.setItem('fp_currentUser', JSON.stringify(user));
             alert('Bienvenue ' + user.name);
-            showPage('home');
+            
+            // Reset view
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('profileContent').classList.remove('hidden');
+            
+            showPage('profile');
         }
 
         function logout() {
@@ -574,4 +605,3 @@ Li gen tout fonksyonalite debaz yo:
     </script>
 </body>
 </html>
-```
