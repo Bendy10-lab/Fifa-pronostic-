@@ -3,809 +3,758 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FIFA PRONOSTIC & AVIATOR</title>
+    <title>FIFA PRONOSTIC</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0A0E1A;
-            --bg-card: #141927;
-            --primary: #00C853;
+            --bg: #0A0E1A;
+            --card: #141927;
+            --green: #00C853;
             --gold: #FFD700;
-            --aviator-red: #E91E63;
-            --text-white: #FFFFFF;
-            --text-gray: #8B92A8;
+            --red: #E91E63;
+            --white: #FFFFFF;
+            --gray: #8B92A8;
+            --border: #2A3142;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 80px; }
-        .hidden { display: none !important; }
-        
-        /* Buttons & Inputs */
-        .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 5px; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-gold { background: var(--gold); color: black; }
-        .btn-danger { background: #EF4444; color: white; }
-        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
-        .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; display: inline-block; margin: 0; }
-        
-        input, select { width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid #2A3142; border-radius: 10px; color: white; margin-bottom: 10px; outline: none; }
-        
-        /* Layout */
-        header { position: sticky; top: 0; z-index: 100; background: rgba(10,14,26,0.95); padding: 15px 20px; border-bottom: 1px solid #2A3142; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(5px); }
-        .logo { font-weight: 800; color: var(--primary); font-size: 18px; }
-        
-        .card { background: var(--bg-card); border-radius: 16px; padding: 15px; margin: 15px 20px; border: 1px solid #2A3142; position: relative; }
-        
-        /* Match Display */
-        .match-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .team { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
-        .team-logo { font-size: 24px; }
-        
-        /* Prediction Card */
-        .pred-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .badge-free { background: rgba(0, 200, 83, 0.2); color: var(--primary); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
-        .badge-vip { background: rgba(255, 215, 0, 0.2); color: var(--gold); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
-        .coupon-box { background: #000; padding: 10px; border-radius: 8px; margin-top: 10px; border-left: 3px solid var(--primary); }
-        
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid #2A3142; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
-        .nav-item { background: none; border: none; color: var(--text-gray); font-size: 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .nav-item i { font-size: 18px; margin-bottom: 3px; }
-        .nav-item.active { color: var(--primary); }
-        .nav-admin { color: var(--danger) !important; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+        body { background:var(--bg); color:var(--white); padding-bottom:80px; }
+        .hidden { display:none !important; }
 
-        /* Admin Tabs */
-        .admin-tabs { display: flex; gap: 5px; overflow-x: auto; padding: 10px 20px; background: #111; }
-        .tab-btn { background: #222; color: #888; border: none; padding: 8px 12px; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; }
-        .tab-btn.active { background: var(--primary); color: white; }
+        .btn { width:100%; padding:12px; border-radius:12px; border:none; font-weight:bold; cursor:pointer; font-size:14px; margin-top:5px; }
+        .btn:active { transform:scale(0.97); }
+        .btn-green { background:var(--green); color:white; }
+        .btn-gold { background:var(--gold); color:black; }
+        .btn-red { background:var(--red); color:white; }
+        .btn-dark { background:#222; color:white; border:1px solid var(--border); }
+        .btn-outline { background:transparent; border:1px solid var(--green); color:var(--green); }
+        .btn-sm { padding:6px 12px; font-size:11px; width:auto; display:inline-block; margin:0; }
 
-        /* AVIATOR GAME STYLES */
-        #aviatorPage { background: #111; min-height: 100vh; padding-bottom: 80px; }
-        .aviator-screen {
-            height: 250px;
-            background: radial-gradient(circle at center, #2a1a1a 0%, #000 100%);
-            position: relative;
-            overflow: hidden;
-            border-bottom: 2px solid var(--aviator-red);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .plane-container {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            transition: all 0.1s linear;
-        }
-        .plane-icon { font-size: 40px; color: var(--aviator-red); transform: rotate(-15deg); }
-        .multiplier-display {
-            font-size: 48px;
-            font-weight: 900;
-            color: white;
-            z-index: 10;
-            text-shadow: 0 0 20px rgba(233, 30, 99, 0.5);
-        }
-        .crashed-text { color: var(--danger); font-size: 30px; font-weight: bold; display: none; }
-        
-        .bet-controls { padding: 20px; }
-        .bet-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .history-bar { display: flex; gap: 5px; overflow-x: auto; padding: 10px 20px; background: #000; }
-        .hist-item { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-        .hist-win { background: rgba(0, 200, 83, 0.2); color: var(--primary); }
-        .hist-loss { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        input, select, textarea { width:100%; padding:12px; background:var(--card); border:1px solid var(--border); border-radius:10px; color:white; margin-bottom:10px; outline:none; font-size:14px; }
+        label { font-size:12px; color:var(--gray); display:block; margin-bottom:4px; }
 
+        header { position:sticky; top:0; z-index:100; background:rgba(10,14,26,0.95); padding:14px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; backdrop-filter:blur(8px); }
+        .logo { font-weight:800; color:var(--green); font-size:17px; }
+
+        .card { background:var(--card); border-radius:14px; padding:14px; margin:12px 16px; border:1px solid var(--border); }
+
+        .badge-free { background:rgba(0,200,83,0.15); color:var(--green); padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold; }
+        .badge-vip { background:rgba(255,215,0,0.15); color:var(--gold); padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold; }
+        .badge-combo { background:rgba(233,30,99,0.15); color:var(--red); padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold; }
+        .badge-aviator { background:rgba(233,30,99,0.2); color:#FF6B9D; padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold; }
+
+        .coupon-box { background:#000; padding:10px; border-radius:8px; margin-top:10px; border-left:3px solid var(--green); }
+
+        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--border); display:flex; justify-content:space-around; padding:8px 0; z-index:100; padding-bottom:env(safe-area-inset-bottom); }
+        .nav-item { background:none; border:none; color:var(--gray); font-size:9px; display:flex; flex-direction:column; align-items:center; cursor:pointer; padding:4px 6px; }
+        .nav-item i { font-size:18px; margin-bottom:3px; }
+        .nav-item.active { color:var(--green); }
+        .nav-admin { color:var(--red) !important; }
+
+        .admin-tabs { display:flex; gap:5px; overflow-x:auto; padding:10px 16px; background:#111; }
+        .tab-btn { background:#222; color:#888; border:none; padding:8px 12px; border-radius:20px; font-size:11px; white-space:nowrap; cursor:pointer; }
+        .tab-btn.active { background:var(--green); color:white; }
+
+        .section-title { padding:0 16px; margin-top:20px; margin-bottom:8px; font-size:16px; font-weight:700; }
+
+        .check-item { display:flex; align-items:center; gap:8px; padding:8px; background:#111; border-radius:8px; margin-bottom:6px; cursor:pointer; }
+        .check-item input[type="checkbox"] { width:auto; margin:0; accent-color:var(--green); }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo"><i class="fas fa-futbol"></i> FIFA PRONOSTIC</div>
-        <div id="userBadge"></div>
-    </header>
+<header>
+    <div class="logo"><i class="fas fa-futbol"></i> FIFA PRONOSTIC</div>
+    <div id="userBadge"></div>
+</header>
 
-    <!-- HOME -->
-    <div id="homePage" class="page">
-        <div style="padding: 30px 20px; text-align: center;">
-            <h1 style="font-size: 28px; margin-bottom: 10px;">Gagne ak Nou</h1>
-            <p style="color: var(--text-gray);">Pronostics football fiables & jeux virtuels.</p>
-            <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: center;">
-                <button onclick="showPage('predictions')" class="btn btn-primary" style="width: auto;">🎯 Voir Pronos</button>
-                <button onclick="showPage('aviator')" class="btn btn-danger" style="width: auto; background: var(--aviator-red); color: white;">✈️ Jouer Aviator</button>
-            </div>
-        </div>
-        
-        <h3 style="padding: 0 20px; margin-top: 10px;">Matchs du Jour</h3>
-        <div id="homeMatchesList"></div>
-    </div>
-
-    <!-- MATCHES -->
-    <div id="matchesPage" class="page hidden">
-        <h2 style="padding: 20px;">Tous les Matchs</h2>
-        <div id="allMatchesList"></div>
-    </div>
-
-    <!-- PREDICTIONS -->
-    <div id="predictionsPage" class="page hidden">
-        <div style="padding: 20px; display: flex; gap: 10px;">
-            <button onclick="filterPreds('free')" class="btn btn-outline" style="flex:1;">FREE</button>
-            <button onclick="filterPreds('vip')" class="btn btn-outline" style="flex:1; border-color: var(--gold); color: var(--gold);">VIP</button>
-        </div>
-        <div id="predsList"></div>
-    </div>
-
-    <!-- AVIATOR GAME PAGE -->
-    <div id="aviatorPage" class="page hidden">
-        <div class="history-bar" id="aviatorHistory">
-            <!-- History items will go here -->
-        </div>
-
-        <div class="aviator-screen">
-            <div class="multiplier-display" id="aviatorMultiplier">1.00x</div>
-            <div class="crashed-text" id="crashedMsg">PARTI EN FUMÉE!</div>
-            
-            <div class="plane-container" id="planeObj">
-                <i class="fas fa-plane plane-icon"></i>
-            </div>
-            
-            <!-- Grid lines for effect -->
-            <div style="position:absolute; bottom:0; left:0; width:100%; height:100%; background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 40px 40px; opacity: 0.2;"></div>
-        </div>
-
-        <div class="bet-controls">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <span style="color:#888;">Solde:</span>
-                <span style="color:var(--primary); font-weight:bold;" id="aviatorBalance">1000 HTG</span>
-            </div>
-            
-            <div class="bet-input-group">
-                <input type="number" id="betAmount" value="100" style="margin:0;">
-                <button id="actionBtn" class="btn btn-gold" onclick="toggleAviator()">PARIER</button>
-            </div>
-            <p style="font-size:11px; color:#666; text-align:center;">Ceci est une simulation pour le fun.</p>
+<!-- ==================== HOME ==================== -->
+<div id="homePage" class="page">
+    <div style="padding:24px 16px; text-align:center;">
+        <h1 style="font-size:26px; margin-bottom:8px;">Gagne ak Nou</h1>
+        <p style="color:var(--gray); font-size:13px;">Pronostics football fiables & analyses VIP.</p>
+        <div style="display:flex; gap:10px; margin-top:16px; justify-content:center;">
+            <button onclick="showPage('predictions')" class="btn btn-green" style="width:auto;">🎯 Tous les Pronos</button>
+            <button onclick="showPage('vip')" class="btn btn-gold" style="width:auto;">💎 Devenir VIP</button>
         </div>
     </div>
 
-    <!-- VIP -->
-    <div id="vipPage" class="page hidden">
-        <div class="card" style="border-color: var(--gold); text-align: center;">
-            <i class="fas fa-crown" style="font-size: 50px; color: var(--gold); margin-bottom: 15px;"></i>
-            <h2 style="color: var(--gold);">Abonnement VIP</h2>
-            <p style="color: #aaa; font-size: 13px; margin: 10px 0;">Accès illimité aux meilleurs coupons.</p>
-            
-            <div id="vipNotLogged">
-                <button onclick="showPage('profile')" class="btn btn-primary">Se connecter</button>
-            </div>
+    <!-- MATCHS DU JOUR -->
+    <div class="section-title">⚽ Matchs du Jour</div>
+    <div id="homeMatches"></div>
 
-            <div id="vipSubscribe" class="hidden">
-                <div style="background: #222; padding: 15px; border-radius: 10px; margin: 15px 0; text-align: left;">
-                    <div style="font-size: 20px; color: var(--gold); font-weight: bold;">1,500 HTG / Mois</div>
-                    <hr style="border: 0; border-top: 1px solid #444; margin: 10px 0;">
-                    <p style="font-size: 12px; color: #aaa;">Envoyez via MonCash :</p>
-                    <div style="background: black; padding: 10px; border-radius: 5px;">
-                        <div>Nom: <strong>Benêche Jurgens</strong></div>
-                        <div>Numéro: <strong style="color: var(--gold);">47173504</strong></div>
-                    </div>
+    <!-- PRONOSTICS FREE (directement sur l'accueil) -->
+    <div class="section-title">🎯 Pronostics FREE du Jour</div>
+    <div id="homeFreePreds"></div>
+
+    <!-- PRONOSTICS AVIATOR (aperçu sur l'accueil) -->
+    <div class="section-title">✈️ Pronostics Aviator</div>
+    <div id="homeAviator"></div>
+
+    <div style="font-size:11px; color:var(--gray); text-align:center; padding:20px; line-height:1.5;">
+        ⚠️ Les pronostics sont des analyses et ne garantissent aucun résultat. Les paris comportent des risques.
+    </div>
+</div>
+
+<!-- ==================== MATCHES ==================== -->
+<div id="matchesPage" class="page hidden">
+    <h2 style="padding:20px 16px 0;">Tous les Matchs</h2>
+    <div id="allMatches"></div>
+</div>
+
+<!-- ==================== PREDICTIONS ==================== -->
+<div id="predictionsPage" class="page hidden">
+    <div style="padding:16px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button onclick="filterPreds('free')" class="btn btn-outline" style="flex:1; min-width:80px;">🆓 FREE</button>
+        <button onclick="filterPreds('vip')" class="btn btn-outline" style="flex:1; min-width:80px; border-color:var(--gold); color:var(--gold);">💎 VIP</button>
+        <button onclick="filterPreds('combo')" class="btn btn-outline" style="flex:1; min-width:80px; border-color:var(--red); color:var(--red);">🔥 Combinés</button>
+        <button onclick="filterPreds('aviator')" class="btn btn-outline" style="flex:1; min-width:80px; border-color:#FF6B9D; color:#FF6B9D;">✈️ Aviator</button>
+    </div>
+    <div id="predsList"></div>
+</div>
+
+<!-- ==================== VIP ==================== -->
+<div id="vipPage" class="page hidden">
+    <div class="card" style="border-color:var(--gold); text-align:center;">
+        <i class="fas fa-crown" style="font-size:50px; color:var(--gold); margin-bottom:12px;"></i>
+        <h2 style="color:var(--gold);">Abonnement VIP</h2>
+        <p style="color:#aaa; font-size:13px; margin:10px 0;">Accès aux pronostics haute confiance, combinés & Aviator.</p>
+        <div id="vipNotLogged"><button onclick="showPage('profile')" class="btn btn-green">Se connecter</button></div>
+        <div id="vipSubscribe" class="hidden">
+            <div style="background:#222; padding:15px; border-radius:10px; margin:15px 0; text-align:left;">
+                <div style="font-size:20px; color:var(--gold); font-weight:bold;">1,500 HTG / Mois</div>
+                <hr style="border:0; border-top:1px solid #444; margin:10px 0;">
+                <p style="font-size:12px; color:#aaa;">Envoyez via MonCash :</p>
+                <div style="background:black; padding:10px; border-radius:5px;">
+                    <div>Nom: <strong>Benêche Jurgens</strong></div>
+                    <div>Numéro: <strong style="color:var(--gold);">47173504</strong></div>
                 </div>
-                <form onsubmit="submitPayment(event)">
-                    <input type="text" id="payTxId" placeholder="ID Transaction (Ex: 8H2...)" required>
-                    <input type="text" id="payName" placeholder="Votre Nom Complet" required>
-                    <button type="submit" class="btn btn-gold">Valider le Paiement</button>
-                </form>
             </div>
-
-            <div id="vipActive" class="hidden">
-                <h3 style="color: var(--primary);">✅ Vous êtes VIP</h3>
-                <p>Profitez de vos avantages maintenant.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- PROFILE / AUTH -->
-    <div id="profilePage" class="page hidden">
-        <div id="profileContent" class="hidden">
-            <div class="card" style="text-align: center;">
-                <div style="width: 70px; height: 70px; background: #333; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 30px;">👤</div>
-                <h2 id="profileName">User</h2>
-                <p id="profileStatus" style="color: var(--text-gray);">Free Member</p>
-                <button onclick="logout()" class="btn btn-outline" style="border-color: var(--danger); color: var(--danger); margin-top: 15px;">Déconnexion</button>
-            </div>
-        </div>
-        
-        <div id="loginPrompt" class="card" style="text-align: center;">
-            <h2>Bienvenue</h2>
-            <p style="color:#888; margin-bottom: 20px;">Connectez-vous pour suivre vos pronostics.</p>
-            <button onclick="showAuthForm()" class="btn btn-primary">Connexion / Inscription</button>
-        </div>
-
-        <div id="authForm" class="card hidden">
-            <h3 id="authTitle">Connexion</h3>
-            <form onsubmit="handleAuth(event)">
-                <input type="email" id="authEmail" placeholder="Email" required>
-                <input type="password" id="authPass" placeholder="Mot de passe" required>
-                <button type="submit" class="btn btn-primary" id="authBtn">Entrer</button>
+            <form onsubmit="submitPayment(event)">
+                <input type="text" id="payTxId" placeholder="ID Transaction MonCash" required>
+                <input type="text" id="payName" placeholder="Votre Nom Complet" required>
+                <button type="submit" class="btn btn-gold">Valider le Paiement</button>
             </form>
-            <p style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
-                <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">Changer mode</a>
-            </p>
+        </div>
+        <div id="vipActive" class="hidden">
+            <h3 style="color:var(--green);">✅ Vous êtes VIP</h3>
+            <p>Profitez de tous les pronostics.</p>
         </div>
     </div>
+</div>
 
-    <!-- ADMIN PANEL -->
-    <div id="adminPage" class="page hidden">
-        <div style="padding: 20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                <h2>🛡️ Admin Panel</h2>
-                <button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:20px;">✕</button>
-            </div>
-            
-            <div class="admin-tabs">
-                <button class="tab-btn active" onclick="showAdminTab('addMatch')">⚽ Matchs</button>
-                <button class="tab-btn" onclick="showAdminTab('addPred')">🎯 Créer Prono</button>
-                <button class="tab-btn" onclick="showAdminTab('payments')">💰 Paiements</button>
-                <button class="tab-btn" onclick="showAdminTab('users')">👥 Users</button>
-            </div>
-
-            <!-- Tab: Add Match -->
-            <div id="admAddMatch" class="admin-section">
-                <h3 style="margin: 15px 0;">Ajouter un Match</h3>
-                <form onsubmit="addMatch(event)">
-                    <input type="text" id="mHome" placeholder="Équipe Domicile" required>
-                    <input type="text" id="mHomeLogo" placeholder="Logo (Emoji) Ex: 🔴">
-                    <input type="text" id="mAway" placeholder="Équipe Extérieure" required>
-                    <input type="text" id="mAwayLogo" placeholder="Logo (Emoji) Ex: ⚪">
-                    
-                    <select id="mDateType" onchange="toggleDateInput()">
-                        <option value="today">Aujourd'hui</option>
-                        <option value="tomorrow">Demain</option>
-                        <option value="custom">Autre date...</option>
-                    </select>
-                    <input type="date" id="mCustomDate" class="hidden">
-                    <input type="time" id="mTime" required>
-                    <button class="btn btn-primary">Enregistrer le Match</button>
-                </form>
-
-                <h3 style="margin: 20px 0 10px;">Liste des Matchs (Glisser pour supprimer)</h3>
-                <div id="adminMatchList"></div>
-            </div>
-
-            <!-- Tab: Create Prediction -->
-            <div id="admAddPred" class="admin-section hidden">
-                <h3 style="margin: 15px 0;">Créer un Pronostic</h3>
-                <form onsubmit="addPrediction(event)">
-                    <label style="font-size:12px; color:#888;">Choisir le Match:</label>
-                    <select id="pMatchId" required></select>
-                    
-                    <input type="text" id="pType" placeholder="Type (Ex: 1X2, Over 2.5)" required>
-                    <input type="text" id="pPick" placeholder="Pronostic (Ex: Victoire Barca)" required>
-                    <input type="number" step="0.01" id="pOdds" placeholder="Cote (Ex: 1.85)" required>
-                    
-                    <label style="font-size:12px; color:#888;">Catégorie:</label>
-                    <select id="pCat">
-                        <option value="FREE">🆓 FREE (Public)</option>
-                        <option value="VIP">💎 VIP (Payant)</option>
-                    </select>
-                    
-                    <button class="btn btn-gold">Publier le Pronostic</button>
-                </form>
-            </div>
-
-            <!-- Tab: Payments -->
-            <div id="admPayments" class="admin-section hidden">
-                <h3 style="margin: 15px 0;">Paiements en attente</h3>
-                <div id="paymentList"></div>
-            </div>
-
-            <!-- Tab: Users -->
-            <div id="admUsers" class="admin-section hidden">
-                <h3 style="margin: 15px 0;">Utilisateurs</h3>
-                <table style="width:100%; font-size:12px; border-collapse:collapse;">
-                    <thead><tr style="text-align:left; color:#888;"><th>Nom</th><th>Statut</th><th>Action</th></tr></thead>
-                    <tbody id="usersTableBody"></tbody>
-                </table>
-            </div>
+<!-- ==================== PROFILE / AUTH ==================== -->
+<div id="profilePage" class="page hidden">
+    <div id="profileContent" class="hidden">
+        <div class="card" style="text-align:center;">
+            <div style="width:70px; height:70px; background:#333; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:30px;">👤</div>
+            <h2 id="profileName">User</h2>
+            <p id="profileStatus" style="color:var(--gray);">Free</p>
+            <button onclick="logout()" class="btn btn-outline" style="border-color:var(--red); color:var(--red); margin-top:15px;">Déconnexion</button>
         </div>
     </div>
+    <div id="loginPrompt" class="card" style="text-align:center;">
+        <h2>Bienvenue</h2>
+        <p style="color:#888; margin-bottom:20px;">Connectez-vous pour accéder à votre espace.</p>
+        <button onclick="showAuthForm()" class="btn btn-green">Connexion / Inscription</button>
+    </div>
+    <div id="authForm" class="card hidden">
+        <h3 id="authTitle">Connexion</h3>
+        <form onsubmit="handleAuth(event)">
+            <input type="email" id="authEmail" placeholder="Email" required>
+            <input type="password" id="authPass" placeholder="Mot de passe" required>
+            <button type="submit" class="btn btn-green" id="authBtn">Entrer</button>
+        </form>
+        <p style="text-align:center; margin-top:10px; font-size:12px; color:#888;">
+            <a href="#" onclick="toggleAuthMode()" style="color:var(--green);">Changer mode</a>
+        </p>
+    </div>
+</div>
 
-    <!-- BOTTOM NAV -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i> Accueil</button>
-        <button class="nav-item" onclick="showPage('matches')"><i class="fas fa-futbol"></i> Matchs</button>
-        <button class="nav-item" onclick="showPage('aviator')"><i class="fas fa-plane"></i> Aviator</button>
-        <button class="nav-item" onclick="showPage('predictions')"><i class="fas fa-bullseye"></i> Pronos</button>
-        <button class="nav-item" onclick="showPage('vip')"><i class="fas fa-crown"></i> VIP</button>
-        <button class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i> Profil</button>
-        <button id="adminNavBtn" class="nav-item hidden nav-admin" onclick="showPage('admin')"><i class="fas fa-lock"></i> Admin</button>
-    </nav>
+<!-- ==================== ADMIN ==================== -->
+<div id="adminPage" class="page hidden">
+    <div style="padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h2>🛡️ Admin</h2>
+            <button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:20px;">✕</button>
+        </div>
+        <div class="admin-tabs">
+            <button class="tab-btn active" onclick="showAdminTab('addMatch',this)">⚽ Matchs</button>
+            <button class="tab-btn" onclick="showAdminTab('addPred',this)">🎯 Prono Simple</button>
+            <button class="tab-btn" onclick="showAdminTab('addCombo',this)">🔥 Combiné</button>
+            <button class="tab-btn" onclick="showAdminTab('addAviator',this)">✈️ Aviator</button>
+            <button class="tab-btn" onclick="showAdminTab('payments',this)">💰 Paiements</button>
+            <button class="tab-btn" onclick="showAdminTab('users',this)">👥 Users</button>
+        </div>
 
-    <script>
-        // --- DATABASE INIT ---
-        const DB = {
-            users: JSON.parse(localStorage.getItem('fp_users')) || [
-                { email: 'admin@fifa.com', pass: 'admin123', role: 'admin', isVip: true, name: 'Admin' }
-            ],
-            matches: JSON.parse(localStorage.getItem('fp_matches')) || [],
-            predictions: JSON.parse(localStorage.getItem('fp_preds')) || [],
-            payments: JSON.parse(localStorage.getItem('fp_payments')) || [],
-            currentUser: JSON.parse(localStorage.getItem('fp_currentUser')) || null
-        };
+        <!-- Tab: Matchs -->
+        <div id="admAddMatch" class="admin-section">
+            <h3 style="margin:15px 0;">Ajouter un Match</h3>
+            <form onsubmit="addMatch(event)">
+                <input type="text" id="mHome" placeholder="Équipe Domicile" required>
+                <input type="text" id="mHomeLogo" placeholder="Logo (Emoji) Ex: 🔴">
+                <input type="text" id="mAway" placeholder="Équipe Extérieure" required>
+                <input type="text" id="mAwayLogo" placeholder="Logo (Emoji) Ex: ⚪">
+                <select id="mDateType" onchange="toggleDateInput()">
+                    <option value="today">Aujourd'hui</option>
+                    <option value="tomorrow">Demain</option>
+                    <option value="custom">Autre date...</option>
+                </select>
+                <input type="date" id="mCustomDate" class="hidden">
+                <input type="time" id="mTime" required>
+                <button class="btn btn-green">Enregistrer le Match</button>
+            </form>
+            <h3 style="margin:20px 0 10px;">Matchs existants</h3>
+            <div id="adminMatchList"></div>
+        </div>
 
-        let isRegistering = false;
+        <!-- Tab: Prono Simple -->
+        <div id="admAddPred" class="admin-section hidden">
+            <h3 style="margin:15px 0;">Créer un Pronostic Simple</h3>
+            <form onsubmit="addPrediction(event)">
+                <label>Choisir le Match:</label>
+                <select id="pMatchId" required></select>
+                <input type="text" id="pType" placeholder="Type (1X2, Over 2.5, BTTS...)" required>
+                <input type="text" id="pPick" placeholder="Pronostic (Ex: Victoire Barca)" required>
+                <input type="number" step="0.01" id="pOdds" placeholder="Cote (Ex: 1.85)" required>
+                <label>Catégorie:</label>
+                <select id="pCat">
+                    <option value="FREE">🆓 FREE</option>
+                    <option value="VIP">💎 VIP</option>
+                </select>
+                <button class="btn btn-gold">Publier</button>
+            </form>
+        </div>
 
-        // --- NAVIGATION ---
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-            document.getElementById(pageId + 'Page').classList.remove('hidden');
-            
-            // Update Nav Icons
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            // Map pages to nav index (adjusted for Aviator)
-            const map = {'home':0, 'matches':1, 'aviator':2, 'predictions':3, 'vip':4, 'profile':5, 'admin':6};
-            const btns = document.querySelectorAll('.nav-item');
-            if(map[pageId] !== undefined && btns[map[pageId]]) btns[map[pageId]].classList.add('active');
+        <!-- Tab: Combiné -->
+        <div id="admAddCombo" class="admin-section hidden">
+            <h3 style="margin:15px 0;">🔥 Créer un Pari Combiné</h3>
+            <form onsubmit="addCombo(event)">
+                <label>Sélectionner les matchs (plusieurs):</label>
+                <div id="comboMatchList" style="max-height:200px; overflow-y:auto; margin-bottom:10px;"></div>
+                <input type="text" id="cPick" placeholder="Description du combiné (Ex: 3 victoires)" required>
+                <input type="number" step="0.01" id="cOdds" placeholder="Cote totale du combiné (Ex: 5.50)" required>
+                <label>Catégorie:</label>
+                <select id="cCat">
+                    <option value="FREE">🆓 FREE</option>
+                    <option value="VIP">💎 VIP</option>
+                </select>
+                <button class="btn btn-red">Publier le Combiné</button>
+            </form>
+        </div>
 
-            window.scrollTo(0,0);
-            checkAuth();
-            renderAll();
-        }
-
-        function checkAuth() {
-            const u = DB.currentUser;
-            const badge = document.getElementById('userBadge');
-            const adminBtn = document.getElementById('adminNavBtn');
-            
-            if(u) {
-                badge.innerHTML = u.isVip ? '<span style="color:var(--gold)">💎 VIP</span>' : '<span style="color:#888">🆓 Free</span>';
-                document.getElementById('profileName').innerText = u.name || u.email;
-                document.getElementById('profileStatus').innerText = u.isVip ? 'Membre VIP Actif' : 'Membre Gratuit';
-                
-                document.getElementById('profileContent').classList.remove('hidden');
-                document.getElementById('loginPrompt').classList.add('hidden');
-                document.getElementById('authForm').classList.add('hidden');
-
-                if(u.role === 'admin') adminBtn.classList.remove('hidden');
-                else adminBtn.classList.add('hidden');
-
-                // VIP View Logic
-                if(u.isVip) {
-                    document.getElementById('vipSubscribe').classList.add('hidden');
-                    document.getElementById('vipActive').classList.remove('hidden');
-                    document.getElementById('vipNotLogged').classList.add('hidden');
-                } else {
-                    document.getElementById('vipSubscribe').classList.remove('hidden');
-                    document.getElementById('vipActive').classList.add('hidden');
-                    document.getElementById('vipNotLogged').classList.add('hidden');
-                }
-            } else {
-                badge.innerHTML = '';
-                adminBtn.classList.add('hidden');
-                document.getElementById('profileContent').classList.add('hidden');
-                document.getElementById('loginPrompt').classList.remove('hidden');
-                document.getElementById('authForm').classList.add('hidden');
-                
-                document.getElementById('vipNotLogged').classList.remove('hidden');
-                document.getElementById('vipSubscribe').classList.add('hidden');
-                document.getElementById('vipActive').classList.add('hidden');
-            }
-        }
-
-        // --- AUTH ---
-        function showAuthForm() {
-            document.getElementById('loginPrompt').classList.add('hidden');
-            document.getElementById('authForm').classList.remove('hidden');
-        }
-
-        function toggleAuthMode() {
-            isRegistering = !isRegistering;
-            document.getElementById('authTitle').innerText = isRegistering ? 'Inscription' : 'Connexion';
-            document.getElementById('authBtn').innerText = isRegistering ? "S'inscrire" : 'Se Connecter';
-        }
-
-        function handleAuth(e) {
-            e.preventDefault();
-            const email = document.getElementById('authEmail').value;
-            const pass = document.getElementById('authPass').value;
-
-            if(isRegistering) {
-                if(email === 'admin@fifa.com') return alert('Interdit.');
-                if(DB.users.find(u => u.email === email)) return alert('Email pris.');
-                const newUser = { email, pass, role: 'user', isVip: false, name: email.split('@')[0] };
-                DB.users.push(newUser);
-                saveDB();
-                login(newUser);
-            } else {
-                const user = DB.users.find(u => u.email === email && u.pass === pass);
-                if(user) login(user);
-                else alert('Erreur identifiants');
-            }
-        }
-
-        function login(user) {
-            DB.currentUser = user;
-            localStorage.setItem('fp_currentUser', JSON.stringify(user));
-            alert('Bon retour ' + user.name);
-            showPage('profile');
-        }
-
-        function logout() {
-            DB.currentUser = null;
-            localStorage.removeItem('fp_currentUser');
-            showPage('home');
-        }
-
-        // --- RENDERING ---
-        function renderAll() {
-            renderMatches();
-            filterPreds('free'); 
-            populateMatchSelect();
-            renderAdminMatches(); // For delete feature
-        }
-
-        function renderMatches() {
-            const createCard = (m, isAdmin = false) => `
-                <div class="card">
-                    <div class="match-row">
-                        <span class="vs-badge">${m.dateStr}</span>
-                        <span class="vs-badge">${m.time}</span>
-                        ${isAdmin ? `<button onclick="deleteMatch(${m.id})" style="background:none; border:none; color:red; font-size:16px;"><i class="fas fa-trash"></i></button>` : ''}
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div class="team">
-                            <span class="team-logo">${m.homeLogo || '⚽'}</span>
-                            <span>${m.home}</span>
-                        </div>
-                        <div style="font-weight:bold; color:#555;">VS</div>
-                        <div class="team" style="flex-direction:row-reverse;">
-                            <span class="team-logo">${m.awayLogo || '⚽'}</span>
-                            <span>${m.away}</span>
-                        </div>
-                    </div>
+        <!-- Tab: Aviator Pronostic -->
+        <div id="admAddAviator" class="admin-section hidden">
+            <h3 style="margin:15px 0;">✈️ Pronostic Aviator</h3>
+            <p style="font-size:12px; color:#888; margin-bottom:15px;">Publiez une prédiction de crash point pour le jeu Aviator (1xBet, Melbet, etc.)</p>
+            <form onsubmit="addAviator(event)">
+                <input type="text" id="aPlatform" placeholder="Plateforme (Ex: 1xBet, Melbet, Paryaj Lakay)" required>
+                <input type="number" step="0.01" id="aCrash" placeholder="Crash point prédit (Ex: 3.50)" required>
+                <input type="number" step="0.01" id="aOdds" placeholder="Cote (Ex: 2.10)" required>
+                <label>Intervalle de temps:</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="time" id="aTimeStart" required style="flex:1;">
+                    <input type="time" id="aTimeEnd" required style="flex:1;">
                 </div>
-            `;
+                <input type="text" id="aConfidence" placeholder="Confiance (Ex: Haute, Moyenne, 80%)" required>
+                <label>Catégorie:</label>
+                <select id="aCat">
+                    <option value="FREE">🆓 FREE</option>
+                    <option value="VIP">💎 VIP</option>
+                </select>
+                <button class="btn btn-red">Publier le Pronostic Aviator</button>
+            </form>
+            <h3 style="margin:20px 0 10px;">Pronostics Aviator existants</h3>
+            <div id="adminAviatorList"></div>
+        </div>
 
-            const list = DB.matches.map(m => createCard(m)).join('');
-            document.getElementById('homeMatchesList').innerHTML = list || '<p style="text-align:center;color:#666;">Aucun match.</p>';
-            document.getElementById('allMatchesList').innerHTML = list || '<p style="text-align:center;color:#666;">Aucun match.</p>';
+        <!-- Tab: Payments -->
+        <div id="admPayments" class="admin-section hidden">
+            <h3 style="margin:15px 0;">Paiements en attente</h3>
+            <div id="paymentList"></div>
+        </div>
+
+        <!-- Tab: Users -->
+        <div id="admUsers" class="admin-section hidden">
+            <h3 style="margin:15px 0;">Utilisateurs</h3>
+            <table style="width:100%; font-size:12px; border-collapse:collapse;">
+                <thead><tr style="text-align:left; color:#888;"><th>Nom</th><th>Statut</th><th>Action</th></tr></thead>
+                <tbody id="usersTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== BOTTOM NAV ==================== -->
+<nav class="bottom-nav">
+    <button class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i>Accueil</button>
+    <button class="nav-item" onclick="showPage('matches')"><i class="fas fa-futbol"></i>Matchs</button>
+    <button class="nav-item" onclick="showPage('predictions')"><i class="fas fa-bullseye"></i>Pronos</button>
+    <button class="nav-item" onclick="showPage('vip')"><i class="fas fa-crown"></i>VIP</button>
+    <button class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i>Profil</button>
+    <button id="adminNavBtn" class="nav-item hidden nav-admin" onclick="showPage('admin')"><i class="fas fa-lock"></i>Admin</button>
+</nav>
+
+<script>
+// ==================== DATABASE ====================
+const DB = {
+    users: JSON.parse(localStorage.getItem('fp_users')) || [
+        { email:'admin@fifa.com', pass:'admin123', role:'admin', isVip:true, name:'Admin' }
+    ],
+    matches: JSON.parse(localStorage.getItem('fp_matches')) || [],
+    predictions: JSON.parse(localStorage.getItem('fp_preds')) || [],
+    payments: JSON.parse(localStorage.getItem('fp_payments')) || [],
+    currentUser: JSON.parse(localStorage.getItem('fp_currentUser')) || null
+};
+let isRegistering = false;
+
+// ==================== NAVIGATION ====================
+function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById(id+'Page').classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    const map = {home:0, matches:1, predictions:2, vip:3, profile:4, admin:5};
+    const btns = document.querySelectorAll('.nav-item');
+    if(map[id] !== undefined && btns[map[id]]) btns[map[id]].classList.add('active');
+    window.scrollTo(0,0);
+    checkAuth();
+    renderAll();
+}
+
+function checkAuth() {
+    const u = DB.currentUser;
+    const badge = document.getElementById('userBadge');
+    const adminBtn = document.getElementById('adminNavBtn');
+    if(u) {
+        badge.innerHTML = u.isVip ? '<span style="color:var(--gold)">💎 VIP</span>' : '<span style="color:#888">🆓 Free</span>';
+        document.getElementById('profileName').innerText = u.name || u.email;
+        document.getElementById('profileStatus').innerText = u.isVip ? 'Membre VIP' : 'Membre Gratuit';
+        document.getElementById('profileContent').classList.remove('hidden');
+        document.getElementById('loginPrompt').classList.add('hidden');
+        document.getElementById('authForm').classList.add('hidden');
+        if(u.role==='admin') adminBtn.classList.remove('hidden'); else adminBtn.classList.add('hidden');
+        if(u.isVip) {
+            document.getElementById('vipSubscribe').classList.add('hidden');
+            document.getElementById('vipActive').classList.remove('hidden');
+            document.getElementById('vipNotLogged').classList.add('hidden');
+        } else {
+            document.getElementById('vipSubscribe').classList.remove('hidden');
+            document.getElementById('vipActive').classList.add('hidden');
+            document.getElementById('vipNotLogged').classList.add('hidden');
         }
+    } else {
+        badge.innerHTML = '';
+        adminBtn.classList.add('hidden');
+        document.getElementById('profileContent').classList.add('hidden');
+        document.getElementById('loginPrompt').classList.remove('hidden');
+        document.getElementById('authForm').classList.add('hidden');
+        document.getElementById('vipNotLogged').classList.remove('hidden');
+        document.getElementById('vipSubscribe').classList.add('hidden');
+        document.getElementById('vipActive').classList.add('hidden');
+    }
+}
 
-        function renderAdminMatches() {
-            const list = DB.matches.map(m => `
-                <div class="card" style="margin:10px 20px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-size:14px;">${m.home} vs ${m.away}</div>
-                    <button onclick="deleteMatch(${m.id})" class="btn btn-danger btn-sm">Supprimer</button>
+// ==================== AUTH ====================
+function showAuthForm() {
+    document.getElementById('loginPrompt').classList.add('hidden');
+    document.getElementById('authForm').classList.remove('hidden');
+}
+function toggleAuthMode() {
+    isRegistering = !isRegistering;
+    document.getElementById('authTitle').innerText = isRegistering ? 'Inscription' : 'Connexion';
+    document.getElementById('authBtn').innerText = isRegistering ? "S'inscrire" : 'Se Connecter';
+}
+function handleAuth(e) {
+    e.preventDefault();
+    const email = document.getElementById('authEmail').value;
+    const pass = document.getElementById('authPass').value;
+    if(isRegistering) {
+        if(email==='admin@fifa.com') return alert('Interdit.');
+        if(DB.users.find(u=>u.email===email)) return alert('Email pris.');
+        const nu = { email, pass, role:'user', isVip:false, name:email.split('@')[0] };
+        DB.users.push(nu); saveDB(); login(nu);
+    } else {
+        const user = DB.users.find(u=>u.email===email && u.pass===pass);
+        if(user) login(user); else alert('Erreur identifiants');
+    }
+}
+function login(user) {
+    DB.currentUser = user;
+    localStorage.setItem('fp_currentUser', JSON.stringify(user));
+    alert('Bon retour ' + user.name);
+    showPage('profile');
+}
+function logout() {
+    DB.currentUser = null;
+    localStorage.removeItem('fp_currentUser');
+    showPage('home');
+}
+
+// ==================== RENDERING ====================
+function renderAll() {
+    renderMatches();
+    renderHomePreds();
+    renderHomeAviator();
+    filterPreds('free');
+    populateMatchSelect();
+    populateComboMatches();
+    renderAdminMatches();
+    renderAdminAviator();
+}
+
+function matchCard(m) {
+    return `<div class="card">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:11px; color:var(--gray);">${m.dateStr}</span>
+            <span style="font-size:11px; color:var(--gray);">${m.time}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:24px;">${m.homeLogo||'⚽'}</span><span style="font-weight:600; font-size:14px;">${m.home}</span></div>
+            <div style="font-weight:bold; color:#555; font-size:12px;">VS</div>
+            <div style="display:flex; align-items:center; gap:8px; flex-direction:row-reverse;"><span style="font-size:24px;">${m.awayLogo||'⚽'}</span><span style="font-weight:600; font-size:14px;">${m.away}</span></div>
+        </div>
+    </div>`;
+}
+
+function renderMatches() {
+    const list = DB.matches.map(matchCard).join('');
+    const empty = '<p style="text-align:center; color:#666; padding:20px;">Aucun match programmé.</p>';
+    document.getElementById('homeMatches').innerHTML = list || empty;
+    document.getElementById('allMatches').innerHTML = list || empty;
+}
+
+// Pronostics sur la page d'accueil
+function renderHomePreds() {
+    const free = DB.predictions.filter(p => p.cat === 'FREE' && p.type !== 'aviator' && p.type !== 'combo').slice(0, 3);
+    const container = document.getElementById('homeFreePreds');
+    if(free.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#666; padding:10px;">Aucun pronostic FREE pour le moment.</p>';
+        return;
+    }
+    container.innerHTML = free.map(p => predCard(p)).join('');
+}
+
+function renderHomeAviator() {
+    const av = DB.predictions.filter(p => p.type === 'aviator').slice(0, 2);
+    const container = document.getElementById('homeAviator');
+    if(av.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#666; padding:10px;">Aucun pronostic Aviator pour le moment.</p>';
+        return;
+    }
+    container.innerHTML = av.map(p => predCard(p)).join('');
+}
+
+// Carte de pronostic universelle
+function predCard(p) {
+    let badgeClass = 'badge-free';
+    let badgeText = '🆓 FREE';
+    if(p.cat === 'VIP') { badgeClass = 'badge-vip'; badgeText = '💎 VIP'; }
+    if(p.type === 'combo') { badgeClass = 'badge-combo'; badgeText = '🔥 COMBINÉ'; }
+    if(p.type === 'aviator') { badgeClass = 'badge-aviator'; badgeText = '✈️ AVIATOR'; }
+
+    const u = DB.currentUser;
+    const isVip = u && u.isVip;
+    const locked = p.cat === 'VIP' && !isVip;
+
+    if(p.type === 'aviator') {
+        const coupon = `✈️ *PRONOSTIC AVIATOR*\n\n🎮 Plateforme: ${p.platform}\n📉 Crash prédit: ${p.crash}x\n💰 Cote: ${p.odds}\n⏰ Intervalle: ${p.timeStart} - ${p.timeEnd}\n🎯 Confiance: ${p.confidence}`;
+        return `<div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span class="${badgeClass}">${badgeText}</span>
+                <span style="font-size:10px; color:#666;">⏰ ${p.timeStart} - ${p.timeEnd}</span>
+            </div>
+            <div style="text-align:center; padding:10px 0;">
+                <div style="font-size:14px; color:#FF6B9D; margin-bottom:4px;">${p.platform}</div>
+                <div style="font-size:36px; font-weight:900; color:var(--red);">${p.crash}x</div>
+                <div style="font-size:12px; color:var(--gray);">Crash point prédit</div>
+            </div>
+            ${locked ? `<div style="text-align:center; padding:10px;"><i class="fas fa-lock" style="color:var(--gold); font-size:24px;"></i><p style="color:#888; font-size:12px; margin-top:6px;">Réservé VIP</p><button onclick="showPage('vip')" class="btn btn-gold btn-sm">Devenir VIP</button></div>` :
+            `<div class="coupon-box">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span style="color:var(--gray); font-size:12px;">Cote</span>
+                    <span style="color:var(--gold); font-weight:bold;">${p.odds}</span>
                 </div>
-            `).join('');
-            document.getElementById('adminMatchList').innerHTML = list || '<p style="color:#666; padding:0 20px;">Aucun match ajouté.</p>';
-        }
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span style="color:var(--gray); font-size:12px;">Confiance</span>
+                    <span style="color:var(--green); font-weight:bold;">${p.confidence}</span>
+                </div>
+            </div>
+            <button onclick="copyCoupon(\`${coupon}\`)" class="btn btn-outline btn-sm" style="margin-top:10px; width:100%;"><i class="fas fa-copy"></i> Copier le Coupon</button>`}
+        </div>`;
+    }
 
-        function deleteMatch(id) {
-            if(confirm('Voulez-vous vraiment supprimer ce match ?')) {
-                DB.matches = DB.matches.filter(m => m.id !== id);
-                // Also remove predictions linked to this match
-                DB.predictions = DB.predictions.filter(p => p.matchId !== id);
-                saveDB();
-                renderAll();
-            }
-        }
+    if(p.type === 'combo') {
+        const matchNames = p.matchIds.map(id => {
+            const m = DB.matches.find(x => x.id == id);
+            return m ? `${m.home} vs ${m.away}` : 'Match inconnu';
+        }).join('\n');
+        const coupon = `🔥 *PARI COMBINÉ*\n\n${p.matchIds.map((id,i) => {
+            const m = DB.matches.find(x => x.id == id);
+            return m ? `Match ${i+1}: ${m.home} vs ${m.away}` : '';
+        }).join('\n')}\n\n✅ Pick: ${p.pick}\n💰 Cote totale: ${p.odds}`;
 
-        function filterPreds(cat) {
-            const u = DB.currentUser;
-            const container = document.getElementById('predsList');
-            
-            // FIX: Use DB.predictions correctly
-            let preds = DB.predictions.filter(p => p.cat === cat);
-
-            // Check VIP Lock
-            if(cat === 'VIP' && (!u || !u.isVip)) {
-                container.innerHTML = `
-                    <div class="card" style="text-align:center; border:1px solid var(--gold);">
-                        <i class="fas fa-lock" style="font-size:40px; color:var(--gold); margin:20px 0;"></i>
-                        <h3>Zone Réservée VIP</h3>
-                        <p style="color:#888; margin-bottom:15px;">Abonnez-vous pour voir nos meilleurs coupons.</p>
-                        <button onclick="showPage('vip')" class="btn btn-gold">Devenir VIP</button>
+        return `<div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span class="${badgeClass}">${badgeText}</span>
+                <span style="font-size:10px; color:#666;">${p.matchIds.length} matchs</span>
+            </div>
+            <div style="margin-bottom:8px;">
+                ${p.matchIds.map(id => {
+                    const m = DB.matches.find(x => x.id == id);
+                    if(!m) return '';
+                    return `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #222; font-size:13px;">
+                        <span>${m.homeLogo||'⚽'} ${m.home}</span>
+                        <span>${m.away} ${m.awayLogo||'⚽'}</span>
                     </div>`;
-                return;
-            }
-
-            if(preds.length === 0) {
-                container.innerHTML = '<p style="text-align:center;padding:20px;color:#666;">Aucun pronostic disponible.</p>';
-                return;
-            }
-
-            container.innerHTML = preds.map(p => {
-                const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'⚽', awayLogo:'⚽'};
-                const couponText = `⚽ *FIFA PRONOSTIC*\n\n🔹 *Match:* ${m.home} vs ${m.away}\n🔸 *Pari:* ${p.type}\n✅ *Pick:* ${p.pick}\n💰 *Cote:* ${p.odds}`;
-                
-                return `
-                <div class="card">
-                    <div class="pred-header">
-                        <span class="${p.cat === 'VIP' ? 'badge-vip' : 'badge-free'}">${p.cat}</span>
-                        <span style="font-size:10px; color:#666;">${m.dateStr}</span>
-                    </div>
-                    
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <div class="team"><span class="team-logo">${m.homeLogo}</span> ${m.home}</div>
-                        <div class="team" style="flex-direction:row-reverse;"><span class="team-logo">${m.awayLogo}</span> ${m.away}</div>
-                    </div>
-
-                    <div class="coupon-box">
-                        <div style="display:flex; justify-content:space-between; color:white; margin-bottom:5px;">
-                            <span>${p.type}</span>
-                            <span style="color:var(--gold); font-weight:bold;">${p.odds}</span>
-                        </div>
-                        <div style="color:var(--primary); font-weight:bold; font-size:16px;">${p.pick}</div>
-                    </div>
-
-                    <button onclick="copyCoupon('${couponText.replace(/\n/g, '\\n')}')" class="btn btn-outline btn-sm" style="margin-top:10px; width:100%;">
-                        <i class="fas fa-copy"></i> Copier le Coupon
-                    </button>
-                </div>`;
-            }).join('');
-        }
-
-        function copyCoupon(text) {
-            const cleanText = text.replace(/\\n/g, '\n');
-            navigator.clipboard.writeText(cleanText).then(() => alert('Coupon copié !'));
-        }
-
-        // --- ADMIN FUNCTIONS ---
-        function showAdminTab(tabId) {
-            document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById('adm' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
-            
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-
-            if(tabId === 'payments') renderPayments();
-            if(tabId === 'users') renderUsers();
-        }
-
-        function toggleDateInput() {
-            const val = document.getElementById('mDateType').value;
-            const input = document.getElementById('mCustomDate');
-            if(val === 'custom') { input.classList.remove('hidden'); input.required = true; }
-            else { input.classList.add('hidden'); input.required = false; }
-        }
-
-        function addMatch(e) {
-            e.preventDefault();
-            const home = document.getElementById('mHome').value;
-            const away = document.getElementById('mAway').value;
-            const hLogo = document.getElementById('mHomeLogo').value || '⚽';
-            const aLogo = document.getElementById('mAwayLogo').value || '⚽';
-            const time = document.getElementById('mTime').value;
-            const dType = document.getElementById('mDateType').value;
-            
-            let dateStr = "Aujourd'hui";
-            if(dType === 'tomorrow') dateStr = "Demain";
-            if(dType === 'custom') dateStr = new Date(document.getElementById('mCustomDate').value).toLocaleDateString();
-
-            DB.matches.push({
-                id: Date.now(),
-                home, away, homeLogo: hLogo, awayLogo: aLogo,
-                time, dateStr
-            });
-            saveDB();
-            alert('Match ajouté !');
-            e.target.reset();
-            renderAll();
-        }
-
-        function populateMatchSelect() {
-            const sel = document.getElementById('pMatchId');
-            sel.innerHTML = '<option value="">-- Choisir un match --</option>';
-            DB.matches.forEach(m => {
-                sel.innerHTML += `<option value="${m.id}">${m.home} vs ${m.away} (${m.time})</option>`;
-            });
-        }
-
-        function addPrediction(e) {
-            e.preventDefault();
-            const matchId = document.getElementById('pMatchId').value;
-            if(!matchId) return alert('Choisissez un match !');
-
-            const newPred = {
-                id: Date.now(),
-                matchId: parseInt(matchId),
-                type: document.getElementById('pType').value,
-                pick: document.getElementById('pPick').value,
-                odds: document.getElementById('pOdds').value,
-                cat: document.getElementById('pCat').value
-            };
-
-            DB.predictions.push(newPred);
-            saveDB();
-            alert('Pronostic publié avec succès !');
-            e.target.reset();
-            // Force refresh predictions view
-            filterPreds(document.querySelector('.btn-outline[style*="var(--primary)"]') ? 'free' : 'free'); 
-        }
-
-        function submitPayment(e) {
-            e.preventDefault();
-            const tx = document.getElementById('payTxId').value;
-            if(DB.payments.find(p => p.txId === tx)) return alert('Transaction déjà utilisée.');
-            
-            DB.payments.push({
-                id: Date.now(),
-                userEmail: DB.currentUser.email,
-                userName: document.getElementById('payName').value,
-                txId: tx,
-                amount: 1500,
-                status: 'pending'
-            });
-            saveDB();
-            alert('Demande envoyée ! Attendez la validation.');
-            showPage('home');
-        }
-
-        function renderPayments() {
-            const list = document.getElementById('paymentList');
-            const pending = DB.payments.filter(p => p.status === 'pending');
-            if(pending.length === 0) list.innerHTML = '<p style="color:#666">Rien en attente.</p>';
-            
-            list.innerHTML = pending.map(p => `
-                <div class="card" style="padding:10px; margin-bottom:10px;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <b>${p.userName}</b>
-                        <span style="color:var(--gold)">${p.amount} HTG</span>
-                    </div>
-                    <div style="font-size:12px; color:#888;">TX: ${p.txId}</div>
-                    <div style="display:flex; gap:5px; margin-top:5px;">
-                        <button onclick="approvePay(${p.id})" class="btn btn-primary btn-sm">Approuver</button>
-                        <button onclick="rejectPay(${p.id})" class="btn btn-outline btn-sm" style="border-color:red; color:red;">Rejeter</button>
-                    </div>
+                }).join('')}
+            </div>
+            ${locked ? `<div style="text-align:center; padding:10px;"><i class="fas fa-lock" style="color:var(--gold); font-size:24px;"></i><p style="color:#888; font-size:12px; margin-top:6px;">Réservé VIP</p><button onclick="showPage('vip')" class="btn btn-gold btn-sm">Devenir VIP</button></div>` :
+            `<div class="coupon-box">
+                <div style="color:var(--red); font-weight:bold; font-size:16px; margin-bottom:4px;">${p.pick}</div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:var(--gray); font-size:12px;">Cote totale</span>
+                    <span style="color:var(--gold); font-weight:bold; font-size:18px;">${p.odds}</span>
                 </div>
-            `).join('');
-        }
+            </div>
+            <button onclick="copyCoupon(\`${coupon}\`)" class="btn btn-outline btn-sm" style="margin-top:10px; width:100%;"><i class="fas fa-copy"></i> Copier le Coupon</button>`}
+        </div>`;
+    }
 
-        function approvePay(id) {
-            const p = DB.payments.find(x => x.id === id);
-            if(p) {
-                p.status = 'approved';
-                const u = DB.users.find(x => x.email === p.userEmail);
-                if(u) u.isVip = true;
-                saveDB();
-                renderPayments();
-                alert('VIP Activé pour l\'utilisateur.');
-            }
-        }
+    // Simple prediction
+    const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'⚽', awayLogo:'⚽'};
+    const coupon = `⚽ *FIFA PRONOSTIC*\n\n🔹 Match: ${m.home} vs ${m.away}\n🔸 Pari: ${p.pick}\n💰 Cote: ${p.odds}`;
 
-        function rejectPay(id) {
-            const idx = DB.payments.findIndex(x => x.id === id);
-            if(idx > -1) { DB.payments[idx].status = 'rejected'; saveDB(); renderPayments(); }
-        }
+    return `<div class="card">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span class="${badgeClass}">${badgeText}</span>
+            <span style="font-size:10px; color:#666;">${m.dateStr||''}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:6px;"><span style="font-size:20px;">${m.homeLogo}</span><span style="font-size:13px; font-weight:600;">${m.home}</span></div>
+            <div style="font-size:11px; color:#555;">VS</div>
+            <div style="display:flex; align-items:center; gap:6px; flex-direction:row-reverse;"><span style="font-size:20px;">${m.awayLogo}</span><span style="font-size:13px; font-weight:600;">${m.away}</span></div>
+        </div>
+        ${locked ? `<div style="text-align:center; padding:10px;"><i class="fas fa-lock" style="color:var(--gold); font-size:24px;"></i><p style="color:#888; font-size:12px; margin-top:6px;">Réservé VIP</p><button onclick="showPage('vip')" class="btn btn-gold btn-sm">Devenir VIP</button></div>` :
+        `<div class="coupon-box">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span style="color:var(--gray); font-size:12px;">${p.pickType||'Pari'}</span>
+                <span style="color:var(--gold); font-weight:bold;">${p.odds}</span>
+            </div>
+            <div style="color:var(--green); font-weight:bold; font-size:16px;">${p.pick}</div>
+        </div>
+        <button onclick="copyCoupon(\`${coupon}\`)" class="btn btn-outline btn-sm" style="margin-top:10px; width:100%;"><i class="fas fa-copy"></i> Copier le Coupon</button>`}
+    </div>`;
+}
 
-        function renderUsers() {
-            const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = DB.users.filter(u => u.role !== 'admin').map(u => `
-                <tr style="border-bottom:1px solid #222;">
-                    <td style="padding:8px;">${u.name}</td>
-                    <td style="padding:8px;"><span style="color:${u.isVip ? 'var(--gold)' : '#888'}">${u.isVip ? 'VIP' : 'Free'}</span></td>
-                    <td style="padding:8px;"><button onclick="toggleVip('${u.email}')" style="font-size:10px;">Switch</button></td>
-                </tr>
-            `).join('');
-        }
+function filterPreds(cat) {
+    const container = document.getElementById('predsList');
+    const u = DB.currentUser;
+    const isVip = u && u.isVip;
 
-        function toggleVip(email) {
-            const u = DB.users.find(x => x.email === email);
-            if(u) { u.isVip = !u.isVip; saveDB(); renderUsers(); }
-        }
+    let preds;
+    if(cat === 'combo') preds = DB.predictions.filter(p => p.type === 'combo');
+    else if(cat === 'aviator') preds = DB.predictions.filter(p => p.type === 'aviator');
+    else preds = DB.predictions.filter(p => p.cat === cat && p.type !== 'combo' && p.type !== 'aviator');
 
-        function saveDB() {
-            localStorage.setItem('fp_users', JSON.stringify(DB.users));
-            localStorage.setItem('fp_matches', JSON.stringify(DB.matches));
-            localStorage.setItem('fp_preds', JSON.stringify(DB.predictions));
-            localStorage.setItem('fp_payments', JSON.stringify(DB.payments));
-        }
+    if(preds.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:20px; color:#666;">Aucun pronostic disponible.</p>';
+        return;
+    }
+    container.innerHTML = preds.map(p => predCard(p)).join('');
+}
 
-        // --- AVIATOR GAME LOGIC ---
-        let aviatorInterval;
-        let multiplier = 1.00;
-        let isFlying = false;
-        let crashPoint = 0;
-        let userBet = 0;
-        let balance = 1000;
+function copyCoupon(text) {
+    navigator.clipboard.writeText(text).then(() => alert('Coupon copié ! Prêt à coller.')).catch(() => {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        alert('Coupon copié !');
+    });
+}
 
-        function toggleAviator() {
-            const btn = document.getElementById('actionBtn');
-            const betInput = document.getElementById('betAmount');
-            
-            if (!isFlying) {
-                // START GAME
-                userBet = parseInt(betInput.value);
-                if (userBet > balance) return alert("Solde insuffisant!");
-                if (userBet <= 0) return alert("Mise invalide.");
+// ==================== ADMIN ====================
+function showAdminTab(id, btn) {
+    document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
+    document.getElementById('adm'+id.charAt(0).toUpperCase()+id.slice(1)).classList.remove('hidden');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    if(id==='payments') renderPayments();
+    if(id==='users') renderUsers();
+}
 
-                balance -= userBet;
-                updateBalance();
-                
-                isFlying = true;
-                multiplier = 1.00;
-                btn.innerText = "RETIRER";
-                btn.classList.remove('btn-gold');
-                btn.classList.add('btn-primary');
-                betInput.disabled = true;
-                
-                document.getElementById('crashedMsg').style.display = 'none';
-                document.getElementById('aviatorMultiplier').style.color = 'white';
-                
-                // Determine crash point (random between 1.00 and 10.00, weighted low)
-                crashPoint = (Math.random() * 5 + 1).toFixed(2);
-                if(Math.random() > 0.9) crashPoint = (Math.random() * 20 + 1).toFixed(2); // Rare big win
+function toggleDateInput() {
+    const v = document.getElementById('mDateType').value;
+    const inp = document.getElementById('mCustomDate');
+    if(v==='custom') { inp.classList.remove('hidden'); inp.required=true; }
+    else { inp.classList.add('hidden'); inp.required=false; }
+}
 
-                startAnimation();
-            } else {
-                // CASH OUT
-                clearInterval(aviatorInterval);
-                const winAmount = Math.floor(userBet * multiplier);
-                balance += winAmount;
-                updateBalance();
-                
-                addToHistory(multiplier, true);
-                alert(`Bravo! Vous avez gagné ${winAmount} HTG (x${multiplier.toFixed(2)})`);
-                resetGame();
-            }
-        }
+function addMatch(e) {
+    e.preventDefault();
+    const dType = document.getElementById('mDateType').value;
+    let dateStr = "Aujourd'hui";
+    if(dType==='tomorrow') dateStr = "Demain";
+    if(dType==='custom') dateStr = new Date(document.getElementById('mCustomDate').value).toLocaleDateString('fr-FR');
 
-        function startAnimation() {
-            const plane = document.getElementById('planeObj');
-            const display = document.getElementById('aviatorMultiplier');
-            
-            aviatorInterval = setInterval(() => {
-                multiplier += 0.01 + (multiplier * 0.005); // Accelerate
-                display.innerText = multiplier.toFixed(2) + 'x';
-                
-                // Move plane visually
-                let progress = Math.min((multiplier - 1) * 20, 80);
-                plane.style.bottom = (20 + progress) + 'px';
-                plane.style.left = (20 + progress) + 'px';
+    DB.matches.push({
+        id: Date.now(),
+        home: document.getElementById('mHome').value,
+        away: document.getElementById('mAway').value,
+        homeLogo: document.getElementById('mHomeLogo').value || '⚽',
+        awayLogo: document.getElementById('mAwayLogo').value || '⚽',
+        time: document.getElementById('mTime').value,
+        dateStr
+    });
+    saveDB(); alert('Match ajouté !'); e.target.reset(); renderAll();
+}
 
-                if (multiplier >= crashPoint) {
-                    crashPlane();
-                }
-            }, 50);
-        }
+function deleteMatch(id) {
+    if(!confirm('Supprimer ce match ?')) return;
+    DB.matches = DB.matches.filter(m => m.id !== id);
+    DB.predictions = DB.predictions.filter(p => p.matchId !== id && (!p.matchIds || !p.matchIds.includes(id)));
+    saveDB(); renderAll();
+}
 
-        function crashPlane() {
-            clearInterval(aviatorInterval);
-            isFlying = false;
-            document.getElementById('crashedMsg').style.display = 'block';
-            document.getElementById('aviatorMultiplier').style.color = 'var(--danger)';
-            document.getElementById('actionBtn').innerText = "PARIER";
-            document.getElementById('actionBtn').classList.add('btn-gold');
-            document.getElementById('actionBtn').classList.remove('btn-primary');
-            document.getElementById('betAmount').disabled = false;
-            
-            addToHistory(multiplier, false);
-        }
+function renderAdminMatches() {
+    const list = DB.matches.map(m => `<div class="card" style="margin:8px 0; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:13px;">${m.homeLogo} ${m.home} vs ${m.away} ${m.awayLogo} <span style="color:#888; font-size:11px;">(${m.dateStr} ${m.time})</span></div>
+        <button onclick="deleteMatch(${m.id})" class="btn btn-sm" style="background:var(--red); color:white;">🗑️</button>
+    </div>`).join('');
+    document.getElementById('adminMatchList').innerHTML = list || '<p style="color:#666;">Aucun match.</p>';
+}
 
-        function resetGame() {
-            isFlying = false;
-            document.getElementById('actionBtn').innerText = "PARIER";
-            document.getElementById('actionBtn').classList.add('btn-gold');
-            document.getElementById('actionBtn').classList.remove('btn-primary');
-            document.getElementById('betAmount').disabled = false;
-            document.getElementById('planeObj').style.bottom = '20px';
-            document.getElementById('planeObj').style.left = '20px';
-            document.getElementById('aviatorMultiplier').innerText = "1.00x";
-        }
+function populateMatchSelect() {
+    const sel = document.getElementById('pMatchId');
+    sel.innerHTML = '<option value="">-- Choisir un match --</option>';
+    DB.matches.forEach(m => { sel.innerHTML += `<option value="${m.id}">${m.home} vs ${m.away} (${m.time})</option>`; });
+}
 
-        function updateBalance() {
-            document.getElementById('aviatorBalance').innerText = balance + " HTG";
-        }
+function addPrediction(e) {
+    e.preventDefault();
+    const matchId = document.getElementById('pMatchId').value;
+    if(!matchId) return alert('Choisissez un match !');
+    DB.predictions.push({
+        id: Date.now(),
+        matchId: parseInt(matchId),
+        pickType: document.getElementById('pType').value,
+        pick: document.getElementById('pPick').value,
+        odds: document.getElementById('pOdds').value,
+        cat: document.getElementById('pCat').value,
+        type: 'simple'
+    });
+    saveDB(); alert('Pronostic publié !'); e.target.reset(); renderAll();
+}
 
-        function addToHistory(val, won) {
-            const hist = document.getElementById('aviatorHistory');
-            const item = document.createElement('div');
-            item.className = `hist-item ${won ? 'hist-win' : 'hist-loss'}`;
-            item.innerText = val.toFixed(2) + 'x';
-            hist.prepend(item);
-            if(hist.children.length > 20) hist.lastChild.remove();
-        }
+// Combiné
+function populateComboMatches() {
+    const container = document.getElementById('comboMatchList');
+    if(DB.matches.length === 0) { container.innerHTML = '<p style="color:#666; font-size:12px;">Aucun match disponible. Ajoutez des matchs d\'abord.</p>'; return; }
+    container.innerHTML = DB.matches.map(m => `<label class="check-item">
+        <input type="checkbox" value="${m.id}" class="combo-check">
+        <span style="font-size:13px;">${m.homeLogo} ${m.home} vs ${m.away} ${m.awayLogo}</span>
+    </label>`).join('');
+}
 
-        // Init
-        renderAll();
-        checkAuth();
-    </script>
+function addCombo(e) {
+    e.preventDefault();
+    const checked = document.querySelectorAll('.combo-check:checked');
+    if(checked.length < 2) return alert('Sélectionnez au moins 2 matchs pour un combiné !');
+    const matchIds = Array.from(checked).map(c => parseInt(c.value));
+    DB.predictions.push({
+        id: Date.now(),
+        matchIds: matchIds,
+        pick: document.getElementById('cPick').value,
+        odds: document.getElementById('cOdds').value,
+        cat: document.getElementById('cCat').value,
+        type: 'combo'
+    });
+    saveDB(); alert('Combiné publié !'); e.target.reset(); renderAll();
+}
+
+// Aviator Pronostic
+function addAviator(e) {
+    e.preventDefault();
+    DB.predictions.push({
+        id: Date.now(),
+        platform: document.getElementById('aPlatform').value,
+        crash: document.getElementById('aCrash').value,
+        odds: document.getElementById('aOdds').value,
+        timeStart: document.getElementById('aTimeStart').value,
+        timeEnd: document.getElementById('aTimeEnd').value,
+        confidence: document.getElementById('aConfidence').value,
+        cat: document.getElementById('aCat').value,
+        type: 'aviator'
+    });
+    saveDB(); alert('Pronostic Aviator publié !'); e.target.reset(); renderAll();
+}
+
+function deleteAviator(id) {
+    if(!confirm('Supprimer ce pronostic Aviator ?')) return;
+    DB.predictions = DB.predictions.filter(p => p.id !== id);
+    saveDB(); renderAll();
+}
+
+function renderAdminAviator() {
+    const av = DB.predictions.filter(p => p.type === 'aviator');
+    const list = av.map(p => `<div class="card" style="margin:8px 0; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:13px;">✈️ ${p.platform} → <strong style="color:var(--red);">${p.crash}x</strong> (${p.timeStart}-${p.timeEnd})</div>
+        <button onclick="deleteAviator(${p.id})" class="btn btn-sm" style="background:var(--red); color:white;">🗑️</button>
+    </div>`).join('');
+    document.getElementById('adminAviatorList').innerHTML = list || '<p style="color:#666;">Aucun pronostic Aviator.</p>';
+}
+
+// Payments
+function submitPayment(e) {
+    e.preventDefault();
+    const tx = document.getElementById('payTxId').value;
+    if(DB.payments.find(p=>p.txId===tx)) return alert('Transaction déjà utilisée.');
+    DB.payments.push({ id:Date.now(), userEmail:DB.currentUser.email, userName:document.getElementById('payName').value, txId:tx, amount:1500, status:'pending' });
+    saveDB(); alert('Demande envoyée !'); showPage('home');
+}
+function renderPayments() {
+    const list = document.getElementById('paymentList');
+    const pending = DB.payments.filter(p=>p.status==='pending');
+    if(!pending.length) { list.innerHTML='<p style="color:#666;">Rien en attente.</p>'; return; }
+    list.innerHTML = pending.map(p => `<div class="card" style="padding:10px; margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between;"><b>${p.userName}</b><span style="color:var(--gold);">${p.amount} HTG</span></div>
+        <div style="font-size:12px; color:#888;">TX: ${p.txId}</div>
+        <div style="display:flex; gap:5px; margin-top:8px;">
+            <button onclick="approvePay(${p.id})" class="btn btn-green btn-sm">Approuver</button>
+            <button onclick="rejectPay(${p.id})" class="btn btn-sm" style="background:var(--red); color:white;">Rejeter</button>
+        </div>
+    </div>`).join('');
+}
+function approvePay(id) {
+    const p = DB.payments.find(x=>x.id===id);
+    if(p) { p.status='approved'; const u=DB.users.find(x=>x.email===p.userEmail); if(u) u.isVip=true; saveDB(); renderPayments(); alert('VIP Activé !'); }
+}
+function rejectPay(id) {
+    const i = DB.payments.findIndex(x=>x.id===id);
+    if(i>-1) { DB.payments[i].status='rejected'; saveDB(); renderPayments(); }
+}
+
+// Users
+function renderUsers() {
+    document.getElementById('usersTableBody').innerHTML = DB.users.filter(u=>u.role!=='admin').map(u => `<tr style="border-bottom:1px solid #222;">
+        <td style="padding:8px;">${u.name}</td>
+        <td style="padding:8px;"><span style="color:${u.isVip?'var(--gold)':'#888'}">${u.isVip?'VIP':'Free'}</span></td>
+        <td style="padding:8px;"><button onclick="toggleVip('${u.email}')" style="font-size:10px; padding:4px 8px; background:#333; color:white; border:none; border-radius:4px; cursor:pointer;">Switch</button></td>
+    </tr>`).join('') || '<tr><td colspan="3" style="text-align:center; color:#666; padding:20px;">Aucun utilisateur.</td></tr>';
+}
+function toggleVip(email) {
+    const u = DB.users.find(x=>x.email===email);
+    if(u) { u.isVip=!u.isVip; saveDB(); renderUsers(); }
+}
+
+function saveDB() {
+    localStorage.setItem('fp_users', JSON.stringify(DB.users));
+    localStorage.setItem('fp_matches', JSON.stringify(DB.matches));
+    localStorage.setItem('fp_preds', JSON.stringify(DB.predictions));
+    localStorage.setItem('fp_payments', JSON.stringify(DB.payments));
+}
+
+// Init
+renderAll();
+checkAuth();
+</script>
 </body>
 </html>
