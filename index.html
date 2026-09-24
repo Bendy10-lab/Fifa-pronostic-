@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FIFA PRONOSTIC</title>
+    <title>FIFA PRONOSTIC & AVIATOR</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -11,20 +11,22 @@
             --bg-card: #141927;
             --primary: #00C853;
             --gold: #FFD700;
+            --aviator-red: #E91E63;
             --text-white: #FFFFFF;
             --text-gray: #8B92A8;
-            --danger: #EF4444;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 80px; }
         .hidden { display: none !important; }
         
         /* Buttons & Inputs */
-        .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 5px; }
+        .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 5px; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
         .btn-primary { background: var(--primary); color: white; }
         .btn-gold { background: var(--gold); color: black; }
+        .btn-danger { background: #EF4444; color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
-        .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; display: inline-block; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; display: inline-block; margin: 0; }
         
         input, select { width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid #2A3142; border-radius: 10px; color: white; margin-bottom: 10px; outline: none; }
         
@@ -38,15 +40,12 @@
         .match-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .team { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
         .team-logo { font-size: 24px; }
-        .vs-badge { background: #222; padding: 4px 8px; border-radius: 6px; font-size: 10px; color: #888; }
         
         /* Prediction Card */
         .pred-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .badge-free { background: rgba(0, 200, 83, 0.2); color: var(--primary); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
         .badge-vip { background: rgba(255, 215, 0, 0.2); color: var(--gold); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
-        
         .coupon-box { background: #000; padding: 10px; border-radius: 8px; margin-top: 10px; border-left: 3px solid var(--primary); }
-        .coupon-text { font-family: monospace; font-size: 12px; color: #ccc; word-break: break-all; }
         
         /* Bottom Nav */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid #2A3142; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
@@ -59,6 +58,42 @@
         .admin-tabs { display: flex; gap: 5px; overflow-x: auto; padding: 10px 20px; background: #111; }
         .tab-btn { background: #222; color: #888; border: none; padding: 8px 12px; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; }
         .tab-btn.active { background: var(--primary); color: white; }
+
+        /* AVIATOR GAME STYLES */
+        #aviatorPage { background: #111; min-height: 100vh; padding-bottom: 80px; }
+        .aviator-screen {
+            height: 250px;
+            background: radial-gradient(circle at center, #2a1a1a 0%, #000 100%);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid var(--aviator-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .plane-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            transition: all 0.1s linear;
+        }
+        .plane-icon { font-size: 40px; color: var(--aviator-red); transform: rotate(-15deg); }
+        .multiplier-display {
+            font-size: 48px;
+            font-weight: 900;
+            color: white;
+            z-index: 10;
+            text-shadow: 0 0 20px rgba(233, 30, 99, 0.5);
+        }
+        .crashed-text { color: var(--danger); font-size: 30px; font-weight: bold; display: none; }
+        
+        .bet-controls { padding: 20px; }
+        .bet-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .history-bar { display: flex; gap: 5px; overflow-x: auto; padding: 10px 20px; background: #000; }
+        .hist-item { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .hist-win { background: rgba(0, 200, 83, 0.2); color: var(--primary); }
+        .hist-loss { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
     </style>
 </head>
 <body>
@@ -72,10 +107,10 @@
     <div id="homePage" class="page">
         <div style="padding: 30px 20px; text-align: center;">
             <h1 style="font-size: 28px; margin-bottom: 10px;">Gagne ak Nou</h1>
-            <p style="color: var(--text-gray);">Pronostics football fiables & analyses VIP.</p>
+            <p style="color: var(--text-gray);">Pronostics football fiables & jeux virtuels.</p>
             <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: center;">
                 <button onclick="showPage('predictions')" class="btn btn-primary" style="width: auto;">🎯 Voir Pronos</button>
-                <button onclick="showPage('vip')" class="btn btn-gold" style="width: auto;">💎 Devenir VIP</button>
+                <button onclick="showPage('aviator')" class="btn btn-danger" style="width: auto; background: var(--aviator-red); color: white;">✈️ Jouer Aviator</button>
             </div>
         </div>
         
@@ -96,6 +131,38 @@
             <button onclick="filterPreds('vip')" class="btn btn-outline" style="flex:1; border-color: var(--gold); color: var(--gold);">VIP</button>
         </div>
         <div id="predsList"></div>
+    </div>
+
+    <!-- AVIATOR GAME PAGE -->
+    <div id="aviatorPage" class="page hidden">
+        <div class="history-bar" id="aviatorHistory">
+            <!-- History items will go here -->
+        </div>
+
+        <div class="aviator-screen">
+            <div class="multiplier-display" id="aviatorMultiplier">1.00x</div>
+            <div class="crashed-text" id="crashedMsg">PARTI EN FUMÉE!</div>
+            
+            <div class="plane-container" id="planeObj">
+                <i class="fas fa-plane plane-icon"></i>
+            </div>
+            
+            <!-- Grid lines for effect -->
+            <div style="position:absolute; bottom:0; left:0; width:100%; height:100%; background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 40px 40px; opacity: 0.2;"></div>
+        </div>
+
+        <div class="bet-controls">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <span style="color:#888;">Solde:</span>
+                <span style="color:var(--primary); font-weight:bold;" id="aviatorBalance">1000 HTG</span>
+            </div>
+            
+            <div class="bet-input-group">
+                <input type="number" id="betAmount" value="100" style="margin:0;">
+                <button id="actionBtn" class="btn btn-gold" onclick="toggleAviator()">PARIER</button>
+            </div>
+            <p style="font-size:11px; color:#666; text-align:center;">Ceci est une simulation pour le fun.</p>
+        </div>
     </div>
 
     <!-- VIP -->
@@ -158,7 +225,7 @@
                 <button type="submit" class="btn btn-primary" id="authBtn">Entrer</button>
             </form>
             <p style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
-                <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">Changer mode (Inscription/Connexion)</a>
+                <a href="#" onclick="toggleAuthMode()" style="color: var(--primary);">Changer mode</a>
             </p>
         </div>
     </div>
@@ -182,23 +249,23 @@
             <div id="admAddMatch" class="admin-section">
                 <h3 style="margin: 15px 0;">Ajouter un Match</h3>
                 <form onsubmit="addMatch(event)">
-                    <input type="text" id="mHome" placeholder="Équipe Domicile (Ex: Barcelona)" required>
-                    <input type="text" id="mHomeLogo" placeholder="Logo Domicile (Emoji/Lettre) Ex: 🔴">
+                    <input type="text" id="mHome" placeholder="Équipe Domicile" required>
+                    <input type="text" id="mHomeLogo" placeholder="Logo (Emoji) Ex: 🔴">
+                    <input type="text" id="mAway" placeholder="Équipe Extérieure" required>
+                    <input type="text" id="mAwayLogo" placeholder="Logo (Emoji) Ex: ⚪">
                     
-                    <input type="text" id="mAway" placeholder="Équipe Extérieure (Ex: Real Madrid)" required>
-                    <input type="text" id="mAwayLogo" placeholder="Logo Extérieur (Emoji/Lettre) Ex: ⚪">
-                    
-                    <label style="font-size:12px; color:#888;">Date du match:</label>
                     <select id="mDateType" onchange="toggleDateInput()">
                         <option value="today">Aujourd'hui</option>
                         <option value="tomorrow">Demain</option>
                         <option value="custom">Autre date...</option>
                     </select>
                     <input type="date" id="mCustomDate" class="hidden">
-                    
                     <input type="time" id="mTime" required>
                     <button class="btn btn-primary">Enregistrer le Match</button>
                 </form>
+
+                <h3 style="margin: 20px 0 10px;">Liste des Matchs (Glisser pour supprimer)</h3>
+                <div id="adminMatchList"></div>
             </div>
 
             <!-- Tab: Create Prediction -->
@@ -208,8 +275,8 @@
                     <label style="font-size:12px; color:#888;">Choisir le Match:</label>
                     <select id="pMatchId" required></select>
                     
-                    <input type="text" id="pType" placeholder="Type de pari (Ex: 1X2, Over 2.5)" required>
-                    <input type="text" id="pPick" placeholder="Pronostic (Ex: Victoire Barca, Oui)" required>
+                    <input type="text" id="pType" placeholder="Type (Ex: 1X2, Over 2.5)" required>
+                    <input type="text" id="pPick" placeholder="Pronostic (Ex: Victoire Barca)" required>
                     <input type="number" step="0.01" id="pOdds" placeholder="Cote (Ex: 1.85)" required>
                     
                     <label style="font-size:12px; color:#888;">Catégorie:</label>
@@ -243,6 +310,7 @@
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i> Accueil</button>
         <button class="nav-item" onclick="showPage('matches')"><i class="fas fa-futbol"></i> Matchs</button>
+        <button class="nav-item" onclick="showPage('aviator')"><i class="fas fa-plane"></i> Aviator</button>
         <button class="nav-item" onclick="showPage('predictions')"><i class="fas fa-bullseye"></i> Pronos</button>
         <button class="nav-item" onclick="showPage('vip')"><i class="fas fa-crown"></i> VIP</button>
         <button class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i> Profil</button>
@@ -250,7 +318,7 @@
     </nav>
 
     <script>
-        // --- DATABASE INIT (Clean Slate) ---
+        // --- DATABASE INIT ---
         const DB = {
             users: JSON.parse(localStorage.getItem('fp_users')) || [
                 { email: 'admin@fifa.com', pass: 'admin123', role: 'admin', isVip: true, name: 'Admin' }
@@ -270,7 +338,8 @@
             
             // Update Nav Icons
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            const map = {'home':0, 'matches':1, 'predictions':2, 'vip':3, 'profile':4, 'admin':5};
+            // Map pages to nav index (adjusted for Aviator)
+            const map = {'home':0, 'matches':1, 'aviator':2, 'predictions':3, 'vip':4, 'profile':5, 'admin':6};
             const btns = document.querySelectorAll('.nav-item');
             if(map[pageId] !== undefined && btns[map[pageId]]) btns[map[pageId]].classList.add('active');
 
@@ -366,16 +435,18 @@
         // --- RENDERING ---
         function renderAll() {
             renderMatches();
-            filterPreds('free'); // Default view
+            filterPreds('free'); 
             populateMatchSelect();
+            renderAdminMatches(); // For delete feature
         }
 
         function renderMatches() {
-            const createCard = (m) => `
+            const createCard = (m, isAdmin = false) => `
                 <div class="card">
                     <div class="match-row">
                         <span class="vs-badge">${m.dateStr}</span>
                         <span class="vs-badge">${m.time}</span>
+                        ${isAdmin ? `<button onclick="deleteMatch(${m.id})" style="background:none; border:none; color:red; font-size:16px;"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div class="team">
@@ -391,18 +462,37 @@
                 </div>
             `;
 
-            const list = DB.matches.map(createCard).join('');
+            const list = DB.matches.map(m => createCard(m)).join('');
             document.getElementById('homeMatchesList').innerHTML = list || '<p style="text-align:center;color:#666;">Aucun match.</p>';
             document.getElementById('allMatchesList').innerHTML = list || '<p style="text-align:center;color:#666;">Aucun match.</p>';
+        }
+
+        function renderAdminMatches() {
+            const list = DB.matches.map(m => `
+                <div class="card" style="margin:10px 20px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:14px;">${m.home} vs ${m.away}</div>
+                    <button onclick="deleteMatch(${m.id})" class="btn btn-danger btn-sm">Supprimer</button>
+                </div>
+            `).join('');
+            document.getElementById('adminMatchList').innerHTML = list || '<p style="color:#666; padding:0 20px;">Aucun match ajouté.</p>';
+        }
+
+        function deleteMatch(id) {
+            if(confirm('Voulez-vous vraiment supprimer ce match ?')) {
+                DB.matches = DB.matches.filter(m => m.id !== id);
+                // Also remove predictions linked to this match
+                DB.predictions = DB.predictions.filter(p => p.matchId !== id);
+                saveDB();
+                renderAll();
+            }
         }
 
         function filterPreds(cat) {
             const u = DB.currentUser;
             const container = document.getElementById('predsList');
             
-            // Filter predictions
-            let preds = DB.predictations || []; // Fix typo in variable name if any, using DB.predictions
-            preds = DB.predictions.filter(p => p.cat === cat);
+            // FIX: Use DB.predictions correctly
+            let preds = DB.predictions.filter(p => p.cat === cat);
 
             // Check VIP Lock
             if(cat === 'VIP' && (!u || !u.isVip)) {
@@ -423,8 +513,7 @@
 
             container.innerHTML = preds.map(p => {
                 const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'⚽', awayLogo:'⚽'};
-                // Create Coupon Text
-                const couponText = `⚽ *FIFA PRONOSTIC*\n\n🔹 *Match:* ${m.home} vs ${m.away}\n🔸 *Pari:* ${p.type}\n✅ *Pick:* ${p.pick}\n💰 *Cote:* ${p.odds}\n\n🔗 Jouez maintenant!`;
+                const couponText = `⚽ *FIFA PRONOSTIC*\n\n🔹 *Match:* ${m.home} vs ${m.away}\n🔸 *Pari:* ${p.type}\n✅ *Pick:* ${p.pick}\n💰 *Cote:* ${p.odds}`;
                 
                 return `
                 <div class="card">
@@ -454,11 +543,8 @@
         }
 
         function copyCoupon(text) {
-            // Decode escaped newlines for actual copying
             const cleanText = text.replace(/\\n/g, '\n');
-            navigator.clipboard.writeText(cleanText).then(() => {
-                alert('Coupon copié ! Prêt à coller sur WhatsApp.');
-            });
+            navigator.clipboard.writeText(cleanText).then(() => alert('Coupon copié !'));
         }
 
         // --- ADMIN FUNCTIONS ---
@@ -528,9 +614,10 @@
 
             DB.predictions.push(newPred);
             saveDB();
-            alert('Pronostic publié !');
+            alert('Pronostic publié avec succès !');
             e.target.reset();
-            renderAll();
+            // Force refresh predictions view
+            filterPreds(document.querySelector('.btn-outline[style*="var(--primary)"]') ? 'free' : 'free'); 
         }
 
         function submitPayment(e) {
@@ -607,8 +694,113 @@
         function saveDB() {
             localStorage.setItem('fp_users', JSON.stringify(DB.users));
             localStorage.setItem('fp_matches', JSON.stringify(DB.matches));
-            localStorage.setItem('fp_predictions', JSON.stringify(DB.predictions)); // Fixed key
+            localStorage.setItem('fp_preds', JSON.stringify(DB.predictions));
             localStorage.setItem('fp_payments', JSON.stringify(DB.payments));
+        }
+
+        // --- AVIATOR GAME LOGIC ---
+        let aviatorInterval;
+        let multiplier = 1.00;
+        let isFlying = false;
+        let crashPoint = 0;
+        let userBet = 0;
+        let balance = 1000;
+
+        function toggleAviator() {
+            const btn = document.getElementById('actionBtn');
+            const betInput = document.getElementById('betAmount');
+            
+            if (!isFlying) {
+                // START GAME
+                userBet = parseInt(betInput.value);
+                if (userBet > balance) return alert("Solde insuffisant!");
+                if (userBet <= 0) return alert("Mise invalide.");
+
+                balance -= userBet;
+                updateBalance();
+                
+                isFlying = true;
+                multiplier = 1.00;
+                btn.innerText = "RETIRER";
+                btn.classList.remove('btn-gold');
+                btn.classList.add('btn-primary');
+                betInput.disabled = true;
+                
+                document.getElementById('crashedMsg').style.display = 'none';
+                document.getElementById('aviatorMultiplier').style.color = 'white';
+                
+                // Determine crash point (random between 1.00 and 10.00, weighted low)
+                crashPoint = (Math.random() * 5 + 1).toFixed(2);
+                if(Math.random() > 0.9) crashPoint = (Math.random() * 20 + 1).toFixed(2); // Rare big win
+
+                startAnimation();
+            } else {
+                // CASH OUT
+                clearInterval(aviatorInterval);
+                const winAmount = Math.floor(userBet * multiplier);
+                balance += winAmount;
+                updateBalance();
+                
+                addToHistory(multiplier, true);
+                alert(`Bravo! Vous avez gagné ${winAmount} HTG (x${multiplier.toFixed(2)})`);
+                resetGame();
+            }
+        }
+
+        function startAnimation() {
+            const plane = document.getElementById('planeObj');
+            const display = document.getElementById('aviatorMultiplier');
+            
+            aviatorInterval = setInterval(() => {
+                multiplier += 0.01 + (multiplier * 0.005); // Accelerate
+                display.innerText = multiplier.toFixed(2) + 'x';
+                
+                // Move plane visually
+                let progress = Math.min((multiplier - 1) * 20, 80);
+                plane.style.bottom = (20 + progress) + 'px';
+                plane.style.left = (20 + progress) + 'px';
+
+                if (multiplier >= crashPoint) {
+                    crashPlane();
+                }
+            }, 50);
+        }
+
+        function crashPlane() {
+            clearInterval(aviatorInterval);
+            isFlying = false;
+            document.getElementById('crashedMsg').style.display = 'block';
+            document.getElementById('aviatorMultiplier').style.color = 'var(--danger)';
+            document.getElementById('actionBtn').innerText = "PARIER";
+            document.getElementById('actionBtn').classList.add('btn-gold');
+            document.getElementById('actionBtn').classList.remove('btn-primary');
+            document.getElementById('betAmount').disabled = false;
+            
+            addToHistory(multiplier, false);
+        }
+
+        function resetGame() {
+            isFlying = false;
+            document.getElementById('actionBtn').innerText = "PARIER";
+            document.getElementById('actionBtn').classList.add('btn-gold');
+            document.getElementById('actionBtn').classList.remove('btn-primary');
+            document.getElementById('betAmount').disabled = false;
+            document.getElementById('planeObj').style.bottom = '20px';
+            document.getElementById('planeObj').style.left = '20px';
+            document.getElementById('aviatorMultiplier').innerText = "1.00x";
+        }
+
+        function updateBalance() {
+            document.getElementById('aviatorBalance').innerText = balance + " HTG";
+        }
+
+        function addToHistory(val, won) {
+            const hist = document.getElementById('aviatorHistory');
+            const item = document.createElement('div');
+            item.className = `hist-item ${won ? 'hist-win' : 'hist-loss'}`;
+            item.innerText = val.toFixed(2) + 'x';
+            hist.prepend(item);
+            if(hist.children.length > 20) hist.lastChild.remove();
         }
 
         // Init
