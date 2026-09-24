@@ -22,10 +22,8 @@
         /* SPLASH SCREEN */
         #splashScreen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: linear-gradient(135deg, #0A0E1A 0%, #1a1a2e 50%, #0A0E1A 100%);
             z-index: 9999;
             display: flex;
@@ -34,82 +32,29 @@
             justify-content: center;
             animation: fadeIn 0.5s ease;
         }
-        
         .splash-image-container {
-            width: 90%;
-            max-width: 400px;
-            height: 400px;
-            border-radius: 20px;
-            overflow: hidden;
+            width: 90%; max-width: 400px; height: 400px;
+            border-radius: 20px; overflow: hidden;
             box-shadow: 0 20px 60px rgba(0, 200, 83, 0.3);
             border: 3px solid var(--primary);
             animation: pulse 2s infinite;
-            position: relative;
         }
-        
-        .splash-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .splash-message {
-            margin-top: 30px;
-            text-align: center;
-            animation: slideUp 0.8s ease;
-        }
-        
-        .splash-message h1 {
-            font-size: 28px;
-            color: var(--gold);
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-        
-        .splash-message p {
-            font-size: 16px;
-            color: var(--text-gray);
-            margin-bottom: 30px;
-        }
-        
+        .splash-image-container img { width: 100%; height: 100%; object-fit: cover; }
+        .splash-message { margin-top: 30px; text-align: center; animation: slideUp 0.8s ease; }
+        .splash-message h1 { font-size: 28px; color: var(--gold); margin-bottom: 10px; text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+        .splash-message p { font-size: 16px; color: var(--text-gray); margin-bottom: 30px; }
         .splash-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
+            background: linear-gradient(135deg, var(--primary), #00A844);
+            color: white; border: none; padding: 15px 40px; border-radius: 30px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
             box-shadow: 0 10px 30px rgba(0, 200, 83, 0.4);
-            transition: all 0.3s;
             animation: bounce 2s infinite;
         }
-        
-        .splash-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 200, 83, 0.6);
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
         
         .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 5px; transition: 0.2s; }
         .btn:active { transform: scale(0.98); }
@@ -145,47 +90,11 @@
             position: relative;
             overflow: hidden;
         }
-        .combo-card::before {
-            content: '🔥';
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            font-size: 80px;
-            opacity: 0.1;
-        }
-        .combo-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,215,0,0.3);
-        }
-        .combo-title {
-            color: var(--gold);
-            font-size: 16px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .combo-odd {
-            background: var(--gold);
-            color: black;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: 900;
-            font-size: 18px;
-        }
-        .combo-match {
-            background: rgba(0,0,0,0.4);
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .combo-card::before { content: '🔥'; position: absolute; top: -10px; right: -10px; font-size: 80px; opacity: 0.1; }
+        .combo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,215,0,0.3); }
+        .combo-title { color: var(--gold); font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .combo-odd { background: var(--gold); color: black; padding: 6px 14px; border-radius: 20px; font-weight: 900; font-size: 18px; }
+        .combo-match { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .combo-match-info { flex: 1; }
         .combo-match-pick { color: var(--primary); font-weight: bold; font-size: 13px; }
         
@@ -199,56 +108,13 @@
             position: relative;
             overflow: hidden;
         }
-        .pred-zone::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at center, rgba(233,30,99,0.1) 0%, transparent 70%);
-        }
-        .pred-timer {
-            background: rgba(0,0,0,0.5);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            color: var(--aviator-red);
-            display: inline-block;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        .pred-value {
-            font-size: 42px;
-            font-weight: 900;
-            color: var(--gold);
-            margin: 10px 0;
-            text-shadow: 0 0 20px rgba(255,215,0,0.5);
-        }
-        .pred-confidence {
-            color: var(--gold);
-            font-size: 18px;
-            margin: 5px 0;
-        }
-        .pred-status {
-            font-size: 12px;
-            color: var(--text-gray);
-            margin-top: 8px;
-        }
-        .pred-history {
-            display: flex;
-            gap: 5px;
-            overflow-x: auto;
-            padding: 10px 20px;
-            background: #000;
-        }
-        .pred-hist-item {
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: bold;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .pred-zone::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at center, rgba(233,30,99,0.1) 0%, transparent 70%); }
+        .pred-timer { background: rgba(0,0,0,0.5); padding: 4px 12px; border-radius: 20px; font-size: 12px; color: var(--aviator-red); display: inline-block; margin-bottom: 10px; font-weight: bold; }
+        .pred-value { font-size: 42px; font-weight: 900; color: var(--gold); margin: 10px 0; text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .pred-confidence { color: var(--gold); font-size: 18px; margin: 5px 0; }
+        .pred-status { font-size: 12px; color: var(--text-gray); margin-top: 8px; }
+        .pred-history { display: flex; gap: 5px; overflow-x: auto; padding: 10px 20px; background: #000; }
+        .pred-hist-item { padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
         .pred-hist-win { background: rgba(0,200,83,0.2); color: var(--primary); }
         .pred-hist-loss { background: rgba(239,68,68,0.2); color: #EF4444; }
         
@@ -262,37 +128,7 @@
         .tab-btn { background: #222; color: #888; border: none; padding: 8px 12px; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; }
         .tab-btn.active { background: var(--primary); color: white; }
 
-        #aviatorPage { background: #111; min-height: 100vh; padding-bottom: 80px; }
-        .aviator-screen {
-            height: 250px;
-            background: radial-gradient(circle at center, #2a1a1a 0%, #000 100%);
-            position: relative;
-            overflow: hidden;
-            border-bottom: 2px solid var(--aviator-red);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .plane-container { position: absolute; bottom: 20px; left: 20px; transition: all 0.1s linear; }
-        .plane-icon { font-size: 40px; color: var(--aviator-red); transform: rotate(-15deg); }
-        .multiplier-display { font-size: 48px; font-weight: 900; color: white; z-index: 10; text-shadow: 0 0 20px rgba(233, 30, 99, 0.5); }
-        .crashed-text { color: var(--danger); font-size: 30px; font-weight: bold; display: none; }
-        
-        .bet-controls { padding: 20px; }
-        .bet-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .history-bar { display: flex; gap: 5px; overflow-x: auto; padding: 10px 20px; background: #000; }
-        .hist-item { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-        .hist-win { background: rgba(0, 200, 83, 0.2); color: var(--primary); }
-        .hist-loss { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-
-        .section-title {
-            padding: 0 20px;
-            margin-top: 20px;
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .section-title { padding: 0 20px; margin-top: 20px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
         .section-title h3 { font-size: 16px; color: white; }
     </style>
 </head>
@@ -301,7 +137,6 @@
     <!-- SPLASH SCREEN -->
     <div id="splashScreen">
         <div class="splash-image-container">
-            <!-- CHANJE NON FICHYE A SI LI DIFERAN -->
             <img src="splash.jpg" alt="FIFA PRONOSTIC" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%230A0E1A%22 width=%22400%22 height=%22400%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2240%22 fill=%22%2300C853%22 text-anchor=%22middle%22 dy=%22.3em%22>⚽ BETTING</text></svg>'">
         </div>
         <div class="splash-message">
@@ -333,21 +168,21 @@
         <div id="comboContainer"></div>
 
         <div class="section-title">
-            <h3> Matchs du Jour</h3>
+            <h3>⚽ Matchs du Jour</h3>
             <button onclick="showPage('matches')" style="background:none; border:none; color:var(--primary); font-size:12px; cursor:pointer;">Voir tout →</button>
         </div>
         <div id="homeMatchesList"></div>
 
         <div class="section-title">
-            <h3> Pronostics du Jour</h3>
+            <h3>🎯 Pronostics du Jour</h3>
         </div>
         <div id="homePredsList"></div>
 
         <div class="card" style="background: linear-gradient(135deg, #2a1a2e, #1a0a1e); border-color: var(--aviator-red); text-align:center; margin-top: 20px;" onclick="showPage('aviator')">
             <div style="font-size: 40px; margin-bottom: 10px;">✈️</div>
-            <h3 style="color: var(--aviator-red);">Jouer Aviator</h3>
-            <p style="color: #aaa; font-size: 12px; margin: 8px 0;">Prédictions automatiques + Jeu</p>
-            <button class="btn btn-danger" style="width: auto; padding: 8px 20px; display: inline-block;">Jouer Maintenant</button>
+            <h3 style="color: var(--aviator-red);">Prédictions Aviator</h3>
+            <p style="color: #aaa; font-size: 12px; margin: 8px 0;">Prédictions automatiques en temps réel</p>
+            <button class="btn btn-danger" style="width: auto; padding: 8px 20px; display: inline-block;">Voir les Prédictions</button>
         </div>
     </div>
 
@@ -357,10 +192,10 @@
         <div id="allMatchesList"></div>
     </div>
 
-    <!-- AVIATOR -->
+    <!-- AVIATOR - SEULEMENT PREDIKSYON, PA GEN JWE -->
     <div id="aviatorPage" class="page hidden">
         <div class="pred-zone">
-            <div class="pred-timer" id="predTimer">⏱ Prochaine prédiction dans: <span id="predCountdown">10</span>s</div>
+            <div class="pred-timer" id="predTimer">⏱ Prochaine prédiction dans: <span id="predCountdown">60</span>s</div>
             <div style="font-size: 12px; color: var(--aviator-red); font-weight: bold;">🎯 PRÉDICTION AUTOMATIQUE</div>
             <div class="pred-value" id="predValue">--.--x</div>
             <div class="pred-confidence" id="predConfidence">☆☆☆☆☆</div>
@@ -368,35 +203,17 @@
         </div>
 
         <div style="padding: 10px 20px 0; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:12px; color:#888;"> Historique Prédictions</span>
+            <span style="font-size:12px; color:#888;">📊 Historique Prédictions</span>
             <span style="font-size:11px; color:var(--primary);" id="predSuccessRate">Taux: --%</span>
         </div>
         <div class="pred-history" id="predHistory"></div>
 
-        <div class="history-bar" id="aviatorHistory"></div>
-
-        <div class="aviator-screen">
-            <div class="multiplier-display" id="aviatorMultiplier">1.00x</div>
-            <div class="crashed-text" id="crashedMsg">PARTI EN FUMÉE!</div>
-            
-            <div class="plane-container" id="planeObj">
-                <i class="fas fa-plane plane-icon"></i>
-            </div>
-            
-            <div style="position:absolute; bottom:0; left:0; width:100%; height:100%; background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 40px 40px; opacity: 0.2;"></div>
-        </div>
-
-        <div class="bet-controls">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <span style="color:#888;">Solde:</span>
-                <span style="color:var(--primary); font-weight:bold;" id="aviatorBalance">1000 HTG</span>
-            </div>
-            
-            <div class="bet-input-group">
-                <input type="number" id="betAmount" value="100" style="margin:0;">
-                <button id="actionBtn" class="btn btn-gold" onclick="toggleAviator()">PARIER</button>
-            </div>
-            <p style="font-size:11px; color:#666; text-align:center;">️ Simulation pour le divertissement uniquement.</p>
+        <div class="card" style="text-align:center; margin-top:20px;">
+            <i class="fas fa-info-circle" style="color: var(--aviator-red); font-size: 24px; margin-bottom: 10px;"></i>
+            <p style="color: var(--text-gray); font-size: 13px; line-height: 1.6;">
+                Les prédictions Aviator sont générées automatiquement toutes les <strong style="color: var(--gold);">60 secondes</strong>.<br>
+                Suivez l'historique pour analyser les tendances.
+            </p>
         </div>
     </div>
 
@@ -469,7 +286,7 @@
     <div id="adminPage" class="page hidden">
         <div style="padding: 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                <h2>🛡️ Admin Panel</h2>
+                <h2>️ Admin Panel</h2>
                 <button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:20px;">✕</button>
             </div>
             
@@ -516,17 +333,19 @@
                     </select>
                     <button class="btn btn-gold">Publier le Pronostic</button>
                 </form>
+
+                <h3 style="margin: 25px 0 10px;">📋 Liste des Pronostics (Valider/Résultat)</h3>
+                <div id="adminPredList"></div>
             </div>
 
             <div id="admCombo" class="admin-section hidden">
                 <h3 style="margin: 15px 0;">🔥 Créer Coupon Combiné du Jour</h3>
                 <p style="font-size:12px; color:#888; margin-bottom:15px;">Ajoutez plusieurs pronostics pour former un coupon combiné.</p>
-                
                 <div id="comboBuilder">
                     <div id="comboItemsList"></div>
                     <button onclick="addComboItem()" class="btn btn-outline" style="margin-bottom:15px;">+ Ajouter un match au coupon</button>
                     <button onclick="saveCombo()" class="btn btn-gold">💾 Publier le Coupon Combiné</button>
-                    <button onclick="clearCombo()" class="btn btn-danger" style="background:#555;">🗑️ Vider</button>
+                    <button onclick="clearCombo()" class="btn btn-danger" style="background:#555;">️ Vider</button>
                 </div>
             </div>
 
@@ -565,22 +384,12 @@
                 showPage('home');
             }, 500);
         }
-
-        // Auto-close after 5 seconds
         setTimeout(() => {
-            if(!document.getElementById('splashScreen').classList.contains('hidden')) {
-                closeSplash();
-            }
+            if(!document.getElementById('splashScreen').classList.contains('hidden')) closeSplash();
         }, 5000);
 
-        // Add fadeOut animation
         const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeOut {
-                from { opacity: 1; }
-                to { opacity: 0; visibility: hidden; }
-            }
-        `;
+        style.textContent = `@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }`;
         document.head.appendChild(style);
 
         // DATABASE
@@ -703,6 +512,7 @@
             renderCombo();
             populateMatchSelect();
             renderAdminMatches();
+            renderAdminPreds();
             document.getElementById('comboDate').innerText = new Date().toLocaleDateString('fr-FR');
         }
 
@@ -744,9 +554,15 @@
             container.innerHTML = preds.map(p => renderPredCard(p)).join('');
         }
 
+        // RENDER PREDICT CARD - SAN BOUTON COPIER
         function renderPredCard(p) {
             const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'', awayLogo:'⚽', dateStr:''};
-            const couponText = `⚽ *FIFA PRONOSTIC*\n\n🔹 *Match:* ${m.home} vs ${m.away}\n🔸 *Pari:* ${p.type}\n✅ *Pick:* ${p.pick}\n *Cote:* ${p.odds}`;
+            
+            let statusBadge = '';
+            if(p.result === 'won') statusBadge = '<span style="color:var(--primary); font-weight:bold;">✅ GAGNÉ</span>';
+            else if(p.result === 'lost') statusBadge = '<span style="color:#EF4444; font-weight:bold;">❌ PERDU</span>';
+            else if(p.result === 'cancelled') statusBadge = '<span style="color:#888; font-weight:bold;">⏸️ ANNULÉ</span>';
+            else statusBadge = '<span style="color:var(--gold); font-weight:bold;">⏳ EN ATTENTE</span>';
             
             return `
             <div class="card">
@@ -768,9 +584,9 @@
                     <div style="color:var(--primary); font-weight:bold; font-size:16px;">${p.pick}</div>
                 </div>
 
-                <button onclick="copyCoupon(\`${couponText.replace(/`/g, '\\`')}\`)" class="btn btn-outline btn-sm" style="margin-top:10px; width:100%;">
-                    <i class="fas fa-copy"></i> Copier le Coupon
-                </button>
+                <div style="margin-top:10px; text-align:center;">
+                    ${statusBadge}
+                </div>
             </div>`;
         }
 
@@ -798,11 +614,6 @@
                 `;
             }).join('');
 
-            const comboText = combo.items.map(item => {
-                const m = DB.matches.find(x => x.id == item.matchId) || {home:'?', away:'?'};
-                return `✅ ${m.home} vs ${m.away} → ${item.pick} (${item.odds})`;
-            }).join('\n');
-
             container.innerHTML = `
                 <div class="combo-card">
                     <div class="combo-header">
@@ -810,20 +621,8 @@
                         <div class="combo-odd">${totalOdds}</div>
                     </div>
                     ${itemsHtml}
-                    <button onclick="copyCombo(\`${comboText.replace(/`/g, '\\`')}\`, ${totalOdds})" class="btn btn-gold" style="margin-top:15px;">
-                        <i class="fas fa-copy"></i> Copier le Coupon Combiné
-                    </button>
                 </div>
             `;
-        }
-
-        function copyCombo(text, odds) {
-            const full = `🔥 *COUPON COMBINÉ DU JOUR*\n *Cote Totale: ${odds}*\n\n${text}\n\n🔗 FIFA PRONOSTIC`;
-            navigator.clipboard.writeText(full).then(() => alert('Coupon Combiné copié !'));
-        }
-
-        function copyCoupon(text) {
-            navigator.clipboard.writeText(text).then(() => alert('Coupon copié !'));
         }
 
         function showAdminTab(tabId) {
@@ -836,6 +635,7 @@
             if(tabId === 'payments') renderPayments();
             if(tabId === 'users') renderUsers();
             if(tabId === 'combo') renderComboBuilder();
+            if(tabId === 'addPred') renderAdminPreds();
         }
 
         function toggleDateInput() {
@@ -903,12 +703,81 @@
                 type: document.getElementById('pType').value,
                 pick: document.getElementById('pPick').value,
                 odds: document.getElementById('pOdds').value,
-                cat: document.getElementById('pCat').value
+                cat: document.getElementById('pCat').value,
+                result: 'pending' // pending, won, lost, cancelled
             });
             saveDB();
             alert('Pronostic publié !');
             e.target.reset();
             renderAll();
+        }
+
+        // RENDER ADMIN PRED LIST - AK BOUTON VALIDE/PA VALIDE
+        function renderAdminPreds() {
+            const container = document.getElementById('adminPredList');
+            if(DB.predictions.length === 0) {
+                container.innerHTML = '<p style="color:#666; text-align:center; padding:20px;">Aucun pronostic créé.</p>';
+                return;
+            }
+
+            container.innerHTML = DB.predictions.map(p => {
+                const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?'};
+                let statusColor = '#888';
+                let statusText = '⏳ En attente';
+                if(p.result === 'won') { statusColor = 'var(--primary)'; statusText = '✅ GAGNÉ'; }
+                else if(p.result === 'lost') { statusColor = '#EF4444'; statusText = '❌ PERDU'; }
+                else if(p.result === 'cancelled') { statusColor = '#888'; statusText = '⏸️ ANNULÉ'; }
+
+                return `
+                    <div class="card" style="margin:10px 0; padding:12px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span class="${p.cat === 'VIP' ? 'badge-vip' : 'badge-free'}">${p.cat}</span>
+                            <span style="color:${statusColor}; font-weight:bold; font-size:12px;">${statusText}</span>
+                        </div>
+                        <div style="font-size:13px; color:white; margin-bottom:6px;">${m.home} vs ${m.away}</div>
+                        <div style="font-size:12px; color:var(--primary); margin-bottom:10px;">${p.type}: ${p.pick} (${p.odds})</div>
+                        
+                        ${p.result === 'pending' ? `
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                <button onclick="setPredResult(${p.id}, 'won')" class="btn btn-primary btn-sm" style="flex:1;">✅ Valide (Gagné)</button>
+                                <button onclick="setPredResult(${p.id}, 'lost')" class="btn btn-danger btn-sm" style="flex:1;">❌ Pa Valide (Perdu)</button>
+                                <button onclick="setPredResult(${p.id}, 'cancelled')" class="btn btn-outline btn-sm" style="flex:1; border-color:#888; color:#888;">⏸️ Annulé</button>
+                            </div>
+                        ` : `
+                            <button onclick="setPredResult(${p.id}, 'pending')" class="btn btn-outline btn-sm" style="width:100%;"> Remettre en attente</button>
+                        `}
+                        
+                        <button onclick="deletePred(${p.id})" class="btn btn-danger btn-sm" style="width:100%; margin-top:6px;">🗑️ Supprimer</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function setPredResult(id, result) {
+            const pred = DB.predictions.find(p => p.id === id);
+            if(pred) {
+                pred.result = result;
+                saveDB();
+                renderAdminPreds();
+                renderHomePreds();
+                
+                const statusMsg = {
+                    'won': 'Pronostic marqué comme GAGNÉ ✅',
+                    'lost': 'Pronostic marqué comme PERDU ❌',
+                    'cancelled': 'Pronostic ANNULÉ ⏸️',
+                    'pending': 'Pronostic remis en attente ⏳'
+                };
+                alert(statusMsg[result]);
+            }
+        }
+
+        function deletePred(id) {
+            if(confirm('Supprimer ce pronostic ?')) {
+                DB.predictions = DB.predictions.filter(p => p.id !== id);
+                saveDB();
+                renderAdminPreds();
+                renderHomePreds();
+            }
         }
 
         function renderComboBuilder() {
@@ -948,10 +817,7 @@
             const odds = prompt("Cote (Ex: 1.85):");
             if(!odds || isNaN(odds)) return alert('Cote invalide.');
 
-            comboBuilderItems.push({
-                matchId: parseInt(matchId),
-                type, pick, odds: parseFloat(odds)
-            });
+            comboBuilderItems.push({ matchId: parseInt(matchId), type, pick, odds: parseFloat(odds) });
             renderComboBuilder();
         }
 
@@ -1053,8 +919,11 @@
             localStorage.setItem('fp_combo', JSON.stringify(DB.combo));
         }
 
+        // ============================================
+        // AVIATOR - PREDIKSYON OTOMATIK (1 MINIT)
+        // ============================================
         let autoPredInterval = null;
-        let autoPredCountdown = 10;
+        let autoPredCountdown = 60; // 60 segonn = 1 minit
         let currentAutoPred = null;
         let autoPredHistory = JSON.parse(localStorage.getItem('fp_autoPredHist') || '[]');
 
@@ -1063,7 +932,7 @@
             generateNewPrediction();
             
             if(autoPredInterval) clearInterval(autoPredInterval);
-            autoPredCountdown = 10;
+            autoPredCountdown = 60;
             
             autoPredInterval = setInterval(() => {
                 autoPredCountdown--;
@@ -1072,7 +941,7 @@
                 if(autoPredCountdown <= 0) {
                     resolvePrediction();
                     generateNewPrediction();
-                    autoPredCountdown = 10;
+                    autoPredCountdown = 60;
                 }
             }, 1000);
         }
@@ -1109,7 +978,7 @@
 
             document.getElementById('predValue').innerText = predictedValue + 'x';
             document.getElementById('predConfidence').innerText = '★'.repeat(confidence) + '☆'.repeat(5 - confidence);
-            document.getElementById('predStatus').innerText = '🎯 Prédiction active - Placez vos paris !';
+            document.getElementById('predStatus').innerText = '🎯 Prédiction active - Analysez la tendance !';
             document.getElementById('predValue').style.color = 'var(--gold)';
         }
 
@@ -1160,108 +1029,6 @@
             const wins = autoPredHistory.filter(h => h.success).length;
             const rate = Math.round((wins / autoPredHistory.length) * 100);
             document.getElementById('predSuccessRate').innerText = `Taux: ${rate}% (${wins}/${autoPredHistory.length})`;
-        }
-
-        let aviatorInterval;
-        let multiplier = 1.00;
-        let isFlying = false;
-        let crashPoint = 0;
-        let userBet = 0;
-        let balance = 1000;
-
-        function toggleAviator() {
-            const btn = document.getElementById('actionBtn');
-            const betInput = document.getElementById('betAmount');
-            
-            if (!isFlying) {
-                userBet = parseInt(betInput.value);
-                if (userBet > balance) return alert("Solde insuffisant!");
-                if (userBet <= 0) return alert("Mise invalide.");
-
-                balance -= userBet;
-                updateBalance();
-                
-                isFlying = true;
-                multiplier = 1.00;
-                btn.innerText = "RETIRER";
-                btn.classList.remove('btn-gold');
-                btn.classList.add('btn-primary');
-                betInput.disabled = true;
-                
-                document.getElementById('crashedMsg').style.display = 'none';
-                document.getElementById('aviatorMultiplier').style.color = 'white';
-                
-                if(currentAutoPred && !currentAutoPred.resolved) {
-                    crashPoint = currentAutoPred.value + (Math.random() * 0.5 - 0.25);
-                    if(crashPoint < 1.01) crashPoint = 1.01;
-                } else {
-                    crashPoint = (Math.random() * 5 + 1).toFixed(2);
-                }
-
-                startAnimation();
-            } else {
-                clearInterval(aviatorInterval);
-                const winAmount = Math.floor(userBet * multiplier);
-                balance += winAmount;
-                updateBalance();
-                
-                addToHistory(multiplier, true);
-                alert(`Bravo! Vous avez gagné ${winAmount} HTG (x${multiplier.toFixed(2)})`);
-                resetGame();
-            }
-        }
-
-        function startAnimation() {
-            const plane = document.getElementById('planeObj');
-            const display = document.getElementById('aviatorMultiplier');
-            
-            aviatorInterval = setInterval(() => {
-                multiplier += 0.01 + (multiplier * 0.005);
-                display.innerText = multiplier.toFixed(2) + 'x';
-                
-                let progress = Math.min((multiplier - 1) * 20, 80);
-                plane.style.bottom = (20 + progress) + 'px';
-                plane.style.left = (20 + progress) + 'px';
-
-                if (multiplier >= crashPoint) crashPlane();
-            }, 50);
-        }
-
-        function crashPlane() {
-            clearInterval(aviatorInterval);
-            isFlying = false;
-            document.getElementById('crashedMsg').style.display = 'block';
-            document.getElementById('aviatorMultiplier').style.color = 'var(--danger)';
-            document.getElementById('actionBtn').innerText = "PARIER";
-            document.getElementById('actionBtn').classList.add('btn-gold');
-            document.getElementById('actionBtn').classList.remove('btn-primary');
-            document.getElementById('betAmount').disabled = false;
-            
-            addToHistory(multiplier, false);
-        }
-
-        function resetGame() {
-            isFlying = false;
-            document.getElementById('actionBtn').innerText = "PARIER";
-            document.getElementById('actionBtn').classList.add('btn-gold');
-            document.getElementById('actionBtn').classList.remove('btn-primary');
-            document.getElementById('betAmount').disabled = false;
-            document.getElementById('planeObj').style.bottom = '20px';
-            document.getElementById('planeObj').style.left = '20px';
-            document.getElementById('aviatorMultiplier').innerText = "1.00x";
-        }
-
-        function updateBalance() {
-            document.getElementById('aviatorBalance').innerText = balance + " HTG";
-        }
-
-        function addToHistory(val, won) {
-            const hist = document.getElementById('aviatorHistory');
-            const item = document.createElement('div');
-            item.className = `hist-item ${won ? 'hist-win' : 'hist-loss'}`;
-            item.innerText = val.toFixed(2) + 'x';
-            hist.prepend(item);
-            if(hist.children.length > 20) hist.lastChild.remove();
         }
 
         renderAll();
