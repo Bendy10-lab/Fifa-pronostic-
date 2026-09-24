@@ -19,6 +19,98 @@
         body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 80px; }
         .hidden { display: none !important; }
         
+        /* SPLASH SCREEN */
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0A0E1A 0%, #1a1a2e 50%, #0A0E1A 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .splash-image-container {
+            width: 90%;
+            max-width: 400px;
+            height: 400px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 200, 83, 0.3);
+            border: 3px solid var(--primary);
+            animation: pulse 2s infinite;
+            position: relative;
+        }
+        
+        .splash-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .splash-message {
+            margin-top: 30px;
+            text-align: center;
+            animation: slideUp 0.8s ease;
+        }
+        
+        .splash-message h1 {
+            font-size: 28px;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .splash-message p {
+            font-size: 16px;
+            color: var(--text-gray);
+            margin-bottom: 30px;
+        }
+        
+        .splash-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 200, 83, 0.4);
+            transition: all 0.3s;
+            animation: bounce 2s infinite;
+        }
+        
+        .splash-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 200, 83, 0.6);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
         .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 5px; transition: 0.2s; }
         .btn:active { transform: scale(0.98); }
         .btn-primary { background: var(--primary); color: white; }
@@ -44,7 +136,6 @@
         .badge-vip { background: rgba(255, 215, 0, 0.2); color: var(--gold); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
         .coupon-box { background: #000; padding: 10px; border-radius: 8px; margin-top: 10px; border-left: 3px solid var(--primary); }
         
-        /* COUPON COMBINÉ STYLE */
         .combo-card {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             border: 2px solid var(--gold);
@@ -98,7 +189,6 @@
         .combo-match-info { flex: 1; }
         .combo-match-pick { color: var(--primary); font-weight: bold; font-size: 13px; }
         
-        /* AVIATOR PREDICTION ZONE */
         .pred-zone {
             background: linear-gradient(135deg, #1a0a1e 0%, #2a1a2e 100%);
             border: 2px solid var(--aviator-red);
@@ -208,39 +298,51 @@
 </head>
 <body>
 
+    <!-- SPLASH SCREEN -->
+    <div id="splashScreen">
+        <div class="splash-image-container">
+            <!-- CHANJE NON FICHYE A SI LI DIFERAN -->
+            <img src="splash.jpg" alt="FIFA PRONOSTIC" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%230A0E1A%22 width=%22400%22 height=%22400%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2240%22 fill=%22%2300C853%22 text-anchor=%22middle%22 dy=%22.3em%22>⚽ BETTING</text></svg>'">
+        </div>
+        <div class="splash-message">
+            <h1>🔥 FIFA PRONOSTIC 🔥</h1>
+            <p>Télécharge l'application pour une meilleure expérience!</p>
+            <button class="splash-btn" onclick="closeSplash()">
+                <i class="fas fa-download"></i> CONTINUER
+            </button>
+        </div>
+    </div>
+
+    <!-- HEADER -->
     <header>
         <div class="logo"><i class="fas fa-futbol"></i> FIFA PRONOSTIC</div>
         <div id="userBadge"></div>
     </header>
 
-    <!-- HOME - Tout sou yon sèl paj -->
-    <div id="homePage" class="page">
+    <!-- HOME -->
+    <div id="homePage" class="page hidden">
         <div style="padding: 20px; text-align: center;">
             <h1 style="font-size: 24px; margin-bottom: 5px;">Gagne ak Nou</h1>
             <p style="color: var(--text-gray); font-size: 13px;">Pronostics, Coupons & Aviator</p>
         </div>
 
-        <!-- COUPON COMBINÉ DU JOUR -->
         <div class="section-title">
             <h3>🔥 Coupon Combiné du Jour</h3>
             <span style="color: var(--gold); font-size: 11px;" id="comboDate"></span>
         </div>
         <div id="comboContainer"></div>
 
-        <!-- MATCHS DU JOUR -->
         <div class="section-title">
-            <h3>⚽ Matchs du Jour</h3>
+            <h3> Matchs du Jour</h3>
             <button onclick="showPage('matches')" style="background:none; border:none; color:var(--primary); font-size:12px; cursor:pointer;">Voir tout →</button>
         </div>
         <div id="homeMatchesList"></div>
 
-        <!-- PRONOSTICS FREE -->
         <div class="section-title">
-            <h3>🎯 Pronostics du Jour</h3>
+            <h3> Pronostics du Jour</h3>
         </div>
         <div id="homePredsList"></div>
 
-        <!-- AVIATOR PROMO -->
         <div class="card" style="background: linear-gradient(135deg, #2a1a2e, #1a0a1e); border-color: var(--aviator-red); text-align:center; margin-top: 20px;" onclick="showPage('aviator')">
             <div style="font-size: 40px; margin-bottom: 10px;">✈️</div>
             <h3 style="color: var(--aviator-red);">Jouer Aviator</h3>
@@ -249,15 +351,14 @@
         </div>
     </div>
 
-    <!-- MATCHS -->
+    <!-- MATCHES -->
     <div id="matchesPage" class="page hidden">
         <h2 style="padding: 20px;">Tous les Matchs</h2>
         <div id="allMatchesList"></div>
     </div>
 
-    <!-- AVIATOR - Ak Prediksyon Otomatik -->
+    <!-- AVIATOR -->
     <div id="aviatorPage" class="page hidden">
-        <!-- ZONE PREDIKSYON OTOMATIK -->
         <div class="pred-zone">
             <div class="pred-timer" id="predTimer">⏱ Prochaine prédiction dans: <span id="predCountdown">10</span>s</div>
             <div style="font-size: 12px; color: var(--aviator-red); font-weight: bold;">🎯 PRÉDICTION AUTOMATIQUE</div>
@@ -266,14 +367,12 @@
             <div class="pred-status" id="predStatus">En attente du prochain round...</div>
         </div>
 
-        <!-- HISTORIQUE PREDIKSYON -->
         <div style="padding: 10px 20px 0; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:12px; color:#888;">📊 Historique Prédictions</span>
+            <span style="font-size:12px; color:#888;"> Historique Prédictions</span>
             <span style="font-size:11px; color:var(--primary);" id="predSuccessRate">Taux: --%</span>
         </div>
         <div class="pred-history" id="predHistory"></div>
 
-        <!-- AVIATOR GAME SCREEN -->
         <div class="history-bar" id="aviatorHistory"></div>
 
         <div class="aviator-screen">
@@ -297,7 +396,7 @@
                 <input type="number" id="betAmount" value="100" style="margin:0;">
                 <button id="actionBtn" class="btn btn-gold" onclick="toggleAviator()">PARIER</button>
             </div>
-            <p style="font-size:11px; color:#666; text-align:center;">⚠️ Simulation pour le divertissement uniquement.</p>
+            <p style="font-size:11px; color:#666; text-align:center;">️ Simulation pour le divertissement uniquement.</p>
         </div>
     </div>
 
@@ -336,7 +435,7 @@
         </div>
     </div>
 
-    <!-- PROFILE / AUTH -->
+    <!-- PROFILE -->
     <div id="profilePage" class="page hidden">
         <div id="profileContent" class="hidden">
             <div class="card" style="text-align: center;">
@@ -366,7 +465,7 @@
         </div>
     </div>
 
-    <!-- ADMIN PANEL -->
+    <!-- ADMIN -->
     <div id="adminPage" class="page hidden">
         <div style="padding: 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
@@ -398,7 +497,6 @@
                     <input type="time" id="mTime" required>
                     <button class="btn btn-primary">Enregistrer le Match</button>
                 </form>
-
                 <h3 style="margin: 20px 0 10px;">Liste des Matchs</h3>
                 <div id="adminMatchList"></div>
             </div>
@@ -420,15 +518,13 @@
                 </form>
             </div>
 
-            <!-- NOUVO: TAB POU KREYE COUPON COMBINE -->
             <div id="admCombo" class="admin-section hidden">
                 <h3 style="margin: 15px 0;">🔥 Créer Coupon Combiné du Jour</h3>
-                <p style="font-size:12px; color:#888; margin-bottom:15px;">Ajoutez plusieurs pronostics pour former un coupon combiné. La cote totale sera calculée automatiquement.</p>
+                <p style="font-size:12px; color:#888; margin-bottom:15px;">Ajoutez plusieurs pronostics pour former un coupon combiné.</p>
                 
                 <div id="comboBuilder">
                     <div id="comboItemsList"></div>
                     <button onclick="addComboItem()" class="btn btn-outline" style="margin-bottom:15px;">+ Ajouter un match au coupon</button>
-                    
                     <button onclick="saveCombo()" class="btn btn-gold">💾 Publier le Coupon Combiné</button>
                     <button onclick="clearCombo()" class="btn btn-danger" style="background:#555;">🗑️ Vider</button>
                 </div>
@@ -449,7 +545,7 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAV - San "Pronos" -->
+    <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i> Accueil</button>
         <button class="nav-item" onclick="showPage('matches')"><i class="fas fa-futbol"></i> Matchs</button>
@@ -460,7 +556,34 @@
     </nav>
 
     <script>
-        // --- DATABASE ---
+        // SPLASH SCREEN
+        function closeSplash() {
+            const splash = document.getElementById('splashScreen');
+            splash.style.animation = 'fadeOut 0.5s ease forwards';
+            setTimeout(() => {
+                splash.classList.add('hidden');
+                showPage('home');
+            }, 500);
+        }
+
+        // Auto-close after 5 seconds
+        setTimeout(() => {
+            if(!document.getElementById('splashScreen').classList.contains('hidden')) {
+                closeSplash();
+            }
+        }, 5000);
+
+        // Add fadeOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; visibility: hidden; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // DATABASE
         const DB = {
             users: JSON.parse(localStorage.getItem('fp_users')) || [
                 { email: 'admin@fifa.com', pass: 'admin123', role: 'admin', isVip: true, name: 'Admin' }
@@ -475,7 +598,6 @@
         let isRegistering = false;
         let comboBuilderItems = [];
 
-        // --- NAVIGATION ---
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             document.getElementById(pageId + 'Page').classList.remove('hidden');
@@ -489,7 +611,6 @@
             checkAuth();
             renderAll();
 
-            // Kòmanse prediksyon otomatik si sou paj aviator
             if(pageId === 'aviator') startAutoPrediction();
             else stopAutoPrediction();
         }
@@ -533,7 +654,6 @@
             }
         }
 
-        // --- AUTH ---
         function showAuthForm() {
             document.getElementById('loginPrompt').classList.add('hidden');
             document.getElementById('authForm').classList.remove('hidden');
@@ -577,7 +697,6 @@
             showPage('home');
         }
 
-        // --- RENDERING ---
         function renderAll() {
             renderMatches();
             renderHomePreds();
@@ -626,8 +745,8 @@
         }
 
         function renderPredCard(p) {
-            const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'⚽', awayLogo:'⚽', dateStr:''};
-            const couponText = `⚽ *FIFA PRONOSTIC*\n\n🔹 *Match:* ${m.home} vs ${m.away}\n🔸 *Pari:* ${p.type}\n✅ *Pick:* ${p.pick}\n💰 *Cote:* ${p.odds}`;
+            const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'', awayLogo:'⚽', dateStr:''};
+            const couponText = `⚽ *FIFA PRONOSTIC*\n\n🔹 *Match:* ${m.home} vs ${m.away}\n🔸 *Pari:* ${p.type}\n✅ *Pick:* ${p.pick}\n *Cote:* ${p.odds}`;
             
             return `
             <div class="card">
@@ -655,7 +774,6 @@
             </div>`;
         }
 
-        // --- COUPON COMBINÉ ---
         function renderCombo() {
             const container = document.getElementById('comboContainer');
             const combo = DB.combo;
@@ -700,7 +818,7 @@
         }
 
         function copyCombo(text, odds) {
-            const full = `🔥 *COUPON COMBINÉ DU JOUR*\n💰 *Cote Totale: ${odds}*\n\n${text}\n\n🔗 FIFA PRONOSTIC`;
+            const full = `🔥 *COUPON COMBINÉ DU JOUR*\n *Cote Totale: ${odds}*\n\n${text}\n\n🔗 FIFA PRONOSTIC`;
             navigator.clipboard.writeText(full).then(() => alert('Coupon Combiné copié !'));
         }
 
@@ -708,7 +826,6 @@
             navigator.clipboard.writeText(text).then(() => alert('Coupon copié !'));
         }
 
-        // --- ADMIN ---
         function showAdminTab(tabId) {
             document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('adm' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
@@ -732,7 +849,7 @@
             e.preventDefault();
             const home = document.getElementById('mHome').value;
             const away = document.getElementById('mAway').value;
-            const hLogo = document.getElementById('mHomeLogo').value || '⚽';
+            const hLogo = document.getElementById('mHomeLogo').value || '';
             const aLogo = document.getElementById('mAwayLogo').value || '⚽';
             const time = document.getElementById('mTime').value;
             const dType = document.getElementById('mDateType').value;
@@ -794,11 +911,10 @@
             renderAll();
         }
 
-        // --- COUPON COMBINÉ BUILDER (ADMIN) ---
         function renderComboBuilder() {
             const list = document.getElementById('comboItemsList');
             if(comboBuilderItems.length === 0) {
-                list.innerHTML = '<p style="color:#666; font-size:12px; text-align:center; padding:10px;">Aucun match ajouté. Cliquez sur "Ajouter un match".</p>';
+                list.innerHTML = '<p style="color:#666; font-size:12px; text-align:center; padding:10px;">Aucun match ajouté.</p>';
                 return;
             }
             list.innerHTML = comboBuilderItems.map((item, idx) => {
@@ -820,13 +936,13 @@
         function addComboItem() {
             if(DB.matches.length === 0) return alert('Ajoutez d\'abord des matchs !');
             
-            const matchId = prompt("ID du match (voir liste dans 'Matchs'):\n" + DB.matches.map(m => `${m.id}: ${m.home} vs ${m.away}`).join('\n'));
+            const matchId = prompt("ID du match:\n" + DB.matches.map(m => `${m.id}: ${m.home} vs ${m.away}`).join('\n'));
             if(!matchId || !DB.matches.find(m => m.id == matchId)) return alert('Match invalide.');
             
             const type = prompt("Type de pari (Ex: 1X2, Over 2.5):");
             if(!type) return;
             
-            const pick = prompt("Pronostic (Ex: Victoire, Oui, Plus de 2.5):");
+            const pick = prompt("Pronostic (Ex: Victoire, Oui):");
             if(!pick) return;
             
             const odds = prompt("Cote (Ex: 1.85):");
@@ -845,7 +961,7 @@
         }
 
         function saveCombo() {
-            if(comboBuilderItems.length < 2) return alert('Ajoutez au moins 2 matchs pour un combiné !');
+            if(comboBuilderItems.length < 2) return alert('Ajoutez au moins 2 matchs!');
             DB.combo = { items: [...comboBuilderItems], createdAt: Date.now() };
             saveDB();
             comboBuilderItems = [];
@@ -854,7 +970,7 @@
         }
 
         function clearCombo() {
-            if(confirm('Vider le coupon en cours ?')) {
+            if(confirm('Vider le coupon ?')) {
                 comboBuilderItems = [];
                 renderComboBuilder();
             }
@@ -937,9 +1053,6 @@
             localStorage.setItem('fp_combo', JSON.stringify(DB.combo));
         }
 
-        // ============================================
-        // AVIATOR - PREDIKSYON OTOMATIK
-        // ============================================
         let autoPredInterval = null;
         let autoPredCountdown = 10;
         let currentAutoPred = null;
@@ -972,23 +1085,19 @@
         }
 
         function generateNewPrediction() {
-            // Jenerasyon otomatik - baze sou statistik (similye)
-            // 70% chans prediksyon an ba (1.2x - 2.5x)
-            // 25% chans mwayen (2.5x - 5x)
-            // 5% chans wo (5x - 20x)
             const rand = Math.random();
             let predictedValue;
             let confidence;
             
             if(rand < 0.70) {
                 predictedValue = (Math.random() * 1.3 + 1.2).toFixed(2);
-                confidence = Math.floor(Math.random() * 2) + 3; // 3-4 zetwal
+                confidence = Math.floor(Math.random() * 2) + 3;
             } else if(rand < 0.95) {
                 predictedValue = (Math.random() * 2.5 + 2.5).toFixed(2);
-                confidence = Math.floor(Math.random() * 2) + 2; // 2-3 zetwal
+                confidence = Math.floor(Math.random() * 2) + 2;
             } else {
                 predictedValue = (Math.random() * 15 + 5).toFixed(2);
-                confidence = Math.floor(Math.random() * 2) + 1; // 1-2 zetwal
+                confidence = Math.floor(Math.random() * 2) + 1;
             }
 
             currentAutoPred = {
@@ -998,7 +1107,6 @@
                 resolved: false
             };
 
-            // Afiche prediksyon an
             document.getElementById('predValue').innerText = predictedValue + 'x';
             document.getElementById('predConfidence').innerText = '★'.repeat(confidence) + '☆'.repeat(5 - confidence);
             document.getElementById('predStatus').innerText = '🎯 Prédiction active - Placez vos paris !';
@@ -1008,17 +1116,14 @@
         function resolvePrediction() {
             if(!currentAutoPred) return;
 
-            // Reel crash point (ki kote avyon an ap kraze)
             const rand = Math.random();
             let actualCrash;
             if(rand < 0.60) actualCrash = Math.random() * 1.5 + 1.0;
             else if(rand < 0.90) actualCrash = Math.random() * 3 + 2.0;
             else actualCrash = Math.random() * 15 + 3.0;
 
-            // Verifie si prediksyon an te kòrèk (reel crash >= predicted)
             const success = actualCrash >= currentAutoPred.value;
             
-            // Sove nan istorik
             autoPredHistory.unshift({
                 predicted: currentAutoPred.value,
                 actual: parseFloat(actualCrash.toFixed(2)),
@@ -1027,11 +1132,9 @@
                 time: Date.now()
             });
             
-            // Kenbe sèlman 30 dènye yo
             if(autoPredHistory.length > 30) autoPredHistory = autoPredHistory.slice(0, 30);
             localStorage.setItem('fp_autoPredHist', JSON.stringify(autoPredHistory));
 
-            // Afiche rezilta
             document.getElementById('predStatus').innerHTML = success 
                 ? `<span style="color:var(--primary);">✅ GAGNÉ! Crash réel: ${actualCrash.toFixed(2)}x</span>`
                 : `<span style="color:#EF4444;">❌ PERDU. Crash réel: ${actualCrash.toFixed(2)}x</span>`;
@@ -1054,15 +1157,11 @@
                 </div>
             `).join('');
 
-            // Kalkile taux siksè
             const wins = autoPredHistory.filter(h => h.success).length;
             const rate = Math.round((wins / autoPredHistory.length) * 100);
             document.getElementById('predSuccessRate').innerText = `Taux: ${rate}% (${wins}/${autoPredHistory.length})`;
         }
 
-        // ============================================
-        // AVIATOR - JEU
-        // ============================================
         let aviatorInterval;
         let multiplier = 1.00;
         let isFlying = false;
@@ -1092,7 +1191,6 @@
                 document.getElementById('crashedMsg').style.display = 'none';
                 document.getElementById('aviatorMultiplier').style.color = 'white';
                 
-                // Itilize prediksyon otomatik la kòm crash point (pou koherans)
                 if(currentAutoPred && !currentAutoPred.resolved) {
                     crashPoint = currentAutoPred.value + (Math.random() * 0.5 - 0.25);
                     if(crashPoint < 1.01) crashPoint = 1.01;
@@ -1166,7 +1264,6 @@
             if(hist.children.length > 20) hist.lastChild.remove();
         }
 
-        // Init
         renderAll();
         checkAuth();
     </script>
