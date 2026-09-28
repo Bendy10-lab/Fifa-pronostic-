@@ -3,58 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOLDEN GOL</title>
+    <title>GOLDEN GOLD</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #0A0E1A;
             --bg-card: #141927;
+            --bg-light: #F5F5F5;
+            --bg-card-light: #FFFFFF;
             --primary: #FFD700;
             --gold: #FFD700;
             --red: #E91E63;
             --blue: #3B82F6;
             --purple: #8B5CF6;
             --text-white: #FFFFFF;
+            --text-black: #000000;
             --text-gray: #8B92A8;
+            --text-gray-light: #6B7280;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 80px; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: background-color 0.3s, color 0.3s; }
+        
+        body.light-mode {
+            background-color: var(--bg-light);
+            color: var(--text-black);
+        }
+        
+        body.light-mode .bg-card {
+            background-color: var(--bg-card-light);
+            border-color: #E5E7EB;
+        }
+        
+        body.light-mode input, body.light-mode select {
+            background-color: var(--bg-card-light);
+            border-color: #D1D5DB;
+            color: var(--text-black);
+        }
+        
+        body.light-mode header {
+            background-color: rgba(255,255,255,0.95);
+            border-bottom-color: #E5E7EB;
+        }
+        
+        body.light-mode .bottom-nav {
+            background-color: var(--bg-card-light);
+            border-top-color: #E5E7EB;
+        }
+        
+        body.light-mode .section-header {
+            border-bottom-color: #E5E7EB;
+        }
+        
+        body.light-mode .pred-card {
+            background-color: var(--bg-card-light);
+            border-color: #E5E7EB;
+        }
+        
+        body.light-mode .pick-box {
+            background-color: #F3F4F6;
+        }
+
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-white); 
+            padding-bottom: 90px; 
+        }
+        
         .hidden { display: none !important; }
 
+        /* ACCESS SCREEN */
         #accessScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #0A0E1A 0%, #1a1a2e 50%, #0A0E1A 100%);
             z-index: 9999; display: flex; flex-direction: column;
             align-items: center; justify-content: center; padding: 20px;
         }
+        
+        body.light-mode #accessScreen {
+            background: linear-gradient(135deg, #F5F5F5 0%, #E5E7EB 50%, #F5F5F5 100%);
+        }
+
         .access-logo {
-            width: 100px; height: 100px; border-radius: 50%;
+            width: 120px; height: 120px; border-radius: 50%;
             background: linear-gradient(135deg, var(--gold), #D4AF37);
             display: flex; align-items: center; justify-content: center;
-            font-size: 50px; margin-bottom: 20px;
+            font-size: 60px; margin-bottom: 20px;
             box-shadow: 0 10px 40px rgba(255, 215, 0, 0.4);
             animation: pulse 2s infinite;
         }
+
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        .access-title { font-size: 28px; font-weight: 800; color: var(--gold); margin-bottom: 8px; text-align: center; }
+        
+        .access-title { font-size: 32px; font-weight: 900; color: var(--gold); margin-bottom: 8px; text-align: center; letter-spacing: 2px; }
         .access-subtitle { color: var(--text-gray); font-size: 14px; margin-bottom: 30px; text-align: center; }
-        .access-input {
-            width: 100%; max-width: 320px; padding: 14px 18px;
-            background: var(--bg-card); border: 2px solid #2A3142;
-            border-radius: 12px; color: white; font-size: 16px;
-            text-align: center; letter-spacing: 2px; outline: none;
-            margin-bottom: 15px;
+        
+        body.light-mode .access-subtitle { color: var(--text-gray-light); }
+
+        .access-form {
+            width: 100%; max-width: 350px;
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid var(--gold);
         }
+        
+        body.light-mode .access-form {
+            background: var(--bg-card-light);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .access-input {
+            width: 100%; padding: 14px 18px;
+            background: var(--bg-dark); border: 2px solid #2A3142;
+            border-radius: 12px; color: white; font-size: 15px;
+            outline: none; margin-bottom: 12px;
+        }
+        
+        body.light-mode .access-input {
+            background: var(--bg-light);
+            border-color: #D1D5DB;
+            color: var(--text-black);
+        }
+
         .access-input:focus { border-color: var(--gold); }
+        
         .access-btn {
-            width: 100%; max-width: 320px; padding: 14px;
+            width: 100%; padding: 14px;
             background: linear-gradient(135deg, var(--gold), #D4AF37);
             color: black; border: none; border-radius: 12px;
             font-size: 16px; font-weight: 800; cursor: pointer;
             margin-bottom: 10px;
         }
-        .access-error { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 20px; }
 
+        .access-toggle {
+            text-align: center; color: var(--gold);
+            font-size: 13px; cursor: pointer; margin-top: 10px;
+        }
+
+        .access-error { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 20px; text-align: center; }
+        .access-success { color: var(--primary); font-size: 13px; margin-top: 10px; min-height: 20px; text-align: center; }
+
+        /* HEADER */
         header {
             position: sticky; top: 0; z-index: 100;
             background: rgba(10,14,26,0.95); padding: 15px 20px;
@@ -62,19 +151,24 @@
             display: flex; justify-content: space-between; align-items: center;
             backdrop-filter: blur(5px);
         }
-        .logo { font-weight: 800; color: var(--gold); font-size: 18px; display: flex; align-items: center; gap: 8px; }
-        .user-info { font-size: 12px; color: var(--gold); }
+        
+        .logo { font-weight: 900; color: var(--gold); font-size: 20px; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .theme-toggle { background: none; border: none; color: var(--gold); font-size: 20px; cursor: pointer; }
+        .user-badge { font-size: 11px; color: var(--gold); background: rgba(255,215,0,0.1); padding: 4px 10px; border-radius: 12px; }
 
+        /* SECTIONS GRID */
         .sections-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 15px 20px;
+            gap: 15px;
+            padding: 20px;
         }
+        
         .section-card {
             background: var(--bg-card);
-            border-radius: 16px;
-            padding: 20px 15px;
+            border-radius: 20px;
+            padding: 25px 15px;
             text-align: center;
             cursor: pointer;
             border: 2px solid transparent;
@@ -82,19 +176,40 @@
             position: relative;
             overflow: hidden;
         }
+        
+        body.light-mode .section-card {
+            background: var(--bg-card-light);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
         .section-card:active { transform: scale(0.97); }
-        .section-card .icon { font-size: 36px; margin-bottom: 10px; }
-        .section-card .title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .section-card .icon { font-size: 40px; margin-bottom: 12px; }
+        .section-card .title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
         .section-card .count { font-size: 11px; color: var(--text-gray); }
+        
+        body.light-mode .section-card .count { color: var(--text-gray-light); }
+
         .section-card.correct { border-color: var(--blue); background: linear-gradient(135deg, rgba(59,130,246,0.15), var(--bg-card)); }
         .section-card.correct .title { color: var(--blue); }
-        .section-card.vip { border-color: var(--gold); background: linear-gradient(135deg, rgba(255,215,0,0.15), var(--bg-card)); }
-        .section-card.vip .title { color: var(--gold); }
-        .section-card.odds { border-color: var(--red); background: linear-gradient(135deg, rgba(233,30,99,0.15), var(--bg-card)); }
-        .section-card.odds .title { color: var(--red); }
-        .section-card.daily { border-color: var(--primary); background: linear-gradient(135deg, rgba(255,215,0,0.15), var(--bg-card)); }
-        .section-card.daily .title { color: var(--primary); }
+        
+        body.light-mode .section-card.correct { background: linear-gradient(135deg, rgba(59,130,246,0.1), var(--bg-card-light)); }
 
+        .section-card.draw { border-color: var(--purple); background: linear-gradient(135deg, rgba(139,92,246,0.15), var(--bg-card)); }
+        .section-card.draw .title { color: var(--purple); }
+        
+        body.light-mode .section-card.draw { background: linear-gradient(135deg, rgba(139,92,246,0.1), var(--bg-card-light)); }
+
+        .section-card.odds50 { border-color: var(--red); background: linear-gradient(135deg, rgba(233,30,99,0.15), var(--bg-card)); }
+        .section-card.odds50 .title { color: var(--red); }
+        
+        body.light-mode .section-card.odds50 { background: linear-gradient(135deg, rgba(233,30,99,0.1), var(--bg-card-light)); }
+
+        .section-card.odds2 { border-color: var(--gold); background: linear-gradient(135deg, rgba(255,215,0,0.15), var(--bg-card)); }
+        .section-card.odds2 .title { color: var(--gold); }
+        
+        body.light-mode .section-card.odds2 { background: linear-gradient(135deg, rgba(255,215,0,0.1), var(--bg-card-light)); }
+
+        /* SECTION DETAIL */
         .section-header {
             padding: 20px;
             display: flex;
@@ -102,257 +217,375 @@
             gap: 12px;
             border-bottom: 1px solid #2A3142;
         }
+        
         .section-header .back-btn {
             background: none; border: none; color: white;
             font-size: 20px; cursor: pointer; padding: 5px;
         }
+        
+        body.light-mode .section-header .back-btn { color: var(--text-black); }
+
         .section-header h2 { font-size: 20px; }
         .section-header .icon-big { font-size: 28px; }
 
         .pred-card {
             background: var(--bg-card);
-            border-radius: 14px;
-            padding: 15px;
-            margin: 12px 20px;
+            border-radius: 16px;
+            padding: 18px;
+            margin: 15px 20px;
             border: 1px solid #2A3142;
         }
+        
+        body.light-mode .pred-card {
+            background: var(--bg-card-light);
+            border-color: #E5E7EB;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
         .pred-card-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
+        
         .pred-badge {
-            padding: 3px 10px; border-radius: 20px;
+            padding: 4px 12px; border-radius: 20px;
             font-size: 10px; font-weight: 700;
         }
+        
         .badge-correct { background: rgba(59,130,246,0.2); color: var(--blue); }
-        .badge-vip { background: rgba(255,215,0,0.2); color: var(--gold); }
-        .badge-odds { background: rgba(233,30,99,0.2); color: var(--red); }
-        .badge-daily { background: rgba(255,215,0,0.2); color: var(--primary); }
+        .badge-draw { background: rgba(139,92,246,0.2); color: var(--purple); }
+        .badge-odds50 { background: rgba(233,30,99,0.2); color: var(--red); }
+        .badge-odds2 { background: rgba(255,215,0,0.2); color: var(--gold); }
 
         .match-display {
             display: flex; justify-content: space-between; align-items: center;
-            margin: 10px 0;
+            margin: 12px 0;
         }
+        
         .team-info { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
-        .team-logo { font-size: 24px; }
+        .team-logo { font-size: 26px; }
         .vs { color: var(--text-gray); font-size: 12px; font-weight: bold; }
+        
+        body.light-mode .vs { color: var(--text-gray-light); }
 
         .pick-box {
             background: #000;
-            padding: 12px;
-            border-radius: 10px;
-            margin-top: 10px;
-            border-left: 3px solid var(--gold);
+            padding: 14px;
+            border-radius: 12px;
+            margin-top: 12px;
+            border-left: 4px solid var(--gold);
         }
-        .pick-label { font-size: 11px; color: var(--text-gray); margin-bottom: 4px; }
-        .pick-value { font-size: 18px; font-weight: 800; color: var(--gold); }
-        .pick-odds { color: var(--gold); font-weight: 700; font-size: 14px; }
+        
+        body.light-mode .pick-box {
+            background: #F3F4F6;
+        }
 
-        .confidence-stars { color: var(--gold); font-size: 14px; margin-top: 8px; }
-        .result-badge { margin-top: 10px; text-align: center; font-weight: 700; font-size: 13px; }
+        .pick-label { font-size: 11px; color: var(--text-gray); margin-bottom: 6px; }
+        
+        body.light-mode .pick-label { color: var(--text-gray-light); }
 
+        .pick-value { font-size: 20px; font-weight: 800; color: var(--gold); }
+        .pick-odds { color: var(--gold); font-weight: 700; font-size: 16px; }
+
+        .confidence-stars { color: var(--gold); font-size: 15px; margin-top: 10px; }
+        .result-badge { margin-top: 12px; text-align: center; font-weight: 700; font-size: 13px; padding: 8px; border-radius: 8px; }
+        .result-won { background: rgba(0,200,83,0.1); color: #00C853; }
+        .result-lost { background: rgba(239,68,68,0.1); color: #EF4444; }
+        .result-pending { background: rgba(255,215,0,0.1); color: var(--gold); }
+
+        /* TOTAL ODDS CARD */
+        .total-odds-card {
+            background: linear-gradient(135deg, var(--gold), #D4AF37);
+            color: black;
+            padding: 20px;
+            margin: 15px 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        
+        .total-odds-label { font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+        .total-odds-value { font-size: 36px; font-weight: 900; }
+
+        /* BOTTOM NAV */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--bg-card); border-top: 1px solid #2A3142;
-            display: flex; justify-content: space-around; padding: 10px 0; z-index: 100;
+            display: flex; justify-content: space-around; padding: 12px 0; z-index: 100;
         }
+        
+        body.light-mode .bottom-nav {
+            background: var(--bg-card-light);
+            border-top-color: #E5E7EB;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
         .nav-item {
             background: none; border: none; color: var(--text-gray);
             font-size: 10px; display: flex; flex-direction: column;
             align-items: center; cursor: pointer; min-width: 60px;
+            transition: all 0.3s;
         }
-        .nav-item i { font-size: 18px; margin-bottom: 3px; }
-        .nav-item.active { color: var(--gold); }
+        
+        body.light-mode .nav-item { color: var(--text-gray-light); }
 
+        .nav-item i { font-size: 22px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--gold); transform: translateY(-2px); }
+        
+        body.light-mode .nav-item.active { color: var(--gold); }
+
+        /* ADMIN */
         .admin-tabs {
             display: flex; gap: 5px; overflow-x: auto;
             padding: 10px 20px; background: #111;
         }
+        
+        body.light-mode .admin-tabs {
+            background: #F3F4F6;
+        }
+
         .tab-btn {
             background: #222; color: #888; border: none;
             padding: 8px 12px; border-radius: 20px;
             font-size: 11px; white-space: nowrap; cursor: pointer;
         }
+        
+        body.light-mode .tab-btn {
+            background: #E5E7EB;
+            color: var(--text-gray-light);
+        }
+
         .tab-btn.active { background: var(--gold); color: black; }
+        
         .admin-section { padding: 20px; }
         .admin-section h3 { margin: 15px 0 10px; font-size: 16px; }
 
-        input, select, textarea {
+        input, select {
             width: 100%; padding: 12px;
             background: var(--bg-card); border: 1px solid #2A3142;
             border-radius: 10px; color: white; margin-bottom: 10px; outline: none;
         }
+        
         .btn {
             width: 100%; padding: 12px; border-radius: 12px;
             border: none; font-weight: bold; cursor: pointer;
             font-size: 14px; margin-top: 5px;
         }
+        
         .btn-primary { background: var(--gold); color: black; }
-        .btn-gold { background: var(--gold); color: black; }
         .btn-danger { background: #EF4444; color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
         .btn-sm { padding: 6px 12px; font-size: 11px; width: auto; display: inline-block; margin: 0; }
         .btn-blue { background: var(--blue); color: white; }
         .btn-red { background: var(--red); color: white; }
+        .btn-purple { background: var(--purple); color: white; }
 
-        .code-item {
+        .user-item {
             background: var(--bg-card);
             padding: 12px; border-radius: 10px;
             margin-bottom: 8px;
             display: flex; justify-content: space-between; align-items: center;
             border: 1px solid #2A3142;
         }
-        .code-value {
-            font-family: monospace; font-size: 16px;
-            color: var(--gold); font-weight: 700;
-            background: #000; padding: 4px 10px; border-radius: 6px;
+        
+        body.light-mode .user-item {
+            background: var(--bg-card-light);
+            border-color: #E5E7EB;
         }
-        .code-type { font-size: 11px; color: var(--text-gray); margin-top: 4px; }
+
+        .user-info-text { flex: 1; }
+        .user-name { font-weight: 600; font-size: 14px; }
+        .user-email { font-size: 11px; color: var(--text-gray); margin-top: 2px; }
+        
+        body.light-mode .user-email { color: var(--text-gray-light); }
+
+        .user-status {
+            font-size: 10px; padding: 3px 8px; border-radius: 12px;
+            margin-top: 4px; display: inline-block;
+        }
+        
+        .status-pending { background: rgba(255,215,0,0.2); color: var(--gold); }
+        .status-approved { background: rgba(0,200,83,0.2); color: #00C853; }
+        .status-rejected { background: rgba(239,68,68,0.2); color: #EF4444; }
 
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-gray); }
         .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.5; }
+        
+        body.light-mode .empty-state { color: var(--text-gray-light); }
+
+        /* MODAL */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px; padding: 25px;
+            max-width: 400px; width: 100%;
+            border: 2px solid var(--gold);
+        }
+        
+        body.light-mode .modal-content {
+            background: var(--bg-card-light);
+        }
+
+        .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 15px; color: var(--gold); }
+        .modal-close { float: right; background: none; border: none; color: var(--text-gray); font-size: 24px; cursor: pointer; }
+        
+        body.light-mode .modal-close { color: var(--text-gray-light); }
     </style>
 </head>
 <body>
 
+    <!-- ACCESS SCREEN -->
     <div id="accessScreen">
         <div class="access-logo">⚽</div>
-        <div class="access-title">GOLDEN GOL</div>
-        <div class="access-subtitle">Antre kòd aksè ou a pou w kontinye</div>
-        <input type="text" id="accessCodeInput" class="access-input" placeholder="Kòd Aksè" autocomplete="off">
-        <button class="access-btn" onclick="validateAccess()">ANTRE</button>
-        <div class="access-error" id="accessError"></div>
+        <div class="access-title">GOLDEN GOLD</div>
+        <div class="access-subtitle" id="accessSubtitle">Antre kòd aksè ou a</div>
+        
+        <div class="access-form" id="loginForm">
+            <input type="email" id="loginEmail" class="access-input" placeholder="Email" autocomplete="off">
+            <input type="password" id="loginPassword" class="access-input" placeholder="Modpas" autocomplete="off">
+            <button class="access-btn" onclick="handleLogin()">KONEKTE</button>
+            <div class="access-toggle" onclick="toggleAuthMode()">Pa gen kont? Kreye yon kont</div>
+            <div class="access-error" id="accessError"></div>
+        </div>
+
+        <div class="access-form hidden" id="registerForm">
+            <input type="text" id="regName" class="access-input" placeholder="Non konplè" autocomplete="off">
+            <input type="email" id="regEmail" class="access-input" placeholder="Email" autocomplete="off">
+            <input type="password" id="regPassword" class="access-input" placeholder="Modpas (min 6 karaktè)" autocomplete="off">
+            <input type="password" id="regConfirm" class="access-input" placeholder="Konfime modpas" autocomplete="off">
+            <button class="access-btn" onclick="handleRegister()">KREYE KONT</button>
+            <div class="access-toggle" onclick="toggleAuthMode()">Gen kont deja? Konekte</div>
+            <div class="access-error" id="regError"></div>
+            <div class="access-success" id="regSuccess"></div>
+        </div>
     </div>
 
+    <!-- MAIN APP -->
     <div id="mainApp" class="hidden">
 
         <header>
-            <div class="logo">⚽ GOLDEN GOL</div>
-            <div class="user-info" id="userCodeDisplay"></div>
+            <div class="logo"> GOLDEN GOLD</div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+                <div class="user-badge" id="userBadge">USER</div>
+            </div>
         </header>
 
+        <!-- HOME PAGE -->
         <div id="homePage" class="page">
             <div style="padding: 20px 20px 5px;">
-                <h1 style="font-size: 22px; margin-bottom: 5px;">Byenveni 👋</h1>
-                <p style="color: var(--text-gray); font-size: 13px;">Chwazi yon kategori pou wè prediksyon yo</p>
+                <h1 style="font-size: 24px; margin-bottom: 5px;">Byenveni </h1>
+                <p style="color: var(--text-gray); font-size: 13px;">Chwazi yon kategori</p>
             </div>
 
             <div class="sections-grid">
                 <div class="section-card correct" onclick="openSection('correct')">
                     <div class="icon">🎯</div>
-                    <div class="title">Correct Scores</div>
+                    <div class="title">CORRECT SCORES</div>
                     <div class="count" id="countCorrect">0 prediksyon</div>
                 </div>
-                <div class="section-card vip" onclick="openSection('vip')">
-                    <div class="icon">💎</div>
-                    <div class="title">VIP Prediction</div>
-                    <div class="count" id="countVip">0 prediksyon</div>
+                <div class="section-card draw" onclick="openSection('draw')">
+                    <div class="icon">⚖️</div>
+                    <div class="title">DRAW-WIN</div>
+                    <div class="count" id="countDraw">0 prediksyon</div>
                 </div>
-                <div class="section-card odds" onclick="openSection('odds')">
+                <div class="section-card odds50" onclick="openSection('odds50')">
                     <div class="icon">🔥</div>
-                    <div class="title">Odds Max</div>
-                    <div class="count" id="countOdds">0 prediksyon</div>
+                    <div class="title">ODD'S 50</div>
+                    <div class="count" id="countOdds50">0 prediksyon</div>
                 </div>
-                <div class="section-card daily" onclick="openSection('daily')">
+                <div class="section-card odds2" onclick="openSection('odds2')">
                     <div class="icon">⭐</div>
-                    <div class="title">Daily Pick</div>
-                    <div class="count" id="countDaily">0 prediksyon</div>
+                    <div class="title">ODD'S 2</div>
+                    <div class="count" id="countOdds2">0 prediksyon</div>
                 </div>
             </div>
 
-            <div style="padding: 20px;">
-                <div class="pred-card" style="background: linear-gradient(135deg, rgba(255,215,0,0.1), var(--bg-card)); border-color: var(--gold);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <i class="fas fa-crown" style="font-size: 30px; color: var(--gold);"></i>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 700; color: var(--gold); margin-bottom: 4px;">Kòd ou a: <span id="myCodeDisplay"></span></div>
-                            <div style="font-size: 12px; color: var(--text-gray);">Tip: <span id="myCodeType">-</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div id="totalOddsSection"></div>
         </div>
 
+        <!-- SECTION PAGES -->
         <div id="sectionCorrect" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(59,130,246,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
                 <span class="icon-big">🎯</span>
-                <h2 style="color: var(--blue);">Correct Scores</h2>
+                <h2 style="color: var(--blue);">CORRECT SCORES</h2>
             </div>
             <div id="correctList"></div>
         </div>
 
-        <div id="sectionVip" class="page hidden">
-            <div class="section-header" style="background: linear-gradient(135deg, rgba(255,215,0,0.2), var(--bg-dark));">
+        <div id="sectionDraw" class="page hidden">
+            <div class="section-header" style="background: linear-gradient(135deg, rgba(139,92,246,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <span class="icon-big">💎</span>
-                <h2 style="color: var(--gold);">VIP Prediction</h2>
+                <span class="icon-big">️</span>
+                <h2 style="color: var(--purple);">DRAW-WIN</h2>
             </div>
-            <div id="vipList"></div>
+            <div id="drawList"></div>
         </div>
 
-        <div id="sectionOdds" class="page hidden">
+        <div id="sectionOdds50" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(233,30,99,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
                 <span class="icon-big">🔥</span>
-                <h2 style="color: var(--red);">Odds Max</h2>
+                <h2 style="color: var(--red);">ODD'S 50</h2>
             </div>
-            <div id="oddsList"></div>
+            <div id="odds50List"></div>
         </div>
 
-        <div id="sectionDaily" class="page hidden">
+        <div id="sectionOdds2" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(255,215,0,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
                 <span class="icon-big">⭐</span>
-                <h2 style="color: var(--primary);">Daily Pick</h2>
+                <h2 style="color: var(--gold);">ODD'S 2</h2>
             </div>
-            <div id="dailyList"></div>
+            <div id="odds2List"></div>
         </div>
 
+        <!-- PROFILE PAGE -->
         <div id="profilePage" class="page hidden">
             <div style="padding: 20px;">
                 <div class="pred-card" style="text-align: center;">
-                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), #D4AF37); display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 15px;">👤</div>
-                    <h2 id="profileCode">-</h2>
-                    <p id="profileType" style="color: var(--text-gray);">-</p>
+                    <div style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), #D4AF37); display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 15px;">👤</div>
+                    <h2 id="profileName">-</h2>
+                    <p id="profileEmail" style="color: var(--text-gray); font-size: 13px;">-</p>
+                    <div id="profileStatus" style="margin-top: 10px;"></div>
                     <button onclick="logout()" class="btn btn-danger" style="margin-top: 20px;">Dekonekte</button>
                 </div>
             </div>
         </div>
 
+        <!-- ADMIN PANEL -->
         <div id="adminPage" class="page hidden">
             <div style="padding: 20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                    <h2>️ Admin Panel</h2>
+                    <h2>🛡️ Admin Panel</h2>
                     <button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:20px;">✕</button>
                 </div>
                 
                 <div class="admin-tabs">
-                    <button class="tab-btn active" onclick="showAdminTab('codes')">🔑 Kòd</button>
+                    <button class="tab-btn active" onclick="showAdminTab('users')"> Itilizatè</button>
                     <button class="tab-btn" onclick="showAdminTab('matches')">⚽ Matchs</button>
-                    <button class="tab-btn" onclick="showAdminTab('predCorrect')"> Correct</button>
-                    <button class="tab-btn" onclick="showAdminTab('predVip')">💎 VIP</button>
-                    <button class="tab-btn" onclick="showAdminTab('predOdds')">🔥 Odds</button>
-                    <button class="tab-btn" onclick="showAdminTab('predDaily')">⭐ Daily</button>
+                    <button class="tab-btn" onclick="showAdminTab('predCorrect')">🎯 Correct</button>
+                    <button class="tab-btn" onclick="showAdminTab('predDraw')">⚖️ Draw</button>
+                    <button class="tab-btn" onclick="showAdminTab('predOdds50')">🔥 Odds50</button>
+                    <button class="tab-btn" onclick="showAdminTab('predOdds2')">⭐ Odds2</button>
                 </div>
 
-                <div id="admCodes" class="admin-section">
-                    <h3>🔑 Jere Kòd Aksè</h3>
-                    <p style="font-size:12px; color:#888; margin-bottom:15px;">Kreye kòd pou itilizatè yo.</p>
-                    
-                    <input type="text" id="newCodeValue" placeholder="Kòd (eg: USER123, VIP2026)">
-                    <select id="newCodeType">
-                        <option value="user"> User (nòmal)</option>
-                        <option value="vip">💎 VIP (akses konplè)</option>
-                    </select>
-                    <button class="btn btn-gold" onclick="createCode()">+ Kreye Kòd</button>
-
-                    <h3 style="margin-top: 25px;">Kòd ki egziste yo</h3>
-                    <div id="codesList"></div>
+                <!-- USERS TAB -->
+                <div id="admUsers" class="admin-section">
+                    <h3> Jere Itilizatè yo</h3>
+                    <p style="font-size:12px; color:#888; margin-bottom:15px;">Valide oswa rejte demann enskripsyon yo.</p>
+                    <div id="usersList"></div>
                 </div>
 
+                <!-- MATCHES TAB -->
                 <div id="admMatches" class="admin-section hidden">
-                    <h3>⚽ Ajouter un Match</h3>
+                    <h3> Ajouter un Match</h3>
                     <form onsubmit="addMatch(event)">
                         <input type="text" id="mHome" placeholder="Équipe Domicile" required>
                         <input type="text" id="mHomeLogo" placeholder="Logo (Emoji)">
@@ -366,6 +599,7 @@
                     <div id="adminMatchList"></div>
                 </div>
 
+                <!-- PREDICTION TABS -->
                 <div id="admPredCorrect" class="admin-section hidden">
                     <h3>🎯 Ajouter Correct Score</h3>
                     <form onsubmit="addPrediction(event, 'correct')">
@@ -382,40 +616,40 @@
                         </select>
                         <button class="btn btn-blue">Publier</button>
                     </form>
-                    <h3 style="margin-top: 20px;">Lis Correct Scores yo</h3>
+                    <h3 style="margin-top: 20px;">Lis yo</h3>
                     <div id="adminCorrectList"></div>
                 </div>
 
-                <div id="admPredVip" class="admin-section hidden">
-                    <h3> Ajouter VIP Prediction</h3>
-                    <form onsubmit="addPrediction(event, 'vip')">
+                <div id="admPredDraw" class="admin-section hidden">
+                    <h3>⚖️ Ajouter Draw-Win</h3>
+                    <form onsubmit="addPrediction(event, 'draw')">
                         <label style="font-size:12px; color:#888;">Match:</label>
-                        <select id="pMatchId_vip" required></select>
-                        <input type="text" id="pType_vip" placeholder="Tip (1X2, Over/Under...)" required>
-                        <input type="text" id="pPick_vip" placeholder="Prediksyon" required>
-                        <input type="number" step="0.01" id="pOdds_vip" placeholder="Cote" required>
-                        <select id="pConf_vip">
+                        <select id="pMatchId_draw" required></select>
+                        <input type="text" id="pType_draw" placeholder="Tip (1X2, Double Chance...)" required>
+                        <input type="text" id="pPick_draw" placeholder="Prediksyon" required>
+                        <input type="number" step="0.01" id="pOdds_draw" placeholder="Cote" required>
+                        <select id="pConf_draw">
                             <option value="5">★★★★★</option>
                             <option value="4">★★★★</option>
                             <option value="3">★★★</option>
                             <option value="2">★★</option>
                             <option value="1">★</option>
                         </select>
-                        <button class="btn btn-gold">Publier</button>
+                        <button class="btn btn-purple">Publier</button>
                     </form>
-                    <h3 style="margin-top: 20px;">Lis VIP yo</h3>
-                    <div id="adminVipList"></div>
+                    <h3 style="margin-top: 20px;">Lis yo</h3>
+                    <div id="adminDrawList"></div>
                 </div>
 
-                <div id="admPredOdds" class="admin-section hidden">
-                    <h3>🔥 Ajouter Odds Max</h3>
-                    <form onsubmit="addPrediction(event, 'odds')">
+                <div id="admPredOdds50" class="admin-section hidden">
+                    <h3> Ajouter Odds 50</h3>
+                    <form onsubmit="addPrediction(event, 'odds50')">
                         <label style="font-size:12px; color:#888;">Match:</label>
-                        <select id="pMatchId_odds" required></select>
-                        <input type="text" id="pType_odds" placeholder="Tip" required>
-                        <input type="text" id="pPick_odds" placeholder="Prediksyon" required>
-                        <input type="number" step="0.01" id="pOdds_odds" placeholder="Cote (wo)" required>
-                        <select id="pConf_odds">
+                        <select id="pMatchId_odds50" required></select>
+                        <input type="text" id="pType_odds50" placeholder="Tip" required>
+                        <input type="text" id="pPick_odds50" placeholder="Prediksyon" required>
+                        <input type="number" step="0.01" id="pOdds_odds50" placeholder="Cote" required>
+                        <select id="pConf_odds50">
                             <option value="5">★★★★★</option>
                             <option value="4">★★★★</option>
                             <option value="3">★★★</option>
@@ -424,88 +658,197 @@
                         </select>
                         <button class="btn btn-red">Publier</button>
                     </form>
-                    <h3 style="margin-top: 20px;">Lis Odds Max yo</h3>
-                    <div id="adminOddsList"></div>
+                    <h3 style="margin-top: 20px;">Lis yo</h3>
+                    <div id="adminOdds50List"></div>
                 </div>
 
-                <div id="admPredDaily" class="admin-section hidden">
-                    <h3>⭐ Ajouter Daily Pick</h3>
-                    <form onsubmit="addPrediction(event, 'daily')">
+                <div id="admPredOdds2" class="admin-section hidden">
+                    <h3>⭐ Ajouter Odds 2</h3>
+                    <form onsubmit="addPrediction(event, 'odds2')">
                         <label style="font-size:12px; color:#888;">Match:</label>
-                        <select id="pMatchId_daily" required></select>
-                        <input type="text" id="pType_daily" placeholder="Tip" required>
-                        <input type="text" id="pPick_daily" placeholder="Prediksyon" required>
-                        <input type="number" step="0.01" id="pOdds_daily" placeholder="Cote" required>
-                        <select id="pConf_daily">
+                        <select id="pMatchId_odds2" required></select>
+                        <input type="text" id="pType_odds2" placeholder="Tip" required>
+                        <input type="text" id="pPick_odds2" placeholder="Prediksyon" required>
+                        <input type="number" step="0.01" id="pOdds_odds2" placeholder="Cote" required>
+                        <select id="pConf_odds2">
                             <option value="5">★★★★★</option>
                             <option value="4">★★★★</option>
                             <option value="3">★★★</option>
                             <option value="2">★★</option>
                             <option value="1">★</option>
                         </select>
-                        <button class="btn btn-primary">Publier Daily Pick</button>
+                        <button class="btn btn-primary">Publier</button>
                     </form>
-                    <h3 style="margin-top: 20px;">Daily Picks yo</h3>
-                    <div id="adminDailyList"></div>
+                    <h3 style="margin-top: 20px;">Lis yo</h3>
+                    <div id="adminOdds2List"></div>
                 </div>
             </div>
         </div>
 
+        <!-- BOTTOM NAV -->
         <nav class="bottom-nav">
             <button class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i> Accueil</button>
+            <button class="nav-item" onclick="openSection('correct')"><i class="fas fa-bullseye"></i> Correct</button>
+            <button class="nav-item" onclick="openSection('draw')"><i class="fas fa-balance-scale"></i> Draw</button>
+            <button class="nav-item" onclick="openSection('odds50')"><i class="fas fa-fire"></i> Odds50</button>
+            <button class="nav-item" onclick="openSection('odds2')"><i class="fas fa-star"></i> Odds2</button>
             <button class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i> Profil</button>
             <button id="adminNavBtn" class="nav-item hidden" onclick="showPage('admin')" style="color: var(--gold);"><i class="fas fa-shield-alt"></i> Admin</button>
         </nav>
     </div>
 
     <script>
+        // DATABASE
         const DB = {
-            codes: JSON.parse(localStorage.getItem('gg_codes')) || [
-                { code: 'Dg trump', type: 'admin', active: true, createdAt: Date.now() }
+            users: JSON.parse(localStorage.getItem('gg_users')) || [
+                { id: 'admin1', name: 'Administrateur', email: 'admin@goldengold.com', password: 'admin123', role: 'admin', status: 'approved', createdAt: Date.now() }
             ],
             matches: JSON.parse(localStorage.getItem('gg_matches')) || [],
             predictions: JSON.parse(localStorage.getItem('gg_preds')) || [],
-            currentUser: JSON.parse(localStorage.getItem('gg_currentUser')) || null
+            currentUser: JSON.parse(localStorage.getItem('gg_currentUser')) || null,
+            theme: localStorage.getItem('gg_theme') || 'dark'
         };
 
-        function validateAccess() {
-            const input = document.getElementById('accessCodeInput').value.trim();
+        let isRegistering = false;
+
+        // THEME
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('themeBtn');
+            
+            if(body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                btn.innerText = '🌙';
+                DB.theme = 'dark';
+            } else {
+                body.classList.add('light-mode');
+                btn.innerText = '☀️';
+                DB.theme = 'light';
+            }
+            localStorage.setItem('gg_theme', DB.theme);
+        }
+
+        // AUTH
+        function toggleAuthMode() {
+            isRegistering = !isRegistering;
+            document.getElementById('loginForm').classList.toggle('hidden');
+            document.getElementById('registerForm').classList.toggle('hidden');
+            document.getElementById('accessSubtitle').innerText = isRegistering ? 'Kreye yon nouvo kont' : 'Antre kòd aksè ou a';
+            document.getElementById('accessError').innerText = '';
+            document.getElementById('regError').innerText = '';
+            document.getElementById('regSuccess').innerText = '';
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
             const errorEl = document.getElementById('accessError');
-            
-            if(!input) {
-                errorEl.innerText = 'Tanpri antre yon kòd';
+
+            if(!email || !password) {
+                errorEl.innerText = 'Tanpri ranpli tout chan yo';
                 return;
             }
 
-            const code = DB.codes.find(c => c.code.toLowerCase() === input.toLowerCase() && c.active);
+            const user = DB.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
             
-            if(!code) {
-                errorEl.innerText = '❌ Kòd sa a pa valid';
+            if(!user) {
+                errorEl.innerText = '❌ Email oswa modpas pa kòrèk';
                 return;
             }
 
-            DB.currentUser = { code: code.code, type: code.type, loggedInAt: Date.now() };
-            localStorage.setItem('gg_currentUser', JSON.stringify(DB.currentUser));
+            if(user.status === 'pending') {
+                errorEl.innerText = '⏳ Kont ou an ap tann validasyon admin an';
+                return;
+            }
+
+            if(user.status === 'rejected') {
+                errorEl.innerText = '❌ Kont ou a te rejte';
+                return;
+            }
+
+            DB.currentUser = user;
+            localStorage.setItem('gg_currentUser', JSON.stringify(user));
+            enterApp();
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirm').value;
+            const errorEl = document.getElementById('regError');
+            const successEl = document.getElementById('regSuccess');
+
+            if(!name || !email || !password || !confirm) {
+                errorEl.innerText = 'Tanpri ranpli tout chan yo';
+                return;
+            }
+
+            if(password.length < 6) {
+                errorEl.innerText = 'Modpas la dwe gen omwen 6 karaktè';
+                return;
+            }
+
+            if(password !== confirm) {
+                errorEl.innerText = 'Modpas yo pa matche';
+                return;
+            }
+
+            if(DB.users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+                errorEl.innerText = 'Email sa a deja itilize';
+                return;
+            }
+
+            const newUser = {
+                id: 'user_' + Date.now(),
+                name: name,
+                email: email,
+                password: password,
+                role: 'user',
+                status: 'pending',
+                createdAt: Date.now()
+            };
+
+            DB.users.push(newUser);
+            saveDB();
             
             errorEl.innerText = '';
-            enterApp();
+            successEl.innerText = '✅ Kont ou a kreye! Ap tann validasyon admin an.';
+            
+            setTimeout(() => {
+                toggleAuthMode();
+                document.getElementById('loginEmail').value = email;
+            }, 2000);
         }
 
         function enterApp() {
             document.getElementById('accessScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
             
-            if(DB.currentUser.type === 'admin') {
+            // Apply theme
+            if(DB.theme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeBtn').innerText = '☀️';
+            }
+
+            // Show admin button if admin
+            if(DB.currentUser.role === 'admin') {
                 document.getElementById('adminNavBtn').classList.remove('hidden');
             } else {
                 document.getElementById('adminNavBtn').classList.add('hidden');
             }
 
-            document.getElementById('userCodeDisplay').innerText = DB.currentUser.type === 'admin' ? '🛡️ ADMIN' : (DB.currentUser.type === 'vip' ? '💎 VIP' : '👤 USER');
-            document.getElementById('myCodeDisplay').innerText = DB.currentUser.code;
-            document.getElementById('myCodeType').innerText = DB.currentUser.type.toUpperCase();
-            document.getElementById('profileCode').innerText = DB.currentUser.code;
-            document.getElementById('profileType').innerText = 'Tip: ' + DB.currentUser.type.toUpperCase();
+            // Update UI
+            document.getElementById('userBadge').innerText = DB.currentUser.role === 'admin' ? '️ ADMIN' : '👤 USER';
+            document.getElementById('profileName').innerText = DB.currentUser.name;
+            document.getElementById('profileEmail').innerText = DB.currentUser.email;
+            
+            const statusEl = document.getElementById('profileStatus');
+            if(DB.currentUser.role === 'admin') {
+                statusEl.innerHTML = '<span class="user-status status-approved">Administrateur</span>';
+            } else {
+                statusEl.innerHTML = '<span class="user-status status-approved">Itilizatè Aktif</span>';
+            }
 
             showPage('home');
         }
@@ -515,20 +858,18 @@
             localStorage.removeItem('gg_currentUser');
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('accessScreen').classList.remove('hidden');
-            document.getElementById('accessCodeInput').value = '';
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
             document.getElementById('accessError').innerText = '';
         }
 
-        document.getElementById('accessCodeInput').addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') validateAccess();
-        });
-
+        // NAVIGATION
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             document.getElementById(pageId + 'Page').classList.remove('hidden');
             
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            const map = {'home':0, 'profile':1, 'admin':2};
+            const map = {'home':0, 'profile':5, 'admin':6};
             const btns = document.querySelectorAll('.nav-item');
             if(map[pageId] !== undefined && btns[map[pageId]]) btns[map[pageId]].classList.add('active');
 
@@ -537,46 +878,67 @@
         }
 
         function openSection(section) {
-            if(section === 'vip' && DB.currentUser.type !== 'vip' && DB.currentUser.type !== 'admin') {
-                alert('🔒 Seksyon sa a rezève pou manm VIP yo.');
-                return;
-            }
             showPage('section' + section.charAt(0).toUpperCase() + section.slice(1));
         }
 
+        // RENDERING
         function renderAll() {
             renderCounts();
             renderSection('correct');
-            renderSection('vip');
-            renderSection('odds');
-            renderSection('daily');
-            if(DB.currentUser?.type === 'admin') {
-                renderAdminCodes();
+            renderSection('draw');
+            renderSection('odds50');
+            renderSection('odds2');
+            renderTotalOdds();
+            
+            if(DB.currentUser?.role === 'admin') {
+                renderAdminUsers();
                 renderAdminMatches();
                 populateAllMatchSelects();
                 renderAdminPreds('correct');
-                renderAdminPreds('vip');
-                renderAdminPreds('odds');
-                renderAdminPreds('daily');
+                renderAdminPreds('draw');
+                renderAdminPreds('odds50');
+                renderAdminPreds('odds2');
             }
         }
 
         function renderCounts() {
-            const preds = DB.predictions;
+            const preds = DB.predictations || DB.predictions;
             document.getElementById('countCorrect').innerText = preds.filter(p => p.category === 'correct').length + ' prediksyon';
-            document.getElementById('countVip').innerText = preds.filter(p => p.category === 'vip').length + ' prediksyon';
-            document.getElementById('countOdds').innerText = preds.filter(p => p.category === 'odds').length + ' prediksyon';
-            document.getElementById('countDaily').innerText = preds.filter(p => p.category === 'daily').length + ' prediksyon';
+            document.getElementById('countDraw').innerText = preds.filter(p => p.category === 'draw').length + ' prediksyon';
+            document.getElementById('countOdds50').innerText = preds.filter(p => p.category === 'odds50').length + ' prediksyon';
+            document.getElementById('countOdds2').innerText = preds.filter(p => p.category === 'odds2').length + ' prediksyon';
+        }
+
+        function renderTotalOdds() {
+            const container = document.getElementById('totalOddsSection');
+            const categories = ['correct', 'draw', 'odds50', 'odds2'];
+            let totalOdds = 1;
+            let hasPreds = false;
+
+            categories.forEach(cat => {
+                const preds = DB.predictions.filter(p => p.category === cat && p.result !== 'cancelled');
+                if(preds.length > 0) {
+                    const maxOdds = Math.max(...preds.map(p => parseFloat(p.odds)));
+                    totalOdds *= maxOdds;
+                    hasPreds = true;
+                }
+            });
+
+            if(hasPreds) {
+                container.innerHTML = `
+                    <div class="total-odds-card">
+                        <div class="total-odds-label">COTE TOTAL OTOMATIK</div>
+                        <div class="total-odds-value">${totalOdds.toFixed(2)}</div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '';
+            }
         }
 
         function renderSection(category) {
             const container = document.getElementById(category + 'List');
-            let preds = DB.predictions.filter(p => p.category === category);
-            
-            if(category === 'vip' && DB.currentUser.type !== 'vip' && DB.currentUser.type !== 'admin') {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-lock"></i><h3 style="color: var(--gold);">Aksè Refize</h3><p>Seksyon sa a rezève pou VIP.</p></div>';
-                return;
-            }
+            const preds = DB.predictions.filter(p => p.category === category);
 
             if(preds.length === 0) {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>Pa gen prediksyon kounye a.</p></div>';
@@ -590,10 +952,10 @@
             const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'⚽', awayLogo:'⚽', date:'-', time:'-'};
             
             let resultBadge = '';
-            if(p.result === 'won') resultBadge = '<div class="result-badge" style="color: var(--primary);">✅ GAGNÉ</div>';
-            else if(p.result === 'lost') resultBadge = '<div class="result-badge" style="color: #EF4444;"> PERDU</div>';
-            else if(p.result === 'cancelled') resultBadge = '<div class="result-badge" style="color: #888;">️ ANNULÉ</div>';
-            else resultBadge = '<div class="result-badge" style="color: var(--gold);">⏳ EN ATTENTE</div>';
+            if(p.result === 'won') resultBadge = '<div class="result-badge result-won">✅ GAGNÉ</div>';
+            else if(p.result === 'lost') resultBadge = '<div class="result-badge result-lost">❌ PERDU</div>';
+            else if(p.result === 'cancelled') resultBadge = '<div class="result-badge" style="background: rgba(139,146,168,0.1); color: #8B92A8;">⏸️ ANNULÉ</div>';
+            else resultBadge = '<div class="result-badge result-pending">⏳ EN ATTENTE</div>';
 
             const stars = '★'.repeat(p.confidence || 3) + '☆'.repeat(5 - (p.confidence || 3));
             
@@ -638,75 +1000,80 @@
 
         function getCategoryLabel(cat) {
             const labels = {
-                'correct': '🎯 Correct Score',
-                'vip': '💎 VIP',
-                'odds': '🔥 Odds Max',
-                'daily': '⭐ Daily Pick'
+                'correct': ' Correct Score',
+                'draw': '️ Draw-Win',
+                'odds50': '🔥 Odds 50',
+                'odds2': '⭐ Odds 2'
             };
             return labels[cat] || cat;
         }
 
-        function createCode() {
-            const value = document.getElementById('newCodeValue').value.trim();
-            const type = document.getElementById('newCodeType').value;
-            
-            if(!value) return alert('Antre yon kòd!');
-            if(DB.codes.find(c => c.code.toLowerCase() === value.toLowerCase())) {
-                return alert('Kòd sa a egziste deja!');
+        // ADMIN: USERS
+        function renderAdminUsers() {
+            const container = document.getElementById('usersList');
+            const users = DB.users.filter(u => u.role !== 'admin');
+
+            if(users.length === 0) {
+                container.innerHTML = '<p style="color:#666; text-align:center;">Pa gen itilizatè.</p>';
+                return;
             }
 
-            DB.codes.push({
-                code: value,
-                type: type,
-                active: true,
-                createdAt: Date.now()
-            });
-            saveDB();
-            document.getElementById('newCodeValue').value = '';
-            renderAdminCodes();
-            alert('✅ Kòd "' + value + '" kreye!');
-        }
+            container.innerHTML = users.map(u => {
+                let statusClass = 'status-pending';
+                let statusText = '⏳ An atant';
+                if(u.status === 'approved') { statusClass = 'status-approved'; statusText = '✅ Apwouve'; }
+                else if(u.status === 'rejected') { statusClass = 'status-rejected'; statusText = ' Rejte'; }
 
-        function toggleCode(code) {
-            const c = DB.codes.find(x => x.code === code);
-            if(c) {
-                c.active = !c.active;
-                saveDB();
-                renderAdminCodes();
-            }
-        }
-
-        function deleteCode(code) {
-            if(code === 'Dg trump') return alert('Ou pa ka efase kòd admin an!');
-            if(!confirm('Efase kòd sa a?')) return;
-            DB.codes = DB.codes.filter(c => c.code !== code);
-            saveDB();
-            renderAdminCodes();
-        }
-
-        function renderAdminCodes() {
-            const container = document.getElementById('codesList');
-            container.innerHTML = DB.codes.map(c => `
-                <div class="code-item">
-                    <div style="flex: 1;">
-                        <div class="code-value">${c.code}</div>
-                        <div class="code-type">
-                            ${c.type === 'admin' ? '🛡️ Admin' : c.type === 'vip' ? '💎 VIP' : '👤 User'}
-                            ${c.active ? '• ✅ Aktif' : '• ❌ Dezaktive'}
+                return `
+                    <div class="user-item">
+                        <div class="user-info-text">
+                            <div class="user-name">${u.name}</div>
+                            <div class="user-email">${u.email}</div>
+                            <span class="user-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div style="display:flex; gap:5px; flex-direction:column;">
+                            ${u.status === 'pending' ? `
+                                <button class="btn btn-sm btn-primary" onclick="approveUser('${u.id}')">✅</button>
+                                <button class="btn btn-sm btn-danger" onclick="rejectUser('${u.id}')">❌</button>
+                            ` : `
+                                <button class="btn btn-sm btn-outline" onclick="resetUser('${u.id}')">↩️</button>
+                            `}
                         </div>
                     </div>
-                    <div style="display:flex; gap:6px;">
-                        ${c.code !== 'Dg trump' ? `
-                            <button class="btn btn-sm ${c.active ? 'btn-outline' : 'btn-primary'}" onclick="toggleCode('${c.code.replace(/'/g, "\\'")}')">
-                                ${c.active ? 'Dezaktive' : 'Aktive'}
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteCode('${c.code.replace(/'/g, "\\'")}')">🗑️</button>
-                        ` : '<span style="font-size:10px; color:#888;">Prensipal</span>'}
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
+        function approveUser(id) {
+            const u = DB.users.find(x => x.id === id);
+            if(u) {
+                u.status = 'approved';
+                saveDB();
+                renderAdminUsers();
+                alert('✅ Itilizatè apwouve!');
+            }
+        }
+
+        function rejectUser(id) {
+            const u = DB.users.find(x => x.id === id);
+            if(u) {
+                u.status = 'rejected';
+                saveDB();
+                renderAdminUsers();
+                alert('❌ Itilizatè rejte!');
+            }
+        }
+
+        function resetUser(id) {
+            const u = DB.users.find(x => x.id === id);
+            if(u) {
+                u.status = 'pending';
+                saveDB();
+                renderAdminUsers();
+            }
+        }
+
+        // ADMIN: MATCHES
         function addMatch(e) {
             e.preventDefault();
             DB.matches.push({
@@ -714,7 +1081,7 @@
                 home: document.getElementById('mHome').value,
                 away: document.getElementById('mAway').value,
                 homeLogo: document.getElementById('mHomeLogo').value || '⚽',
-                awayLogo: document.getElementById('mAwayLogo').value || '',
+                awayLogo: document.getElementById('mAwayLogo').value || '⚽',
                 date: document.getElementById('mDate').value || 'Jodi a',
                 time: document.getElementById('mTime').value
             });
@@ -741,18 +1108,18 @@
                 return;
             }
             container.innerHTML = DB.matches.map(m => `
-                <div class="code-item">
-                    <div style="flex:1;">
-                        <div style="font-weight:600;">${m.homeLogo} ${m.home} vs ${m.away} ${m.awayLogo}</div>
-                        <div class="code-type">${m.date} • ${m.time}</div>
+                <div class="user-item">
+                    <div class="user-info-text">
+                        <div class="user-name">${m.homeLogo} ${m.home} vs ${m.away} ${m.awayLogo}</div>
+                        <div class="user-email">${m.date} • ${m.time}</div>
                     </div>
-                    <button class="btn btn-sm btn-danger" onclick="deleteMatch(${m.id})">️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteMatch(${m.id})">🗑️</button>
                 </div>
             `).join('');
         }
 
         function populateAllMatchSelects() {
-            const categories = ['correct', 'vip', 'odds', 'daily'];
+            const categories = ['correct', 'draw', 'odds50', 'odds2'];
             categories.forEach(cat => {
                 const sel = document.getElementById('pMatchId_' + cat);
                 if(!sel) return;
@@ -763,6 +1130,7 @@
             });
         }
 
+        // ADMIN: PREDICTIONS
         function addPrediction(e, category) {
             e.preventDefault();
             const matchId = document.getElementById('pMatchId_' + category).value;
@@ -791,6 +1159,7 @@
             e.target.reset();
             renderAdminPreds(category);
             renderCounts();
+            renderTotalOdds();
             alert('✅ Prediksyon publie!');
         }
 
@@ -803,6 +1172,7 @@
                 renderAdminPreds(cat);
                 renderSection(cat);
                 renderCounts();
+                renderTotalOdds();
             }
         }
 
@@ -813,6 +1183,7 @@
             saveDB();
             if(p) renderAdminPreds(p.category);
             renderCounts();
+            renderTotalOdds();
         }
 
         function renderAdminPreds(category) {
@@ -827,9 +1198,9 @@
             container.innerHTML = preds.map(p => {
                 const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?'};
                 let statusColor = '#888', statusText = '⏳ En attente';
-                if(p.result === 'won') { statusColor = 'var(--primary)'; statusText = '✅ GAGNÉ'; }
-                else if(p.result === 'lost') { statusColor = '#EF4444'; statusText = '❌ PERDU'; }
-                else if(p.result === 'cancelled') { statusColor = '#888'; statusText = '️ ANNULÉ'; }
+                if(p.result === 'won') { statusColor = '#00C853'; statusText = '✅ GAGNÉ'; }
+                else if(p.result === 'lost') { statusColor = '#EF4444'; statusText = ' PERDU'; }
+                else if(p.result === 'cancelled') { statusColor = '#8B92A8'; statusText = '⏸️ ANNULÉ'; }
 
                 return `
                     <div class="pred-card" style="margin:10px 0;">
@@ -842,12 +1213,12 @@
                         
                         ${p.result === 'pending' ? `
                             <div style="display:flex; gap:5px; margin-top:10px; flex-wrap:wrap;">
-                                <button class="btn btn-sm btn-primary" onclick="setPredResult(${p.id}, 'won')">✅ Valide</button>
-                                <button class="btn btn-sm btn-danger" onclick="setPredResult(${p.id}, 'lost')">❌ Pa Valide</button>
-                                <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'cancelled')" style="border-color:#888; color:#888;">⏸️</button>
+                                <button class="btn btn-sm btn-primary" onclick="setPredResult(${p.id}, 'won')">✅</button>
+                                <button class="btn btn-sm btn-danger" onclick="setPredResult(${p.id}, 'lost')">❌</button>
+                                <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'cancelled')" style="border-color:#888; color:#888;">️</button>
                             </div>
                         ` : `
-                            <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'pending')" style="margin-top:10px; width:100%;">↩️ Remèt an atant</button>
+                            <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'pending')" style="margin-top:10px; width:100%;">↩️</button>
                         `}
                         <button class="btn btn-sm btn-danger" onclick="deletePred(${p.id})" style="margin-top:6px; width:100%;">🗑️ Efase</button>
                     </div>
@@ -864,20 +1235,27 @@
         }
 
         function saveDB() {
-            localStorage.setItem('gg_codes', JSON.stringify(DB.codes));
+            localStorage.setItem('gg_users', JSON.stringify(DB.users));
             localStorage.setItem('gg_matches', JSON.stringify(DB.matches));
             localStorage.setItem('gg_preds', JSON.stringify(DB.predictions));
         }
 
+        // INIT
         if(DB.currentUser) {
-            const code = DB.codes.find(c => c.code === DB.currentUser.code && c.active);
-            if(code) {
+            const user = DB.users.find(u => u.id === DB.currentUser.id);
+            if(user && user.status === 'approved') {
+                DB.currentUser = user;
                 enterApp();
             } else {
                 DB.currentUser = null;
                 localStorage.removeItem('gg_currentUser');
             }
         }
+
+        // Enter key support
+        document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') handleLogin();
+        });
     </script>
 </body>
 </html>
