@@ -9,7 +9,7 @@
         :root {
             --bg-dark: #0A0E1A;
             --bg-card: #141927;
-            --bg-light: #F5F5F5;
+            --bg-light: #F8F9FA;
             --bg-card-light: #FFFFFF;
             --primary: #FFD700;
             --gold: #FFD700;
@@ -17,360 +17,162 @@
             --blue: #3B82F6;
             --purple: #8B5CF6;
             --text-white: #FFFFFF;
-            --text-black: #000000;
+            --text-black: #111827;
             --text-gray: #8B92A8;
             --text-gray-light: #6B7280;
+            --border-dark: #2A3142;
+            --border-light: #E5E7EB;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: background-color 0.3s, color 0.3s; }
         
-        body.light-mode {
-            background-color: var(--bg-light);
-            color: var(--text-black);
-        }
-        
-        body.light-mode .bg-card {
-            background-color: var(--bg-card-light);
-            border-color: #E5E7EB;
-        }
-        
-        body.light-mode input, body.light-mode select {
-            background-color: var(--bg-card-light);
-            border-color: #D1D5DB;
-            color: var(--text-black);
-        }
-        
-        body.light-mode header {
-            background-color: rgba(255,255,255,0.95);
-            border-bottom-color: #E5E7EB;
-        }
-        
-        body.light-mode .bottom-nav {
-            background-color: var(--bg-card-light);
-            border-top-color: #E5E7EB;
-        }
-        
-        body.light-mode .section-header {
-            border-bottom-color: #E5E7EB;
-        }
-        
-        body.light-mode .pred-card {
-            background-color: var(--bg-card-light);
-            border-color: #E5E7EB;
-        }
-        
-        body.light-mode .pick-box {
-            background-color: #F3F4F6;
-        }
+        body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 90px; }
+        body.light-mode { background-color: var(--bg-light); color: var(--text-black); }
+        body.light-mode .bg-card, body.light-mode .section-card, body.light-mode .pred-card, body.light-mode .user-item, body.light-mode .access-form, body.light-mode .modal-content { background-color: var(--bg-card-light); border-color: var(--border-light); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        body.light-mode input, body.light-mode select { background-color: var(--bg-light); border-color: #D1D5DB; color: var(--text-black); }
+        body.light-mode header { background-color: rgba(255,255,255,0.95); border-bottom-color: var(--border-light); }
+        body.light-mode .bottom-nav { background-color: var(--bg-card-light); border-top-color: var(--border-light); }
+        body.light-mode .section-header { border-bottom-color: var(--border-light); }
+        body.light-mode .section-header .back-btn { color: var(--text-black); }
+        body.light-mode .vs, body.light-mode .pick-label, body.light-mode .user-email { color: var(--text-gray-light); }
+        body.light-mode .admin-tabs { background: #F3F4F6; }
+        body.light-mode .tab-btn { background: #E5E7EB; color: var(--text-gray-light); }
+        body.light-mode .empty-state { color: var(--text-gray-light); }
+        body.light-mode .pick-box { background: #F3F4F6; }
+        body.light-mode #accessScreen { background: linear-gradient(135deg, #F8F9FA 0%, #E5E7EB 100%); }
 
-        body { 
-            background-color: var(--bg-dark); 
-            color: var(--text-white); 
-            padding-bottom: 90px; 
-        }
-        
         .hidden { display: none !important; }
 
         /* ACCESS SCREEN */
         #accessScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #0A0E1A 0%, #1a1a2e 50%, #0A0E1A 100%);
+            background: linear-gradient(135deg, #0A0E1A 0%, #1a1a2e 100%);
             z-index: 9999; display: flex; flex-direction: column;
             align-items: center; justify-content: center; padding: 20px;
         }
-        
-        body.light-mode #accessScreen {
-            background: linear-gradient(135deg, #F5F5F5 0%, #E5E7EB 50%, #F5F5F5 100%);
-        }
-
         .access-logo {
-            width: 120px; height: 120px; border-radius: 50%;
+            width: 100px; height: 100px; border-radius: 50%;
             background: linear-gradient(135deg, var(--gold), #D4AF37);
             display: flex; align-items: center; justify-content: center;
-            font-size: 60px; margin-bottom: 20px;
+            font-size: 50px; margin-bottom: 20px;
             box-shadow: 0 10px 40px rgba(255, 215, 0, 0.4);
             animation: pulse 2s infinite;
         }
-
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        
         .access-title { font-size: 32px; font-weight: 900; color: var(--gold); margin-bottom: 8px; text-align: center; letter-spacing: 2px; }
         .access-subtitle { color: var(--text-gray); font-size: 14px; margin-bottom: 30px; text-align: center; }
         
-        body.light-mode .access-subtitle { color: var(--text-gray-light); }
-
         .access-form {
             width: 100%; max-width: 350px;
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: 20px;
-            border: 2px solid var(--gold);
+            background: var(--bg-card); padding: 25px;
+            border-radius: 20px; border: 2px solid var(--gold);
         }
-        
-        body.light-mode .access-form {
-            background: var(--bg-card-light);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
         .access-input {
             width: 100%; padding: 14px 18px;
-            background: var(--bg-dark); border: 2px solid #2A3142;
+            background: var(--bg-dark); border: 2px solid var(--border-dark);
             border-radius: 12px; color: white; font-size: 15px;
             outline: none; margin-bottom: 12px;
         }
-        
-        body.light-mode .access-input {
-            background: var(--bg-light);
-            border-color: #D1D5DB;
-            color: var(--text-black);
-        }
-
         .access-input:focus { border-color: var(--gold); }
-        
         .access-btn {
             width: 100%; padding: 14px;
             background: linear-gradient(135deg, var(--gold), #D4AF37);
             color: black; border: none; border-radius: 12px;
             font-size: 16px; font-weight: 800; cursor: pointer;
-            margin-bottom: 10px;
         }
-
-        .access-toggle {
-            text-align: center; color: var(--gold);
-            font-size: 13px; cursor: pointer; margin-top: 10px;
-        }
-
-        .access-error { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 20px; text-align: center; }
-        .access-success { color: var(--primary); font-size: 13px; margin-top: 10px; min-height: 20px; text-align: center; }
+        .access-error { color: var(--red); font-size: 13px; margin-top: 15px; min-height: 20px; text-align: center; }
+        .access-info { color: var(--blue); font-size: 12px; margin-top: 15px; text-align: center; background: rgba(59,130,246,0.1); padding: 10px; border-radius: 8px; }
 
         /* HEADER */
         header {
             position: sticky; top: 0; z-index: 100;
             background: rgba(10,14,26,0.95); padding: 15px 20px;
-            border-bottom: 1px solid #2A3142;
+            border-bottom: 1px solid var(--border-dark);
             display: flex; justify-content: space-between; align-items: center;
             backdrop-filter: blur(5px);
         }
-        
         .logo { font-weight: 900; color: var(--gold); font-size: 20px; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; }
         .header-actions { display: flex; gap: 10px; align-items: center; }
         .theme-toggle { background: none; border: none; color: var(--gold); font-size: 20px; cursor: pointer; }
         .user-badge { font-size: 11px; color: var(--gold); background: rgba(255,215,0,0.1); padding: 4px 10px; border-radius: 12px; }
 
         /* SECTIONS GRID */
-        .sections-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            padding: 20px;
-        }
-        
+        .sections-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
         .section-card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 25px 15px;
-            text-align: center;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            background: var(--bg-card); border-radius: 20px; padding: 25px 15px;
+            text-align: center; cursor: pointer; border: 2px solid transparent;
+            transition: all 0.3s; position: relative; overflow: hidden;
         }
-        
-        body.light-mode .section-card {
-            background: var(--bg-card-light);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
         .section-card:active { transform: scale(0.97); }
         .section-card .icon { font-size: 40px; margin-bottom: 12px; }
         .section-card .title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
         .section-card .count { font-size: 11px; color: var(--text-gray); }
         
-        body.light-mode .section-card .count { color: var(--text-gray-light); }
-
         .section-card.correct { border-color: var(--blue); background: linear-gradient(135deg, rgba(59,130,246,0.15), var(--bg-card)); }
         .section-card.correct .title { color: var(--blue); }
-        
-        body.light-mode .section-card.correct { background: linear-gradient(135deg, rgba(59,130,246,0.1), var(--bg-card-light)); }
-
         .section-card.draw { border-color: var(--purple); background: linear-gradient(135deg, rgba(139,92,246,0.15), var(--bg-card)); }
         .section-card.draw .title { color: var(--purple); }
-        
-        body.light-mode .section-card.draw { background: linear-gradient(135deg, rgba(139,92,246,0.1), var(--bg-card-light)); }
-
         .section-card.odds50 { border-color: var(--red); background: linear-gradient(135deg, rgba(233,30,99,0.15), var(--bg-card)); }
         .section-card.odds50 .title { color: var(--red); }
-        
-        body.light-mode .section-card.odds50 { background: linear-gradient(135deg, rgba(233,30,99,0.1), var(--bg-card-light)); }
-
         .section-card.odds2 { border-color: var(--gold); background: linear-gradient(135deg, rgba(255,215,0,0.15), var(--bg-card)); }
         .section-card.odds2 .title { color: var(--gold); }
-        
-        body.light-mode .section-card.odds2 { background: linear-gradient(135deg, rgba(255,215,0,0.1), var(--bg-card-light)); }
 
         /* SECTION DETAIL */
-        .section-header {
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid #2A3142;
-        }
-        
-        .section-header .back-btn {
-            background: none; border: none; color: white;
-            font-size: 20px; cursor: pointer; padding: 5px;
-        }
-        
-        body.light-mode .section-header .back-btn { color: var(--text-black); }
-
+        .section-header { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-dark); }
+        .section-header .back-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 5px; }
         .section-header h2 { font-size: 20px; }
         .section-header .icon-big { font-size: 28px; }
 
-        .pred-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 18px;
-            margin: 15px 20px;
-            border: 1px solid #2A3142;
-        }
-        
-        body.light-mode .pred-card {
-            background: var(--bg-card-light);
-            border-color: #E5E7EB;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .pred-card-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .pred-badge {
-            padding: 4px 12px; border-radius: 20px;
-            font-size: 10px; font-weight: 700;
-        }
-        
+        .pred-card { background: var(--bg-card); border-radius: 16px; padding: 18px; margin: 15px 20px; border: 1px solid var(--border-dark); }
+        .pred-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .pred-badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; }
         .badge-correct { background: rgba(59,130,246,0.2); color: var(--blue); }
         .badge-draw { background: rgba(139,92,246,0.2); color: var(--purple); }
         .badge-odds50 { background: rgba(233,30,99,0.2); color: var(--red); }
         .badge-odds2 { background: rgba(255,215,0,0.2); color: var(--gold); }
 
-        .match-display {
-            display: flex; justify-content: space-between; align-items: center;
-            margin: 12px 0;
-        }
-        
+        .match-display { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
         .team-info { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
         .team-logo { font-size: 26px; }
         .vs { color: var(--text-gray); font-size: 12px; font-weight: bold; }
-        
-        body.light-mode .vs { color: var(--text-gray-light); }
 
-        .pick-box {
-            background: #000;
-            padding: 14px;
-            border-radius: 12px;
-            margin-top: 12px;
-            border-left: 4px solid var(--gold);
-        }
-        
-        body.light-mode .pick-box {
-            background: #F3F4F6;
-        }
-
+        .pick-box { background: #000; padding: 14px; border-radius: 12px; margin-top: 12px; border-left: 4px solid var(--gold); }
         .pick-label { font-size: 11px; color: var(--text-gray); margin-bottom: 6px; }
-        
-        body.light-mode .pick-label { color: var(--text-gray-light); }
-
         .pick-value { font-size: 20px; font-weight: 800; color: var(--gold); }
         .pick-odds { color: var(--gold); font-weight: 700; font-size: 16px; }
-
         .confidence-stars { color: var(--gold); font-size: 15px; margin-top: 10px; }
         .result-badge { margin-top: 12px; text-align: center; font-weight: 700; font-size: 13px; padding: 8px; border-radius: 8px; }
         .result-won { background: rgba(0,200,83,0.1); color: #00C853; }
         .result-lost { background: rgba(239,68,68,0.1); color: #EF4444; }
         .result-pending { background: rgba(255,215,0,0.1); color: var(--gold); }
 
-        /* TOTAL ODDS CARD */
+        /* TOTAL ODDS */
         .total-odds-card {
             background: linear-gradient(135deg, var(--gold), #D4AF37);
-            color: black;
-            padding: 20px;
-            margin: 15px 20px;
-            border-radius: 16px;
-            text-align: center;
+            color: black; padding: 20px; margin: 15px 20px; border-radius: 16px; text-align: center;
         }
-        
         .total-odds-label { font-size: 12px; font-weight: 600; margin-bottom: 8px; }
         .total-odds-value { font-size: 36px; font-weight: 900; }
 
         /* BOTTOM NAV */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: var(--bg-card); border-top: 1px solid #2A3142;
-            display: flex; justify-content: space-around; padding: 12px 0; z-index: 100;
+            background: var(--bg-card); border-top: 1px solid var(--border-dark);
+            display: flex; justify-content: space-around; padding: 10px 0 12px; z-index: 100;
         }
-        
-        body.light-mode .bottom-nav {
-            background: var(--bg-card-light);
-            border-top-color: #E5E7EB;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        }
-
-        .nav-item {
-            background: none; border: none; color: var(--text-gray);
-            font-size: 10px; display: flex; flex-direction: column;
-            align-items: center; cursor: pointer; min-width: 60px;
-            transition: all 0.3s;
-        }
-        
-        body.light-mode .nav-item { color: var(--text-gray-light); }
-
-        .nav-item i { font-size: 22px; margin-bottom: 4px; }
-        .nav-item.active { color: var(--gold); transform: translateY(-2px); }
-        
-        body.light-mode .nav-item.active { color: var(--gold); }
+        .nav-item { background: none; border: none; color: var(--text-gray); font-size: 9px; display: flex; flex-direction: column; align-items: center; cursor: pointer; min-width: 50px; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--gold); }
 
         /* ADMIN */
-        .admin-tabs {
-            display: flex; gap: 5px; overflow-x: auto;
-            padding: 10px 20px; background: #111;
-        }
-        
-        body.light-mode .admin-tabs {
-            background: #F3F4F6;
-        }
-
-        .tab-btn {
-            background: #222; color: #888; border: none;
-            padding: 8px 12px; border-radius: 20px;
-            font-size: 11px; white-space: nowrap; cursor: pointer;
-        }
-        
-        body.light-mode .tab-btn {
-            background: #E5E7EB;
-            color: var(--text-gray-light);
-        }
-
+        .admin-tabs { display: flex; gap: 5px; overflow-x: auto; padding: 10px 20px; background: #111; }
+        .tab-btn { background: #222; color: #888; border: none; padding: 8px 12px; border-radius: 20px; font-size: 11px; white-space: nowrap; cursor: pointer; }
         .tab-btn.active { background: var(--gold); color: black; }
-        
         .admin-section { padding: 20px; }
         .admin-section h3 { margin: 15px 0 10px; font-size: 16px; }
-
-        input, select {
-            width: 100%; padding: 12px;
-            background: var(--bg-card); border: 1px solid #2A3142;
-            border-radius: 10px; color: white; margin-bottom: 10px; outline: none;
-        }
         
-        .btn {
-            width: 100%; padding: 12px; border-radius: 12px;
-            border: none; font-weight: bold; cursor: pointer;
-            font-size: 14px; margin-top: 5px;
-        }
-        
+        input, select { width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 10px; color: white; margin-bottom: 10px; outline: none; }
+        .btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 5px; }
         .btn-primary { background: var(--gold); color: black; }
         .btn-danger { background: #EF4444; color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
@@ -379,95 +181,40 @@
         .btn-red { background: var(--red); color: white; }
         .btn-purple { background: var(--purple); color: white; }
 
-        .user-item {
-            background: var(--bg-card);
-            padding: 12px; border-radius: 10px;
-            margin-bottom: 8px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid #2A3142;
-        }
-        
-        body.light-mode .user-item {
-            background: var(--bg-card-light);
-            border-color: #E5E7EB;
-        }
-
+        .user-item { background: var(--bg-card); padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-dark); }
         .user-info-text { flex: 1; }
         .user-name { font-weight: 600; font-size: 14px; }
         .user-email { font-size: 11px; color: var(--text-gray); margin-top: 2px; }
-        
-        body.light-mode .user-email { color: var(--text-gray-light); }
-
-        .user-status {
-            font-size: 10px; padding: 3px 8px; border-radius: 12px;
-            margin-top: 4px; display: inline-block;
-        }
-        
+        .user-status { font-size: 10px; padding: 3px 8px; border-radius: 12px; margin-top: 4px; display: inline-block; }
         .status-pending { background: rgba(255,215,0,0.2); color: var(--gold); }
         .status-approved { background: rgba(0,200,83,0.2); color: #00C853; }
         .status-rejected { background: rgba(239,68,68,0.2); color: #EF4444; }
 
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-gray); }
         .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.5; }
-        
-        body.light-mode .empty-state { color: var(--text-gray-light); }
-
-        /* MODAL */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 1000;
-            display: flex; align-items: center; justify-content: center;
-            padding: 20px;
-        }
-        
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: 20px; padding: 25px;
-            max-width: 400px; width: 100%;
-            border: 2px solid var(--gold);
-        }
-        
-        body.light-mode .modal-content {
-            background: var(--bg-card-light);
-        }
-
-        .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 15px; color: var(--gold); }
-        .modal-close { float: right; background: none; border: none; color: var(--text-gray); font-size: 24px; cursor: pointer; }
-        
-        body.light-mode .modal-close { color: var(--text-gray-light); }
     </style>
 </head>
 <body>
 
-    <!-- ACCESS SCREEN -->
+    <!-- ACCESS SCREEN (LOGIN ONLY) -->
     <div id="accessScreen">
         <div class="access-logo">⚽</div>
         <div class="access-title">GOLDEN GOLD</div>
-        <div class="access-subtitle" id="accessSubtitle">Antre kòd aksè ou a</div>
+        <div class="access-subtitle">Konekte ak kont ou a</div>
         
-        <div class="access-form" id="loginForm">
+        <div class="access-form">
             <input type="email" id="loginEmail" class="access-input" placeholder="Email" autocomplete="off">
             <input type="password" id="loginPassword" class="access-input" placeholder="Modpas" autocomplete="off">
             <button class="access-btn" onclick="handleLogin()">KONEKTE</button>
-            <div class="access-toggle" onclick="toggleAuthMode()">Pa gen kont? Kreye yon kont</div>
             <div class="access-error" id="accessError"></div>
-        </div>
-
-        <div class="access-form hidden" id="registerForm">
-            <input type="text" id="regName" class="access-input" placeholder="Non konplè" autocomplete="off">
-            <input type="email" id="regEmail" class="access-input" placeholder="Email" autocomplete="off">
-            <input type="password" id="regPassword" class="access-input" placeholder="Modpas (min 6 karaktè)" autocomplete="off">
-            <input type="password" id="regConfirm" class="access-input" placeholder="Konfime modpas" autocomplete="off">
-            <button class="access-btn" onclick="handleRegister()">KREYE KONT</button>
-            <div class="access-toggle" onclick="toggleAuthMode()">Gen kont deja? Konekte</div>
-            <div class="access-error" id="regError"></div>
-            <div class="access-success" id="regSuccess"></div>
+            <div class="access-info">
+                <i class="fas fa-info-circle"></i> Ou pa ka kreye kont tèt ou. Kontakte Administratè a pou l kreye yon kont pou ou.
+            </div>
         </div>
     </div>
 
     <!-- MAIN APP -->
     <div id="mainApp" class="hidden">
-
         <header>
             <div class="logo"> GOLDEN GOLD</div>
             <div class="header-actions">
@@ -509,11 +256,11 @@
             <div id="totalOddsSection"></div>
         </div>
 
-        <!-- SECTION PAGES -->
+        <!-- SECTIONS -->
         <div id="sectionCorrect" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(59,130,246,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <span class="icon-big">🎯</span>
+                <span class="icon-big"></span>
                 <h2 style="color: var(--blue);">CORRECT SCORES</h2>
             </div>
             <div id="correctList"></div>
@@ -571,21 +318,29 @@
                     <button class="tab-btn active" onclick="showAdminTab('users')"> Itilizatè</button>
                     <button class="tab-btn" onclick="showAdminTab('matches')">⚽ Matchs</button>
                     <button class="tab-btn" onclick="showAdminTab('predCorrect')">🎯 Correct</button>
-                    <button class="tab-btn" onclick="showAdminTab('predDraw')">⚖️ Draw</button>
+                    <button class="tab-btn" onclick="showAdminTab('predDraw')">️ Draw</button>
                     <button class="tab-btn" onclick="showAdminTab('predOdds50')">🔥 Odds50</button>
                     <button class="tab-btn" onclick="showAdminTab('predOdds2')">⭐ Odds2</button>
                 </div>
 
                 <!-- USERS TAB -->
                 <div id="admUsers" class="admin-section">
-                    <h3> Jere Itilizatè yo</h3>
-                    <p style="font-size:12px; color:#888; margin-bottom:15px;">Valide oswa rejte demann enskripsyon yo.</p>
+                    <h3> Kreye yon nouvo kont Itilizatè</h3>
+                    <p style="font-size:12px; color:#888; margin-bottom:15px;">Ranpli enfòmasyon yo pou kreye kont lan. Itilizatè a ap tann apwobasyon ou.</p>
+                    <form onsubmit="createUser(event)">
+                        <input type="text" id="newUserName" placeholder="Non konplè itilizatè a" required>
+                        <input type="email" id="newUserEmail" placeholder="Email itilizatè a" required>
+                        <input type="text" id="newUserPass" placeholder="Kreye yon modpas inik pou li" required>
+                        <button class="btn btn-primary" type="submit">Kreye Kont lan</button>
+                    </form>
+
+                    <h3 style="margin-top: 25px;">📋 Lis Itilizatè yo</h3>
                     <div id="usersList"></div>
                 </div>
 
                 <!-- MATCHES TAB -->
                 <div id="admMatches" class="admin-section hidden">
-                    <h3> Ajouter un Match</h3>
+                    <h3>⚽ Ajouter un Match</h3>
                     <form onsubmit="addMatch(event)">
                         <input type="text" id="mHome" placeholder="Équipe Domicile" required>
                         <input type="text" id="mHomeLogo" placeholder="Logo (Emoji)">
@@ -599,7 +354,7 @@
                     <div id="adminMatchList"></div>
                 </div>
 
-                <!-- PREDICTION TABS -->
+                <!-- PREDICTIONS TABS -->
                 <div id="admPredCorrect" class="admin-section hidden">
                     <h3>🎯 Ajouter Correct Score</h3>
                     <form onsubmit="addPrediction(event, 'correct')">
@@ -608,11 +363,7 @@
                         <input type="text" id="pScore_correct" placeholder="Score (eg: 2-1)" required>
                         <input type="number" step="0.01" id="pOdds_correct" placeholder="Cote" required>
                         <select id="pConf_correct">
-                            <option value="5">★★★★★</option>
-                            <option value="4">★★★★</option>
-                            <option value="3">★★★</option>
-                            <option value="2">★★</option>
-                            <option value="1">★</option>
+                            <option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option><option value="2">★★</option><option value="1">★</option>
                         </select>
                         <button class="btn btn-blue">Publier</button>
                     </form>
@@ -629,11 +380,7 @@
                         <input type="text" id="pPick_draw" placeholder="Prediksyon" required>
                         <input type="number" step="0.01" id="pOdds_draw" placeholder="Cote" required>
                         <select id="pConf_draw">
-                            <option value="5">★★★★★</option>
-                            <option value="4">★★★★</option>
-                            <option value="3">★★★</option>
-                            <option value="2">★★</option>
-                            <option value="1">★</option>
+                            <option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option><option value="2">★★</option><option value="1">★</option>
                         </select>
                         <button class="btn btn-purple">Publier</button>
                     </form>
@@ -642,7 +389,7 @@
                 </div>
 
                 <div id="admPredOdds50" class="admin-section hidden">
-                    <h3> Ajouter Odds 50</h3>
+                    <h3>🔥 Ajouter Odds 50</h3>
                     <form onsubmit="addPrediction(event, 'odds50')">
                         <label style="font-size:12px; color:#888;">Match:</label>
                         <select id="pMatchId_odds50" required></select>
@@ -650,11 +397,7 @@
                         <input type="text" id="pPick_odds50" placeholder="Prediksyon" required>
                         <input type="number" step="0.01" id="pOdds_odds50" placeholder="Cote" required>
                         <select id="pConf_odds50">
-                            <option value="5">★★★★★</option>
-                            <option value="4">★★★★</option>
-                            <option value="3">★★★</option>
-                            <option value="2">★★</option>
-                            <option value="1">★</option>
+                            <option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option><option value="2">★★</option><option value="1">★</option>
                         </select>
                         <button class="btn btn-red">Publier</button>
                     </form>
@@ -671,11 +414,7 @@
                         <input type="text" id="pPick_odds2" placeholder="Prediksyon" required>
                         <input type="number" step="0.01" id="pOdds_odds2" placeholder="Cote" required>
                         <select id="pConf_odds2">
-                            <option value="5">★★★★★</option>
-                            <option value="4">★★★★</option>
-                            <option value="3">★★★</option>
-                            <option value="2">★★</option>
-                            <option value="1">★</option>
+                            <option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option><option value="2">★★</option><option value="1">★</option>
                         </select>
                         <button class="btn btn-primary">Publier</button>
                     </form>
@@ -698,7 +437,6 @@
     </div>
 
     <script>
-        // DATABASE
         const DB = {
             users: JSON.parse(localStorage.getItem('gg_users')) || [
                 { id: 'admin1', name: 'Administrateur', email: 'admin@goldengold.com', password: 'admin123', role: 'admin', status: 'approved', createdAt: Date.now() }
@@ -709,136 +447,49 @@
             theme: localStorage.getItem('gg_theme') || 'dark'
         };
 
-        let isRegistering = false;
-
         // THEME
         function toggleTheme() {
             const body = document.body;
             const btn = document.getElementById('themeBtn');
-            
             if(body.classList.contains('light-mode')) {
-                body.classList.remove('light-mode');
-                btn.innerText = '🌙';
-                DB.theme = 'dark';
+                body.classList.remove('light-mode'); btn.innerText = '🌙'; DB.theme = 'dark';
             } else {
-                body.classList.add('light-mode');
-                btn.innerText = '☀️';
-                DB.theme = 'light';
+                body.classList.add('light-mode'); btn.innerText = '☀️'; DB.theme = 'light';
             }
             localStorage.setItem('gg_theme', DB.theme);
         }
 
-        // AUTH
-        function toggleAuthMode() {
-            isRegistering = !isRegistering;
-            document.getElementById('loginForm').classList.toggle('hidden');
-            document.getElementById('registerForm').classList.toggle('hidden');
-            document.getElementById('accessSubtitle').innerText = isRegistering ? 'Kreye yon nouvo kont' : 'Antre kòd aksè ou a';
-            document.getElementById('accessError').innerText = '';
-            document.getElementById('regError').innerText = '';
-            document.getElementById('regSuccess').innerText = '';
-        }
-
+        // AUTH (NO REGISTRATION FOR USERS)
         function handleLogin() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
             const errorEl = document.getElementById('accessError');
 
-            if(!email || !password) {
-                errorEl.innerText = 'Tanpri ranpli tout chan yo';
-                return;
-            }
+            if(!email || !password) { errorEl.innerText = 'Tanpri ranpli tout chan yo'; return; }
 
             const user = DB.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
             
-            if(!user) {
-                errorEl.innerText = '❌ Email oswa modpas pa kòrèk';
-                return;
-            }
-
-            if(user.status === 'pending') {
-                errorEl.innerText = '⏳ Kont ou an ap tann validasyon admin an';
-                return;
-            }
-
-            if(user.status === 'rejected') {
-                errorEl.innerText = '❌ Kont ou a te rejte';
-                return;
-            }
+            if(!user) { errorEl.innerText = '❌ Email oswa modpas pa kòrèk'; return; }
+            if(user.status === 'pending') { errorEl.innerText = ' Kont ou a ap tann validasyon Administratè a.'; return; }
+            if(user.status === 'rejected') { errorEl.innerText = ' Kont ou a te rejte. Kontakte admin.'; return; }
 
             DB.currentUser = user;
             localStorage.setItem('gg_currentUser', JSON.stringify(user));
             enterApp();
         }
 
-        function handleRegister() {
-            const name = document.getElementById('regName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const password = document.getElementById('regPassword').value;
-            const confirm = document.getElementById('regConfirm').value;
-            const errorEl = document.getElementById('regError');
-            const successEl = document.getElementById('regSuccess');
-
-            if(!name || !email || !password || !confirm) {
-                errorEl.innerText = 'Tanpri ranpli tout chan yo';
-                return;
-            }
-
-            if(password.length < 6) {
-                errorEl.innerText = 'Modpas la dwe gen omwen 6 karaktè';
-                return;
-            }
-
-            if(password !== confirm) {
-                errorEl.innerText = 'Modpas yo pa matche';
-                return;
-            }
-
-            if(DB.users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-                errorEl.innerText = 'Email sa a deja itilize';
-                return;
-            }
-
-            const newUser = {
-                id: 'user_' + Date.now(),
-                name: name,
-                email: email,
-                password: password,
-                role: 'user',
-                status: 'pending',
-                createdAt: Date.now()
-            };
-
-            DB.users.push(newUser);
-            saveDB();
-            
-            errorEl.innerText = '';
-            successEl.innerText = '✅ Kont ou a kreye! Ap tann validasyon admin an.';
-            
-            setTimeout(() => {
-                toggleAuthMode();
-                document.getElementById('loginEmail').value = email;
-            }, 2000);
-        }
-
         function enterApp() {
             document.getElementById('accessScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
             
-            // Apply theme
-            if(DB.theme === 'light') {
-                document.body.classList.add('light-mode');
-                document.getElementById('themeBtn').innerText = '☀️';
-            }
+            if(DB.theme === 'light') { document.body.classList.add('light-mode'); document.getElementById('themeBtn').innerText = '☀️'; }
 
-            // Show admin button if admin
             if(DB.currentUser.role === 'admin') {
                 document.getElementById('adminNavBtn').classList.remove('hidden');
             } else {
                 document.getElementById('adminNavBtn').classList.add('hidden');
             }
 
-            // Update UI
             document.getElementById('userBadge').innerText = DB.currentUser.role === 'admin' ? '️ ADMIN' : '👤 USER';
             document.getElementById('profileName').innerText = DB.currentUser.name;
             document.getElementById('profileEmail').innerText = DB.currentUser.email;
@@ -902,7 +553,7 @@
         }
 
         function renderCounts() {
-            const preds = DB.predictations || DB.predictions;
+            const preds = DB.predictions;
             document.getElementById('countCorrect').innerText = preds.filter(p => p.category === 'correct').length + ' prediksyon';
             document.getElementById('countDraw').innerText = preds.filter(p => p.category === 'draw').length + ' prediksyon';
             document.getElementById('countOdds50').innerText = preds.filter(p => p.category === 'odds50').length + ' prediksyon';
@@ -958,12 +609,9 @@
             else resultBadge = '<div class="result-badge result-pending">⏳ EN ATTENTE</div>';
 
             const stars = '★'.repeat(p.confidence || 3) + '☆'.repeat(5 - (p.confidence || 3));
-            
             let pickDisplay = p.pick;
             let pickLabel = 'Prediksyon';
-            if(category === 'correct') {
-                pickLabel = 'Score Exact';
-            }
+            if(category === 'correct') pickLabel = 'Score Exact';
 
             return `
                 <div class="pred-card">
@@ -971,19 +619,11 @@
                         <span class="pred-badge badge-${category}">${getCategoryLabel(category)}</span>
                         <span style="font-size:11px; color:#888;">${m.date} • ${m.time}</span>
                     </div>
-                    
                     <div class="match-display">
-                        <div class="team-info">
-                            <span class="team-logo">${m.homeLogo || '⚽'}</span>
-                            <span>${m.home}</span>
-                        </div>
+                        <div class="team-info"><span class="team-logo">${m.homeLogo || ''}</span><span>${m.home}</span></div>
                         <span class="vs">VS</span>
-                        <div class="team-info" style="flex-direction: row-reverse;">
-                            <span class="team-logo">${m.awayLogo || '⚽'}</span>
-                            <span>${m.away}</span>
-                        </div>
+                        <div class="team-info" style="flex-direction: row-reverse;"><span class="team-logo">${m.awayLogo || '⚽'}</span><span>${m.away}</span></div>
                     </div>
-
                     <div class="pick-box">
                         <div class="pick-label">${pickLabel}</div>
                         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -991,7 +631,6 @@
                             <div class="pick-odds">${p.odds}</div>
                         </div>
                     </div>
-
                     <div class="confidence-stars">${stars}</div>
                     ${resultBadge}
                 </div>
@@ -999,36 +638,75 @@
         }
 
         function getCategoryLabel(cat) {
-            const labels = {
-                'correct': ' Correct Score',
-                'draw': '️ Draw-Win',
-                'odds50': '🔥 Odds 50',
-                'odds2': '⭐ Odds 2'
-            };
+            const labels = { 'correct': '🎯 Correct Score', 'draw': '⚖️ Draw-Win', 'odds50': '🔥 Odds 50', 'odds2': '⭐ Odds 2' };
             return labels[cat] || cat;
         }
 
-        // ADMIN: USERS
+        // ADMIN: CREATE USER
+        function createUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('newUserName').value.trim();
+            const email = document.getElementById('newUserEmail').value.trim();
+            const password = document.getElementById('newUserPass').value;
+
+            if(DB.users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+                return alert(' Email sa a deja itilize!');
+            }
+
+            const newUser = {
+                id: 'user_' + Date.now(),
+                name: name,
+                email: email,
+                password: password,
+                role: 'user',
+                status: 'pending', // Ap tann apwobasyon
+                createdAt: Date.now()
+            };
+
+            DB.users.push(newUser);
+            saveDB();
+            e.target.reset();
+            renderAdminUsers();
+            alert('✅ Kont kreye avèk siksè! Itilizatè a ap tann validasyon ou.');
+        }
+
+        function approveUser(id) {
+            const u = DB.users.find(x => x.id === id);
+            if(u) { u.status = 'approved'; saveDB(); renderAdminUsers(); alert('✅ Itilizatè apwouve!'); }
+        }
+
+        function rejectUser(id) {
+            const u = DB.users.find(x => x.id === id);
+            if(u) { u.status = 'rejected'; saveDB(); renderAdminUsers(); alert('❌ Itilizatè rejte!'); }
+        }
+
+        function deleteUser(id) {
+            if(!confirm('Efase itilizatè sa a nèt?')) return;
+            DB.users = DB.users.filter(u => u.id !== id);
+            saveDB();
+            renderAdminUsers();
+        }
+
         function renderAdminUsers() {
             const container = document.getElementById('usersList');
             const users = DB.users.filter(u => u.role !== 'admin');
 
             if(users.length === 0) {
-                container.innerHTML = '<p style="color:#666; text-align:center;">Pa gen itilizatè.</p>';
+                container.innerHTML = '<p style="color:#666; text-align:center;">Pa gen itilizatè ankò.</p>';
                 return;
             }
 
             container.innerHTML = users.map(u => {
-                let statusClass = 'status-pending';
-                let statusText = '⏳ An atant';
+                let statusClass = 'status-pending', statusText = '⏳ Ap tann';
                 if(u.status === 'approved') { statusClass = 'status-approved'; statusText = '✅ Apwouve'; }
-                else if(u.status === 'rejected') { statusClass = 'status-rejected'; statusText = ' Rejte'; }
+                else if(u.status === 'rejected') { statusClass = 'status-rejected'; statusText = '❌ Rejte'; }
 
                 return `
                     <div class="user-item">
                         <div class="user-info-text">
                             <div class="user-name">${u.name}</div>
                             <div class="user-email">${u.email}</div>
+                            <div class="user-email" style="color:var(--gold); font-family:monospace;">Modpas: ${u.password}</div>
                             <span class="user-status ${statusClass}">${statusText}</span>
                         </div>
                         <div style="display:flex; gap:5px; flex-direction:column;">
@@ -1036,41 +714,12 @@
                                 <button class="btn btn-sm btn-primary" onclick="approveUser('${u.id}')">✅</button>
                                 <button class="btn btn-sm btn-danger" onclick="rejectUser('${u.id}')">❌</button>
                             ` : `
-                                <button class="btn btn-sm btn-outline" onclick="resetUser('${u.id}')">↩️</button>
+                                <button class="btn btn-sm btn-outline" onclick="deleteUser('${u.id}')" style="border-color:#EF4444; color:#EF4444;">🗑️</button>
                             `}
                         </div>
                     </div>
                 `;
             }).join('');
-        }
-
-        function approveUser(id) {
-            const u = DB.users.find(x => x.id === id);
-            if(u) {
-                u.status = 'approved';
-                saveDB();
-                renderAdminUsers();
-                alert('✅ Itilizatè apwouve!');
-            }
-        }
-
-        function rejectUser(id) {
-            const u = DB.users.find(x => x.id === id);
-            if(u) {
-                u.status = 'rejected';
-                saveDB();
-                renderAdminUsers();
-                alert('❌ Itilizatè rejte!');
-            }
-        }
-
-        function resetUser(id) {
-            const u = DB.users.find(x => x.id === id);
-            if(u) {
-                u.status = 'pending';
-                saveDB();
-                renderAdminUsers();
-            }
         }
 
         // ADMIN: MATCHES
@@ -1080,15 +729,12 @@
                 id: Date.now(),
                 home: document.getElementById('mHome').value,
                 away: document.getElementById('mAway').value,
-                homeLogo: document.getElementById('mHomeLogo').value || '⚽',
+                homeLogo: document.getElementById('mHomeLogo').value || '',
                 awayLogo: document.getElementById('mAwayLogo').value || '⚽',
                 date: document.getElementById('mDate').value || 'Jodi a',
                 time: document.getElementById('mTime').value
             });
-            saveDB();
-            e.target.reset();
-            renderAdminMatches();
-            populateAllMatchSelects();
+            saveDB(); e.target.reset(); renderAdminMatches(); populateAllMatchSelects();
             alert('✅ Match ajoute!');
         }
 
@@ -1096,17 +742,12 @@
             if(!confirm('Efase match sa a?')) return;
             DB.matches = DB.matches.filter(m => m.id !== id);
             DB.predictions = DB.predictions.filter(p => p.matchId !== id);
-            saveDB();
-            renderAdminMatches();
-            populateAllMatchSelects();
+            saveDB(); renderAdminMatches(); populateAllMatchSelects();
         }
 
         function renderAdminMatches() {
             const container = document.getElementById('adminMatchList');
-            if(DB.matches.length === 0) {
-                container.innerHTML = '<p style="color:#666; text-align:center;">Pa gen match.</p>';
-                return;
-            }
+            if(DB.matches.length === 0) { container.innerHTML = '<p style="color:#666; text-align:center;">Pa gen match.</p>'; return; }
             container.innerHTML = DB.matches.map(m => `
                 <div class="user-item">
                     <div class="user-info-text">
@@ -1124,9 +765,7 @@
                 const sel = document.getElementById('pMatchId_' + cat);
                 if(!sel) return;
                 sel.innerHTML = '<option value="">-- Chwazi yon match --</option>';
-                DB.matches.forEach(m => {
-                    sel.innerHTML += `<option value="${m.id}">${m.home} vs ${m.away}</option>`;
-                });
+                DB.matches.forEach(m => { sel.innerHTML += `<option value="${m.id}">${m.home} vs ${m.away}</option>`; });
             });
         }
 
@@ -1137,69 +776,41 @@
             if(!matchId) return alert('Chwazi yon match!');
 
             let pick = '';
-            if(category === 'correct') {
-                pick = document.getElementById('pScore_' + category).value;
-            } else {
-                const type = document.getElementById('pType_' + category).value;
-                const pickVal = document.getElementById('pPick_' + category).value;
-                pick = type + ': ' + pickVal;
-            }
+            if(category === 'correct') { pick = document.getElementById('pScore_' + category).value; } 
+            else { pick = document.getElementById('pType_' + category).value + ': ' + document.getElementById('pPick_' + category).value; }
 
             DB.predictions.push({
-                id: Date.now(),
-                category: category,
-                matchId: parseInt(matchId),
-                pick: pick,
+                id: Date.now(), category: category, matchId: parseInt(matchId), pick: pick,
                 odds: document.getElementById('pOdds_' + category).value,
                 confidence: parseInt(document.getElementById('pConf_' + category).value),
-                result: 'pending',
-                createdAt: Date.now()
+                result: 'pending', createdAt: Date.now()
             });
-            saveDB();
-            e.target.reset();
-            renderAdminPreds(category);
-            renderCounts();
-            renderTotalOdds();
+            saveDB(); e.target.reset(); renderAdminPreds(category); renderCounts(); renderTotalOdds();
             alert('✅ Prediksyon publie!');
         }
 
         function setPredResult(id, result) {
             const p = DB.predictions.find(x => x.id === id);
-            if(p) {
-                p.result = result;
-                saveDB();
-                const cat = p.category;
-                renderAdminPreds(cat);
-                renderSection(cat);
-                renderCounts();
-                renderTotalOdds();
-            }
+            if(p) { p.result = result; saveDB(); renderAdminPreds(p.category); renderSection(p.category); renderCounts(); renderTotalOdds(); }
         }
 
         function deletePred(id) {
             if(!confirm('Efase prediksyon sa a?')) return;
             const p = DB.predictions.find(x => x.id === id);
             DB.predictions = DB.predictions.filter(x => x.id !== id);
-            saveDB();
-            if(p) renderAdminPreds(p.category);
-            renderCounts();
-            renderTotalOdds();
+            saveDB(); if(p) renderAdminPreds(p.category); renderCounts(); renderTotalOdds();
         }
 
         function renderAdminPreds(category) {
             const container = document.getElementById('admin' + category.charAt(0).toUpperCase() + category.slice(1) + 'List');
             const preds = DB.predictions.filter(p => p.category === category);
-            
-            if(preds.length === 0) {
-                container.innerHTML = '<p style="color:#666; text-align:center;">Pa gen prediksyon.</p>';
-                return;
-            }
+            if(preds.length === 0) { container.innerHTML = '<p style="color:#666; text-align:center;">Pa gen prediksyon.</p>'; return; }
 
             container.innerHTML = preds.map(p => {
                 const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?'};
                 let statusColor = '#888', statusText = '⏳ En attente';
                 if(p.result === 'won') { statusColor = '#00C853'; statusText = '✅ GAGNÉ'; }
-                else if(p.result === 'lost') { statusColor = '#EF4444'; statusText = ' PERDU'; }
+                else if(p.result === 'lost') { statusColor = '#EF4444'; statusText = '❌ PERDU'; }
                 else if(p.result === 'cancelled') { statusColor = '#8B92A8'; statusText = '⏸️ ANNULÉ'; }
 
                 return `
@@ -1210,16 +821,13 @@
                         </div>
                         <div style="font-size:13px; margin-bottom:6px;">${m.home} vs ${m.away}</div>
                         <div style="font-size:14px; color:var(--gold); font-weight:bold;">${p.pick} <span style="color:var(--gold);">(${p.odds})</span></div>
-                        
                         ${p.result === 'pending' ? `
                             <div style="display:flex; gap:5px; margin-top:10px; flex-wrap:wrap;">
                                 <button class="btn btn-sm btn-primary" onclick="setPredResult(${p.id}, 'won')">✅</button>
                                 <button class="btn btn-sm btn-danger" onclick="setPredResult(${p.id}, 'lost')">❌</button>
-                                <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'cancelled')" style="border-color:#888; color:#888;">️</button>
+                                <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'cancelled')" style="border-color:#888; color:#888;">⏸️</button>
                             </div>
-                        ` : `
-                            <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'pending')" style="margin-top:10px; width:100%;">↩️</button>
-                        `}
+                        ` : `<button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'pending')" style="margin-top:10px; width:100%;">↩️</button>`}
                         <button class="btn btn-sm btn-danger" onclick="deletePred(${p.id})" style="margin-top:6px; width:100%;">🗑️ Efase</button>
                     </div>
                 `;
@@ -1229,7 +837,6 @@
         function showAdminTab(tabId) {
             document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('adm' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
-            
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
         }
@@ -1243,7 +850,7 @@
         // INIT
         if(DB.currentUser) {
             const user = DB.users.find(u => u.id === DB.currentUser.id);
-            if(user && user.status === 'approved') {
+            if(user && (user.status === 'approved' || user.role === 'admin')) {
                 DB.currentUser = user;
                 enterApp();
             } else {
@@ -1252,10 +859,7 @@
             }
         }
 
-        // Enter key support
-        document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') handleLogin();
-        });
+        document.getElementById('loginPassword').addEventListener('keypress', function(e) { if(e.key === 'Enter') handleLogin(); });
     </script>
 </body>
 </html>
