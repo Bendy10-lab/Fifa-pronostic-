@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FIFA PRONOSTIC</title>
+    <title>GOLDEN GOL</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #0A0E1A;
             --bg-card: #141927;
-            --primary: #00C853;
+            --primary: #FFD700;
             --gold: #FFD700;
             --red: #E91E63;
             --blue: #3B82F6;
@@ -21,7 +21,6 @@
         body { background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 80px; }
         .hidden { display: none !important; }
 
-        /* ACCESS CODE SCREEN */
         #accessScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #0A0E1A 0%, #1a1a2e 50%, #0A0E1A 100%);
@@ -30,10 +29,10 @@
         }
         .access-logo {
             width: 100px; height: 100px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), #00A844);
+            background: linear-gradient(135deg, var(--gold), #D4AF37);
             display: flex; align-items: center; justify-content: center;
             font-size: 50px; margin-bottom: 20px;
-            box-shadow: 0 10px 40px rgba(0, 200, 83, 0.4);
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.4);
             animation: pulse 2s infinite;
         }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
@@ -56,7 +55,6 @@
         }
         .access-error { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 20px; }
 
-        /* HEADER */
         header {
             position: sticky; top: 0; z-index: 100;
             background: rgba(10,14,26,0.95); padding: 15px 20px;
@@ -64,10 +62,9 @@
             display: flex; justify-content: space-between; align-items: center;
             backdrop-filter: blur(5px);
         }
-        .logo { font-weight: 800; color: var(--primary); font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .logo { font-weight: 800; color: var(--gold); font-size: 18px; display: flex; align-items: center; gap: 8px; }
         .user-info { font-size: 12px; color: var(--gold); }
 
-        /* 4 SECTIONS GRID */
         .sections-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -95,10 +92,9 @@
         .section-card.vip .title { color: var(--gold); }
         .section-card.odds { border-color: var(--red); background: linear-gradient(135deg, rgba(233,30,99,0.15), var(--bg-card)); }
         .section-card.odds .title { color: var(--red); }
-        .section-card.daily { border-color: var(--primary); background: linear-gradient(135deg, rgba(0,200,83,0.15), var(--bg-card)); }
+        .section-card.daily { border-color: var(--primary); background: linear-gradient(135deg, rgba(255,215,0,0.15), var(--bg-card)); }
         .section-card.daily .title { color: var(--primary); }
 
-        /* SECTION DETAIL PAGE */
         .section-header {
             padding: 20px;
             display: flex;
@@ -131,10 +127,7 @@
         .badge-correct { background: rgba(59,130,246,0.2); color: var(--blue); }
         .badge-vip { background: rgba(255,215,0,0.2); color: var(--gold); }
         .badge-odds { background: rgba(233,30,99,0.2); color: var(--red); }
-        .badge-daily { background: rgba(0,200,83,0.2); color: var(--primary); }
-        .badge-result-won { background: rgba(0,200,83,0.2); color: var(--primary); }
-        .badge-result-lost { background: rgba(239,68,68,0.2); color: #EF4444; }
-        .badge-result-pending { background: rgba(139,146,168,0.2); color: var(--text-gray); }
+        .badge-daily { background: rgba(255,215,0,0.2); color: var(--primary); }
 
         .match-display {
             display: flex; justify-content: space-between; align-items: center;
@@ -149,16 +142,15 @@
             padding: 12px;
             border-radius: 10px;
             margin-top: 10px;
-            border-left: 3px solid var(--primary);
+            border-left: 3px solid var(--gold);
         }
         .pick-label { font-size: 11px; color: var(--text-gray); margin-bottom: 4px; }
-        .pick-value { font-size: 18px; font-weight: 800; color: var(--primary); }
+        .pick-value { font-size: 18px; font-weight: 800; color: var(--gold); }
         .pick-odds { color: var(--gold); font-weight: 700; font-size: 14px; }
 
         .confidence-stars { color: var(--gold); font-size: 14px; margin-top: 8px; }
         .result-badge { margin-top: 10px; text-align: center; font-weight: 700; font-size: 13px; }
 
-        /* BOTTOM NAV */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--bg-card); border-top: 1px solid #2A3142;
@@ -170,9 +162,8 @@
             align-items: center; cursor: pointer; min-width: 60px;
         }
         .nav-item i { font-size: 18px; margin-bottom: 3px; }
-        .nav-item.active { color: var(--primary); }
+        .nav-item.active { color: var(--gold); }
 
-        /* ADMIN */
         .admin-tabs {
             display: flex; gap: 5px; overflow-x: auto;
             padding: 10px 20px; background: #111;
@@ -182,7 +173,7 @@
             padding: 8px 12px; border-radius: 20px;
             font-size: 11px; white-space: nowrap; cursor: pointer;
         }
-        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-btn.active { background: var(--gold); color: black; }
         .admin-section { padding: 20px; }
         .admin-section h3 { margin: 15px 0 10px; font-size: 16px; }
 
@@ -196,14 +187,13 @@
             border: none; font-weight: bold; cursor: pointer;
             font-size: 14px; margin-top: 5px;
         }
-        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary { background: var(--gold); color: black; }
         .btn-gold { background: var(--gold); color: black; }
         .btn-danger { background: #EF4444; color: white; }
-        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
         .btn-sm { padding: 6px 12px; font-size: 11px; width: auto; display: inline-block; margin: 0; }
         .btn-blue { background: var(--blue); color: white; }
         .btn-red { background: var(--red); color: white; }
-        .btn-purple { background: var(--purple); color: white; }
 
         .code-item {
             background: var(--bg-card);
@@ -225,25 +215,22 @@
 </head>
 <body>
 
-    <!-- ACCESS CODE SCREEN -->
     <div id="accessScreen">
-        <div class="access-logo"></div>
-        <div class="access-title">FIFA PRONOSTIC</div>
+        <div class="access-logo">⚽</div>
+        <div class="access-title">GOLDEN GOL</div>
         <div class="access-subtitle">Antre kòd aksè ou a pou w kontinye</div>
         <input type="text" id="accessCodeInput" class="access-input" placeholder="Kòd Aksè" autocomplete="off">
         <button class="access-btn" onclick="validateAccess()">ANTRE</button>
         <div class="access-error" id="accessError"></div>
     </div>
 
-    <!-- MAIN APP (hidden until code validated) -->
     <div id="mainApp" class="hidden">
 
         <header>
-            <div class="logo"><i class="fas fa-futbol"></i> FIFA PRONOSTIC</div>
+            <div class="logo">⚽ GOLDEN GOL</div>
             <div class="user-info" id="userCodeDisplay"></div>
         </header>
 
-        <!-- HOME PAGE - 4 SECTIONS -->
         <div id="homePage" class="page">
             <div style="padding: 20px 20px 5px;">
                 <h1 style="font-size: 22px; margin-bottom: 5px;">Byenveni 👋</h1>
@@ -286,7 +273,6 @@
             </div>
         </div>
 
-        <!-- SECTION DETAIL PAGES -->
         <div id="sectionCorrect" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(59,130,246,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
@@ -315,7 +301,7 @@
         </div>
 
         <div id="sectionDaily" class="page hidden">
-            <div class="section-header" style="background: linear-gradient(135deg, rgba(0,200,83,0.2), var(--bg-dark));">
+            <div class="section-header" style="background: linear-gradient(135deg, rgba(255,215,0,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
                 <span class="icon-big">⭐</span>
                 <h2 style="color: var(--primary);">Daily Pick</h2>
@@ -323,11 +309,10 @@
             <div id="dailyList"></div>
         </div>
 
-        <!-- PROFILE PAGE -->
         <div id="profilePage" class="page hidden">
             <div style="padding: 20px;">
                 <div class="pred-card" style="text-align: center;">
-                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #00A844); display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 15px;">👤</div>
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), #D4AF37); display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 15px;">👤</div>
                     <h2 id="profileCode">-</h2>
                     <p id="profileType" style="color: var(--text-gray);">-</p>
                     <button onclick="logout()" class="btn btn-danger" style="margin-top: 20px;">Dekonekte</button>
@@ -335,31 +320,29 @@
             </div>
         </div>
 
-        <!-- ADMIN PANEL -->
         <div id="adminPage" class="page hidden">
             <div style="padding: 20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                    <h2>🛡️ Admin Panel</h2>
+                    <h2>️ Admin Panel</h2>
                     <button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:20px;">✕</button>
                 </div>
                 
                 <div class="admin-tabs">
-                    <button class="tab-btn active" onclick="showAdminTab('codes')"> Kòd</button>
+                    <button class="tab-btn active" onclick="showAdminTab('codes')">🔑 Kòd</button>
                     <button class="tab-btn" onclick="showAdminTab('matches')">⚽ Matchs</button>
-                    <button class="tab-btn" onclick="showAdminTab('predCorrect')">🎯 Correct</button>
+                    <button class="tab-btn" onclick="showAdminTab('predCorrect')"> Correct</button>
                     <button class="tab-btn" onclick="showAdminTab('predVip')">💎 VIP</button>
                     <button class="tab-btn" onclick="showAdminTab('predOdds')">🔥 Odds</button>
                     <button class="tab-btn" onclick="showAdminTab('predDaily')">⭐ Daily</button>
                 </div>
 
-                <!-- TAB: CODES -->
                 <div id="admCodes" class="admin-section">
                     <h3>🔑 Jere Kòd Aksè</h3>
-                    <p style="font-size:12px; color:#888; margin-bottom:15px;">Kreye kòd pou itilizatè yo. Chak kòd ka tip "user" oswa "vip".</p>
+                    <p style="font-size:12px; color:#888; margin-bottom:15px;">Kreye kòd pou itilizatè yo.</p>
                     
                     <input type="text" id="newCodeValue" placeholder="Kòd (eg: USER123, VIP2026)">
                     <select id="newCodeType">
-                        <option value="user">👤 User (nòmal)</option>
+                        <option value="user"> User (nòmal)</option>
                         <option value="vip">💎 VIP (akses konplè)</option>
                     </select>
                     <button class="btn btn-gold" onclick="createCode()">+ Kreye Kòd</button>
@@ -368,7 +351,6 @@
                     <div id="codesList"></div>
                 </div>
 
-                <!-- TAB: MATCHES -->
                 <div id="admMatches" class="admin-section hidden">
                     <h3>⚽ Ajouter un Match</h3>
                     <form onsubmit="addMatch(event)">
@@ -384,7 +366,6 @@
                     <div id="adminMatchList"></div>
                 </div>
 
-                <!-- TAB: PRED CORRECT -->
                 <div id="admPredCorrect" class="admin-section hidden">
                     <h3>🎯 Ajouter Correct Score</h3>
                     <form onsubmit="addPrediction(event, 'correct')">
@@ -393,11 +374,11 @@
                         <input type="text" id="pScore_correct" placeholder="Score (eg: 2-1)" required>
                         <input type="number" step="0.01" id="pOdds_correct" placeholder="Cote" required>
                         <select id="pConf_correct">
-                            <option value="5">★★★★★ (Trè wo)</option>
-                            <option value="4">★★★★ (Wo)</option>
-                            <option value="3">★★★ (Mwayen)</option>
-                            <option value="2">★★ (Ba)</option>
-                            <option value="1">★ (Trè ba)</option>
+                            <option value="5">★★★★★</option>
+                            <option value="4">★★★★</option>
+                            <option value="3">★★★</option>
+                            <option value="2">★★</option>
+                            <option value="1">★</option>
                         </select>
                         <button class="btn btn-blue">Publier</button>
                     </form>
@@ -405,9 +386,8 @@
                     <div id="adminCorrectList"></div>
                 </div>
 
-                <!-- TAB: PRED VIP -->
                 <div id="admPredVip" class="admin-section hidden">
-                    <h3>💎 Ajouter VIP Prediction</h3>
+                    <h3> Ajouter VIP Prediction</h3>
                     <form onsubmit="addPrediction(event, 'vip')">
                         <label style="font-size:12px; color:#888;">Match:</label>
                         <select id="pMatchId_vip" required></select>
@@ -427,7 +407,6 @@
                     <div id="adminVipList"></div>
                 </div>
 
-                <!-- TAB: PRED ODDS -->
                 <div id="admPredOdds" class="admin-section hidden">
                     <h3>🔥 Ajouter Odds Max</h3>
                     <form onsubmit="addPrediction(event, 'odds')">
@@ -449,10 +428,8 @@
                     <div id="adminOddsList"></div>
                 </div>
 
-                <!-- TAB: PRED DAILY -->
                 <div id="admPredDaily" class="admin-section hidden">
                     <h3>⭐ Ajouter Daily Pick</h3>
-                    <p style="font-size:12px; color:#888; margin-bottom:10px;">Chwazi pi bon prediksyon jounen an.</p>
                     <form onsubmit="addPrediction(event, 'daily')">
                         <label style="font-size:12px; color:#888;">Match:</label>
                         <select id="pMatchId_daily" required></select>
@@ -474,7 +451,6 @@
             </div>
         </div>
 
-        <!-- BOTTOM NAV -->
         <nav class="bottom-nav">
             <button class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i> Accueil</button>
             <button class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i> Profil</button>
@@ -483,20 +459,15 @@
     </div>
 
     <script>
-        // ============ DATABASE ============
         const DB = {
-            codes: JSON.parse(localStorage.getItem('fp_codes')) || [
-                // Admin code - toujou la
+            codes: JSON.parse(localStorage.getItem('gg_codes')) || [
                 { code: 'Dg trump', type: 'admin', active: true, createdAt: Date.now() }
             ],
-            matches: JSON.parse(localStorage.getItem('fp_matches')) || [],
-            predictions: JSON.parse(localStorage.getItem('fp_preds')) || [],
-            currentUser: JSON.parse(localStorage.getItem('fp_currentUser')) || null
+            matches: JSON.parse(localStorage.getItem('gg_matches')) || [],
+            predictions: JSON.parse(localStorage.getItem('gg_preds')) || [],
+            currentUser: JSON.parse(localStorage.getItem('gg_currentUser')) || null
         };
 
-        let comboBuilderItems = [];
-
-        // ============ ACCESS CODE SYSTEM ============
         function validateAccess() {
             const input = document.getElementById('accessCodeInput').value.trim();
             const errorEl = document.getElementById('accessError');
@@ -506,17 +477,15 @@
                 return;
             }
 
-            // Chèche kòd la (case insensitive pou admin)
             const code = DB.codes.find(c => c.code.toLowerCase() === input.toLowerCase() && c.active);
             
             if(!code) {
-                errorEl.innerText = '❌ Kòd sa a pa valid oswa li ekspire';
+                errorEl.innerText = '❌ Kòd sa a pa valid';
                 return;
             }
 
-            // Sove kòd la kòm itilizatè aktyèl
             DB.currentUser = { code: code.code, type: code.type, loggedInAt: Date.now() };
-            localStorage.setItem('fp_currentUser', JSON.stringify(DB.currentUser));
+            localStorage.setItem('gg_currentUser', JSON.stringify(DB.currentUser));
             
             errorEl.innerText = '';
             enterApp();
@@ -526,14 +495,12 @@
             document.getElementById('accessScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
             
-            // Si se admin, montre bouton admin
             if(DB.currentUser.type === 'admin') {
                 document.getElementById('adminNavBtn').classList.remove('hidden');
             } else {
                 document.getElementById('adminNavBtn').classList.add('hidden');
             }
 
-            // Afiche enfòmasyon itilizatè
             document.getElementById('userCodeDisplay').innerText = DB.currentUser.type === 'admin' ? '🛡️ ADMIN' : (DB.currentUser.type === 'vip' ? '💎 VIP' : '👤 USER');
             document.getElementById('myCodeDisplay').innerText = DB.currentUser.code;
             document.getElementById('myCodeType').innerText = DB.currentUser.type.toUpperCase();
@@ -545,19 +512,17 @@
 
         function logout() {
             DB.currentUser = null;
-            localStorage.removeItem('fp_currentUser');
+            localStorage.removeItem('gg_currentUser');
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('accessScreen').classList.remove('hidden');
             document.getElementById('accessCodeInput').value = '';
             document.getElementById('accessError').innerText = '';
         }
 
-        // Enter key support
         document.getElementById('accessCodeInput').addEventListener('keypress', function(e) {
             if(e.key === 'Enter') validateAccess();
         });
 
-        // ============ NAVIGATION ============
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             document.getElementById(pageId + 'Page').classList.remove('hidden');
@@ -572,15 +537,13 @@
         }
 
         function openSection(section) {
-            // VIP section - verify user type
             if(section === 'vip' && DB.currentUser.type !== 'vip' && DB.currentUser.type !== 'admin') {
-                alert('️ Seksyon sa a rezève pou manm VIP yo sèlman.\n\nKontakte admin pou jwenn yon kòd VIP.');
+                alert('🔒 Seksyon sa a rezève pou manm VIP yo.');
                 return;
             }
             showPage('section' + section.charAt(0).toUpperCase() + section.slice(1));
         }
 
-        // ============ RENDERING ============
         function renderAll() {
             renderCounts();
             renderSection('correct');
@@ -610,25 +573,13 @@
             const container = document.getElementById(category + 'List');
             let preds = DB.predictions.filter(p => p.category === category);
             
-            // VIP - sèlman VIP ak admin ka wè
             if(category === 'vip' && DB.currentUser.type !== 'vip' && DB.currentUser.type !== 'admin') {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-lock"></i>
-                        <h3 style="color: var(--gold); margin-bottom: 10px;">Aksè Refize</h3>
-                        <p>Seksyon sa a rezève pou manm VIP yo.</p>
-                    </div>
-                `;
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-lock"></i><h3 style="color: var(--gold);">Aksè Refize</h3><p>Seksyon sa a rezève pou VIP.</p></div>';
                 return;
             }
 
             if(preds.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>Pa gen prediksyon nan kategori sa a kounye a.</p>
-                    </div>
-                `;
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>Pa gen prediksyon kounye a.</p></div>';
                 return;
             }
 
@@ -646,12 +597,10 @@
 
             const stars = '★'.repeat(p.confidence || 3) + '☆'.repeat(5 - (p.confidence || 3));
             
-            // Correct Score - afiche score a espesyalman
             let pickDisplay = p.pick;
             let pickLabel = 'Prediksyon';
             if(category === 'correct') {
                 pickLabel = 'Score Exact';
-                pickDisplay = p.pick;
             }
 
             return `
@@ -668,7 +617,7 @@
                         </div>
                         <span class="vs">VS</span>
                         <div class="team-info" style="flex-direction: row-reverse;">
-                            <span class="team-logo">${m.awayLogo || ''}</span>
+                            <span class="team-logo">${m.awayLogo || '⚽'}</span>
                             <span>${m.away}</span>
                         </div>
                     </div>
@@ -689,15 +638,14 @@
 
         function getCategoryLabel(cat) {
             const labels = {
-                'correct': ' Correct Score',
+                'correct': '🎯 Correct Score',
                 'vip': '💎 VIP',
-                'odds': ' Odds Max',
+                'odds': '🔥 Odds Max',
                 'daily': '⭐ Daily Pick'
             };
             return labels[cat] || cat;
         }
 
-        // ============ ADMIN: CODES ============
         function createCode() {
             const value = document.getElementById('newCodeValue').value.trim();
             const type = document.getElementById('newCodeType').value;
@@ -716,7 +664,7 @@
             saveDB();
             document.getElementById('newCodeValue').value = '';
             renderAdminCodes();
-            alert('✅ Kòd "' + value + '" kreye avèk siksè!');
+            alert('✅ Kòd "' + value + '" kreye!');
         }
 
         function toggleCode(code) {
@@ -729,7 +677,7 @@
         }
 
         function deleteCode(code) {
-            if(code === 'Dg trump') return alert('Ou pa ka efase kòd admin prensipal la!');
+            if(code === 'Dg trump') return alert('Ou pa ka efase kòd admin an!');
             if(!confirm('Efase kòd sa a?')) return;
             DB.codes = DB.codes.filter(c => c.code !== code);
             saveDB();
@@ -744,7 +692,7 @@
                         <div class="code-value">${c.code}</div>
                         <div class="code-type">
                             ${c.type === 'admin' ? '🛡️ Admin' : c.type === 'vip' ? '💎 VIP' : '👤 User'}
-                            ${c.active ? '• ✅ Aktif' : '•  Dezaktive'}
+                            ${c.active ? '• ✅ Aktif' : '• ❌ Dezaktive'}
                         </div>
                     </div>
                     <div style="display:flex; gap:6px;">
@@ -759,7 +707,6 @@
             `).join('');
         }
 
-        // ============ ADMIN: MATCHES ============
         function addMatch(e) {
             e.preventDefault();
             DB.matches.push({
@@ -767,7 +714,7 @@
                 home: document.getElementById('mHome').value,
                 away: document.getElementById('mAway').value,
                 homeLogo: document.getElementById('mHomeLogo').value || '⚽',
-                awayLogo: document.getElementById('mAwayLogo').value || '⚽',
+                awayLogo: document.getElementById('mAwayLogo').value || '',
                 date: document.getElementById('mDate').value || 'Jodi a',
                 time: document.getElementById('mTime').value
             });
@@ -775,7 +722,7 @@
             e.target.reset();
             renderAdminMatches();
             populateAllMatchSelects();
-            alert('Match ajoute!');
+            alert('✅ Match ajoute!');
         }
 
         function deleteMatch(id) {
@@ -799,7 +746,7 @@
                         <div style="font-weight:600;">${m.homeLogo} ${m.home} vs ${m.away} ${m.awayLogo}</div>
                         <div class="code-type">${m.date} • ${m.time}</div>
                     </div>
-                    <button class="btn btn-sm btn-danger" onclick="deleteMatch(${m.id})">🗑️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteMatch(${m.id})">️</button>
                 </div>
             `).join('');
         }
@@ -816,7 +763,6 @@
             });
         }
 
-        // ============ ADMIN: PREDICTIONS ============
         function addPrediction(e, category) {
             e.preventDefault();
             const matchId = document.getElementById('pMatchId_' + category).value;
@@ -844,7 +790,8 @@
             saveDB();
             e.target.reset();
             renderAdminPreds(category);
-            alert('Prediksyon publie!');
+            renderCounts();
+            alert('✅ Prediksyon publie!');
         }
 
         function setPredResult(id, result) {
@@ -882,7 +829,7 @@
                 let statusColor = '#888', statusText = '⏳ En attente';
                 if(p.result === 'won') { statusColor = 'var(--primary)'; statusText = '✅ GAGNÉ'; }
                 else if(p.result === 'lost') { statusColor = '#EF4444'; statusText = '❌ PERDU'; }
-                else if(p.result === 'cancelled') { statusColor = '#888'; statusText = '⏸️ ANNULÉ'; }
+                else if(p.result === 'cancelled') { statusColor = '#888'; statusText = '️ ANNULÉ'; }
 
                 return `
                     <div class="pred-card" style="margin:10px 0;">
@@ -891,7 +838,7 @@
                             <span style="color:${statusColor}; font-weight:bold; font-size:12px;">${statusText}</span>
                         </div>
                         <div style="font-size:13px; margin-bottom:6px;">${m.home} vs ${m.away}</div>
-                        <div style="font-size:14px; color:var(--primary); font-weight:bold;">${p.pick} <span style="color:var(--gold);">(${p.odds})</span></div>
+                        <div style="font-size:14px; color:var(--gold); font-weight:bold;">${p.pick} <span style="color:var(--gold);">(${p.odds})</span></div>
                         
                         ${p.result === 'pending' ? `
                             <div style="display:flex; gap:5px; margin-top:10px; flex-wrap:wrap;">
@@ -908,7 +855,6 @@
             }).join('');
         }
 
-        // ============ ADMIN TABS ============
         function showAdminTab(tabId) {
             document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('adm' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
@@ -917,23 +863,19 @@
             event.target.classList.add('active');
         }
 
-        // ============ UTILS ============
         function saveDB() {
-            localStorage.setItem('fp_codes', JSON.stringify(DB.codes));
-            localStorage.setItem('fp_matches', JSON.stringify(DB.matches));
-            localStorage.setItem('fp_preds', JSON.stringify(DB.predictions));
+            localStorage.setItem('gg_codes', JSON.stringify(DB.codes));
+            localStorage.setItem('gg_matches', JSON.stringify(DB.matches));
+            localStorage.setItem('gg_preds', JSON.stringify(DB.predictions));
         }
 
-        // ============ INIT ============
-        // Tcheke si gen sesyon aktyèl
         if(DB.currentUser) {
-            // Verify code still exists and is active
             const code = DB.codes.find(c => c.code === DB.currentUser.code && c.active);
             if(code) {
                 enterApp();
             } else {
                 DB.currentUser = null;
-                localStorage.removeItem('fp_currentUser');
+                localStorage.removeItem('gg_currentUser');
             }
         }
     </script>
