@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOLDEN GOLD</title>
+    <title>GOLDEN STAR</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -92,6 +92,7 @@
             backdrop-filter: blur(5px);
         }
         .logo { font-weight: 900; color: var(--gold); font-size: 20px; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; }
+        .logo-icon { font-size: 28px; }
         .header-actions { display: flex; gap: 10px; align-items: center; }
         .theme-toggle { background: none; border: none; color: var(--gold); font-size: 20px; cursor: pointer; }
         .user-badge { font-size: 11px; color: var(--gold); background: rgba(255,215,0,0.1); padding: 4px 10px; border-radius: 12px; }
@@ -124,7 +125,7 @@
         .section-header .icon-big { font-size: 28px; }
 
         .pred-card { background: var(--bg-card); border-radius: 16px; padding: 18px; margin: 15px 20px; border: 1px solid var(--border-dark); }
-        .pred-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .pred-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 6px; }
         .pred-badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; }
         .badge-correct { background: rgba(59,130,246,0.2); color: var(--blue); }
         .badge-draw { background: rgba(139,92,246,0.2); color: var(--purple); }
@@ -145,6 +146,14 @@
         .result-won { background: rgba(0,200,83,0.1); color: #00C853; }
         .result-lost { background: rgba(239,68,68,0.1); color: #EF4444; }
         .result-pending { background: rgba(255,215,0,0.1); color: var(--gold); }
+
+        .match-championship {
+            font-size: 11px; color: var(--text-gray);
+            background: rgba(255,215,0,0.08);
+            padding: 3px 10px; border-radius: 12px;
+            display: inline-block; margin-top: 4px;
+        }
+        body.light-mode .match-championship { background: rgba(255,215,0,0.15); color: var(--text-gray-light); }
 
         /* TOTAL ODDS */
         .total-odds-card {
@@ -192,14 +201,23 @@
 
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-gray); }
         .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.5; }
+
+        .admin-code-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .admin-code-box label { font-size: 12px; color: var(--text-gray); display: block; margin-bottom: 6px; }
     </style>
 </head>
 <body>
 
-    <!-- ACCESS SCREEN (LOGIN ONLY) -->
+    <!-- ACCESS SCREEN -->
     <div id="accessScreen">
-        <div class="access-logo">⚽</div>
-        <div class="access-title">GOLDEN GOLD</div>
+        <div class="access-logo">⭐</div>
+        <div class="access-title">GOLDEN STAR</div>
         <div class="access-subtitle">Konekte ak kont ou a</div>
         
         <div class="access-form">
@@ -216,7 +234,10 @@
     <!-- MAIN APP -->
     <div id="mainApp" class="hidden">
         <header>
-            <div class="logo"> GOLDEN GOLD</div>
+            <div class="logo">
+                <span class="logo-icon">⭐</span>
+                <span>GOLDEN STAR</span>
+            </div>
             <div class="header-actions">
                 <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
                 <div class="user-badge" id="userBadge">USER</div>
@@ -260,7 +281,7 @@
         <div id="sectionCorrect" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(59,130,246,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <span class="icon-big"></span>
+                <span class="icon-big">🎯</span>
                 <h2 style="color: var(--blue);">CORRECT SCORES</h2>
             </div>
             <div id="correctList"></div>
@@ -269,7 +290,7 @@
         <div id="sectionDraw" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(139,92,246,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <span class="icon-big">️</span>
+                <span class="icon-big">⚖️</span>
                 <h2 style="color: var(--purple);">DRAW-WIN</h2>
             </div>
             <div id="drawList"></div>
@@ -278,7 +299,7 @@
         <div id="sectionOdds50" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(233,30,99,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <span class="icon-big">🔥</span>
+                <span class="icon-big"></span>
                 <h2 style="color: var(--red);">ODD'S 50</h2>
             </div>
             <div id="odds50List"></div>
@@ -310,22 +331,23 @@
         <div id="adminPage" class="page hidden">
             <div style="padding: 20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                    <h2>🛡️ Admin Panel</h2>
+                    <h2>️ Admin Panel</h2>
                     <button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:20px;">✕</button>
                 </div>
                 
                 <div class="admin-tabs">
-                    <button class="tab-btn active" onclick="showAdminTab('users')"> Itilizatè</button>
+                    <button class="tab-btn active" onclick="showAdminTab('users')">👥 Itilizatè</button>
                     <button class="tab-btn" onclick="showAdminTab('matches')">⚽ Matchs</button>
+                    <button class="tab-btn" onclick="showAdminTab('settings')">⚙️ Paramèt</button>
                     <button class="tab-btn" onclick="showAdminTab('predCorrect')">🎯 Correct</button>
-                    <button class="tab-btn" onclick="showAdminTab('predDraw')">️ Draw</button>
+                    <button class="tab-btn" onclick="showAdminTab('predDraw')">⚖️ Draw</button>
                     <button class="tab-btn" onclick="showAdminTab('predOdds50')">🔥 Odds50</button>
                     <button class="tab-btn" onclick="showAdminTab('predOdds2')">⭐ Odds2</button>
                 </div>
 
                 <!-- USERS TAB -->
                 <div id="admUsers" class="admin-section">
-                    <h3> Kreye yon nouvo kont Itilizatè</h3>
+                    <h3>👥 Kreye yon nouvo kont Itilizatè</h3>
                     <p style="font-size:12px; color:#888; margin-bottom:15px;">Ranpli enfòmasyon yo pou kreye kont lan. Itilizatè a ap tann apwobasyon ou.</p>
                     <form onsubmit="createUser(event)">
                         <input type="text" id="newUserName" placeholder="Non konplè itilizatè a" required>
@@ -338,6 +360,31 @@
                     <div id="usersList"></div>
                 </div>
 
+                <!-- SETTINGS TAB (NEW - Admin Code Change) -->
+                <div id="admSettings" class="admin-section hidden">
+                    <h3>⚙️ Paramèt Administratè</h3>
+                    
+                    <div class="admin-code-box">
+                        <label> Chanje Kòd Admin (Modpas Admin)</label>
+                        <input type="password" id="newAdminPass" placeholder="Nouvo modpas admin">
+                        <button class="btn btn-primary" onclick="changeAdminPassword()">Chanje Modpas Admin</button>
+                    </div>
+
+                    <div class="admin-code-box">
+                        <label>📧 Chanje Email Admin</label>
+                        <input type="email" id="newAdminEmail" placeholder="Nouvo email admin">
+                        <button class="btn btn-primary" onclick="changeAdminEmail()">Chanje Email Admin</button>
+                    </div>
+
+                    <div class="admin-code-box">
+                        <label>ℹ️ Enfòmasyon Aktyèl</label>
+                        <p style="font-size:13px; color:var(--gold); margin-top:5px;">
+                            Email: <strong id="currentAdminEmail">-</strong><br>
+                            Modpas: <strong id="currentAdminPass">-</strong>
+                        </p>
+                    </div>
+                </div>
+
                 <!-- MATCHES TAB -->
                 <div id="admMatches" class="admin-section hidden">
                     <h3>⚽ Ajouter un Match</h3>
@@ -346,6 +393,8 @@
                         <input type="text" id="mHomeLogo" placeholder="Logo (Emoji)">
                         <input type="text" id="mAway" placeholder="Équipe Extérieure" required>
                         <input type="text" id="mAwayLogo" placeholder="Logo (Emoji)">
+                        <input type="text" id="mCountry" placeholder="Peyi (eg: France, Espagne, Haiti)" required>
+                        <input type="text" id="mChampionship" placeholder="Championnat (eg: Ligue 1, La Liga, CONCACAF)" required>
                         <input type="text" id="mDate" placeholder="Dat (eg: 28 Sept)">
                         <input type="time" id="mTime" required>
                         <button class="btn btn-primary">Enregistrer</button>
@@ -439,7 +488,7 @@
     <script>
         const DB = {
             users: JSON.parse(localStorage.getItem('gg_users')) || [
-                { id: 'admin1', name: 'Administrateur', email: 'admin@goldengold.com', password: 'admin123', role: 'admin', status: 'approved', createdAt: Date.now() }
+                { id: 'admin1', name: 'Administrateur', email: 'admin@goldenstar.com', password: 'admin123', role: 'admin', status: 'approved', createdAt: Date.now() }
             ],
             matches: JSON.parse(localStorage.getItem('gg_matches')) || [],
             predictions: JSON.parse(localStorage.getItem('gg_preds')) || [],
@@ -459,7 +508,7 @@
             localStorage.setItem('gg_theme', DB.theme);
         }
 
-        // AUTH (NO REGISTRATION FOR USERS)
+        // AUTH
         function handleLogin() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
@@ -470,8 +519,8 @@
             const user = DB.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
             
             if(!user) { errorEl.innerText = '❌ Email oswa modpas pa kòrèk'; return; }
-            if(user.status === 'pending') { errorEl.innerText = ' Kont ou a ap tann validasyon Administratè a.'; return; }
-            if(user.status === 'rejected') { errorEl.innerText = ' Kont ou a te rejte. Kontakte admin.'; return; }
+            if(user.status === 'pending') { errorEl.innerText = '⏳ Kont ou a ap tann validasyon Administratè a.'; return; }
+            if(user.status === 'rejected') { errorEl.innerText = '❌ Kont ou a te rejte. Kontakte admin.'; return; }
 
             DB.currentUser = user;
             localStorage.setItem('gg_currentUser', JSON.stringify(user));
@@ -549,6 +598,7 @@
                 renderAdminPreds('draw');
                 renderAdminPreds('odds50');
                 renderAdminPreds('odds2');
+                renderAdminSettings();
             }
         }
 
@@ -600,7 +650,7 @@
         }
 
         function renderPredCard(p, category) {
-            const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'⚽', awayLogo:'⚽', date:'-', time:'-'};
+            const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'', awayLogo:'⚽', date:'-', time:'-', country:'-', championship:'-'};
             
             let resultBadge = '';
             if(p.result === 'won') resultBadge = '<div class="result-badge result-won">✅ GAGNÉ</div>';
@@ -619,8 +669,9 @@
                         <span class="pred-badge badge-${category}">${getCategoryLabel(category)}</span>
                         <span style="font-size:11px; color:#888;">${m.date} • ${m.time}</span>
                     </div>
+                    <div class="match-championship">🌍 ${m.country} •  ${m.championship}</div>
                     <div class="match-display">
-                        <div class="team-info"><span class="team-logo">${m.homeLogo || ''}</span><span>${m.home}</span></div>
+                        <div class="team-info"><span class="team-logo">${m.homeLogo || '⚽'}</span><span>${m.home}</span></div>
                         <span class="vs">VS</span>
                         <div class="team-info" style="flex-direction: row-reverse;"><span class="team-logo">${m.awayLogo || '⚽'}</span><span>${m.away}</span></div>
                     </div>
@@ -638,8 +689,59 @@
         }
 
         function getCategoryLabel(cat) {
-            const labels = { 'correct': '🎯 Correct Score', 'draw': '⚖️ Draw-Win', 'odds50': '🔥 Odds 50', 'odds2': '⭐ Odds 2' };
+            const labels = { 'correct': '🎯 Correct Score', 'draw': '️ Draw-Win', 'odds50': '🔥 Odds 50', 'odds2': '⭐ Odds 2' };
             return labels[cat] || cat;
+        }
+
+        // ADMIN: SETTINGS (CHANGE ADMIN CODE)
+        function renderAdminSettings() {
+            const admin = DB.users.find(u => u.role === 'admin');
+            if(admin) {
+                document.getElementById('currentAdminEmail').innerText = admin.email;
+                document.getElementById('currentAdminPass').innerText = admin.password;
+            }
+        }
+
+        function changeAdminPassword() {
+            const newPass = document.getElementById('newAdminPass').value.trim();
+            if(!newPass || newPass.length < 4) {
+                return alert('️ Modpas la dwe gen omwen 4 karaktè!');
+            }
+            if(!confirm('⚠️ Ou sèten ou vle chanje modpas admin nan?')) return;
+            
+            const admin = DB.users.find(u => u.role === 'admin');
+            if(admin) {
+                admin.password = newPass;
+                saveDB();
+                document.getElementById('newAdminPass').value = '';
+                renderAdminSettings();
+                alert('✅ Modpas admin chanje avèk siksè!');
+            }
+        }
+
+        function changeAdminEmail() {
+            const newEmail = document.getElementById('newAdminEmail').value.trim();
+            if(!newEmail || !newEmail.includes('@')) {
+                return alert('⚠️ Antre yon email valid!');
+            }
+            if(DB.users.find(u => u.email.toLowerCase() === newEmail.toLowerCase() && u.role !== 'admin')) {
+                return alert('⚠️ Email sa a deja itilize pa yon lòt itilizatè!');
+            }
+            if(!confirm('⚠️ Ou sèten ou vle chanje email admin nan?')) return;
+            
+            const admin = DB.users.find(u => u.role === 'admin');
+            if(admin) {
+                admin.email = newEmail;
+                saveDB();
+                // Update current user if it's the admin
+                if(DB.currentUser && DB.currentUser.role === 'admin') {
+                    DB.currentUser.email = newEmail;
+                    localStorage.setItem('gg_currentUser', JSON.stringify(DB.currentUser));
+                }
+                document.getElementById('newAdminEmail').value = '';
+                renderAdminSettings();
+                alert('✅ Email admin chanje avèk siksè!');
+            }
         }
 
         // ADMIN: CREATE USER
@@ -650,7 +752,7 @@
             const password = document.getElementById('newUserPass').value;
 
             if(DB.users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-                return alert(' Email sa a deja itilize!');
+                return alert('️ Email sa a deja itilize!');
             }
 
             const newUser = {
@@ -659,7 +761,7 @@
                 email: email,
                 password: password,
                 role: 'user',
-                status: 'pending', // Ap tann apwobasyon
+                status: 'pending',
                 createdAt: Date.now()
             };
 
@@ -731,6 +833,8 @@
                 away: document.getElementById('mAway').value,
                 homeLogo: document.getElementById('mHomeLogo').value || '',
                 awayLogo: document.getElementById('mAwayLogo').value || '⚽',
+                country: document.getElementById('mCountry').value,
+                championship: document.getElementById('mChampionship').value,
                 date: document.getElementById('mDate').value || 'Jodi a',
                 time: document.getElementById('mTime').value
             });
@@ -752,6 +856,7 @@
                 <div class="user-item">
                     <div class="user-info-text">
                         <div class="user-name">${m.homeLogo} ${m.home} vs ${m.away} ${m.awayLogo}</div>
+                        <div class="user-email">🌍 ${m.country} • 🏆 ${m.championship}</div>
                         <div class="user-email">${m.date} • ${m.time}</div>
                     </div>
                     <button class="btn btn-sm btn-danger" onclick="deleteMatch(${m.id})">🗑️</button>
@@ -765,7 +870,9 @@
                 const sel = document.getElementById('pMatchId_' + cat);
                 if(!sel) return;
                 sel.innerHTML = '<option value="">-- Chwazi yon match --</option>';
-                DB.matches.forEach(m => { sel.innerHTML += `<option value="${m.id}">${m.home} vs ${m.away}</option>`; });
+                DB.matches.forEach(m => {
+                    sel.innerHTML += `<option value="${m.id}">${m.home} vs ${m.away} (${m.country} - ${m.championship})</option>`;
+                });
             });
         }
 
@@ -807,11 +914,11 @@
             if(preds.length === 0) { container.innerHTML = '<p style="color:#666; text-align:center;">Pa gen prediksyon.</p>'; return; }
 
             container.innerHTML = preds.map(p => {
-                const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?'};
-                let statusColor = '#888', statusText = '⏳ En attente';
+                const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', country:'-', championship:'-'};
+                let statusColor = '#888', statusText = ' En attente';
                 if(p.result === 'won') { statusColor = '#00C853'; statusText = '✅ GAGNÉ'; }
                 else if(p.result === 'lost') { statusColor = '#EF4444'; statusText = '❌ PERDU'; }
-                else if(p.result === 'cancelled') { statusColor = '#8B92A8'; statusText = '⏸️ ANNULÉ'; }
+                else if(p.result === 'cancelled') { statusColor = '#8B92A8'; statusText = '️ ANNULÉ'; }
 
                 return `
                     <div class="pred-card" style="margin:10px 0;">
@@ -819,7 +926,8 @@
                             <span style="font-size:11px; color:var(--gold);">${getCategoryLabel(category)}</span>
                             <span style="color:${statusColor}; font-weight:bold; font-size:12px;">${statusText}</span>
                         </div>
-                        <div style="font-size:13px; margin-bottom:6px;">${m.home} vs ${m.away}</div>
+                        <div style="font-size:13px; margin-bottom:4px;">${m.home} vs ${m.away}</div>
+                        <div style="font-size:11px; color:var(--text-gray); margin-bottom:6px;">🌍 ${m.country} • 🏆 ${m.championship}</div>
                         <div style="font-size:14px; color:var(--gold); font-weight:bold;">${p.pick} <span style="color:var(--gold);">(${p.odds})</span></div>
                         ${p.result === 'pending' ? `
                             <div style="display:flex; gap:5px; margin-top:10px; flex-wrap:wrap;">
