@@ -51,12 +51,16 @@
             align-items: center; justify-content: center; padding: 20px;
         }
         .access-logo {
-            width: 100px; height: 100px; border-radius: 50%;
+            width: 120px; height: 120px; border-radius: 20px;
             background: linear-gradient(135deg, var(--gold), #D4AF37);
             display: flex; align-items: center; justify-content: center;
-            font-size: 50px; margin-bottom: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 10px 40px rgba(255, 215, 0, 0.4);
             animation: pulse 2s infinite;
+            overflow: hidden;
+        }
+        .access-logo img {
+            width: 100%; height: 100%; object-fit: cover;
         }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         .access-title { font-size: 32px; font-weight: 900; color: var(--gold); margin-bottom: 8px; text-align: center; letter-spacing: 2px; }
@@ -86,13 +90,17 @@
         /* HEADER */
         header {
             position: sticky; top: 0; z-index: 100;
-            background: rgba(10,14,26,0.95); padding: 15px 20px;
+            background: rgba(10,14,26,0.95); padding: 12px 20px;
             border-bottom: 1px solid var(--border-dark);
             display: flex; justify-content: space-between; align-items: center;
             backdrop-filter: blur(5px);
         }
-        .logo { font-weight: 900; color: var(--gold); font-size: 20px; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; }
-        .logo-icon { font-size: 28px; }
+        .logo { font-weight: 900; color: var(--gold); font-size: 18px; display: flex; align-items: center; gap: 10px; letter-spacing: 1px; }
+        .logo-img { 
+            width: 40px; height: 40px; border-radius: 10px; 
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--gold), #D4AF37);
+        }
         .header-actions { display: flex; gap: 10px; align-items: center; }
         .theme-toggle { background: none; border: none; color: var(--gold); font-size: 20px; cursor: pointer; }
         .user-badge { font-size: 11px; color: var(--gold); background: rgba(255,215,0,0.1); padding: 4px 10px; border-radius: 12px; }
@@ -122,7 +130,6 @@
         .section-header { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-dark); }
         .section-header .back-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 5px; }
         .section-header h2 { font-size: 20px; }
-        .section-header .icon-big { font-size: 28px; }
 
         .pred-card { background: var(--bg-card); border-radius: 16px; padding: 18px; margin: 15px 20px; border: 1px solid var(--border-dark); }
         .pred-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 6px; }
@@ -132,10 +139,25 @@
         .badge-odds50 { background: rgba(233,30,99,0.2); color: var(--red); }
         .badge-odds2 { background: rgba(255,215,0,0.2); color: var(--gold); }
 
+        .match-datetime {
+            background: rgba(255,215,0,0.1);
+            padding: 6px 12px; border-radius: 8px;
+            font-size: 12px; color: var(--gold);
+            display: inline-block; margin: 8px 0;
+            font-weight: 600;
+        }
+        body.light-mode .match-datetime { background: rgba(255,215,0,0.15); }
+
         .match-display { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
-        .team-info { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
-        .team-logo { font-size: 26px; }
-        .vs { color: var(--text-gray); font-size: 12px; font-weight: bold; }
+        .team-info { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; flex: 1; }
+        .team-logo-img { width: 40px; height: 40px; object-fit: contain; }
+        .team-logo-placeholder { 
+            width: 40px; height: 40px; 
+            background: var(--border-dark); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; color: var(--text-gray);
+        }
+        .vs { color: var(--text-gray); font-size: 12px; font-weight: bold; padding: 0 10px; }
 
         .pick-box { background: #000; padding: 14px; border-radius: 12px; margin-top: 12px; border-left: 4px solid var(--gold); }
         .pick-label { font-size: 11px; color: var(--text-gray); margin-bottom: 6px; }
@@ -210,13 +232,30 @@
             margin-bottom: 15px;
         }
         .admin-code-box label { font-size: 12px; color: var(--text-gray); display: block; margin-bottom: 6px; }
+
+        .logo-upload-box {
+            border: 2px dashed var(--gold);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .logo-upload-box img {
+            max-width: 150px; max-height: 150px;
+            border-radius: 10px; margin-top: 10px;
+        }
+        .logo-upload-box input[type="file"] { display: none; }
     </style>
 </head>
 <body>
 
     <!-- ACCESS SCREEN -->
     <div id="accessScreen">
-        <div class="access-logo">⭐</div>
+        <div class="access-logo" id="accessLogo">
+            <img src="" alt="Logo" id="accessLogoImg" class="hidden">
+            <span id="accessLogoText" style="font-size: 50px;">⭐</span>
+        </div>
         <div class="access-title">GOLDEN STAR</div>
         <div class="access-subtitle">Konekte ak kont ou a</div>
         
@@ -235,7 +274,8 @@
     <div id="mainApp" class="hidden">
         <header>
             <div class="logo">
-                <span class="logo-icon">⭐</span>
+                <img src="" alt="Logo" class="logo-img hidden" id="headerLogoImg">
+                <div class="logo-img" id="headerLogoPlaceholder" style="display: flex; align-items: center; justify-content: center; font-size: 20px;">⭐</div>
                 <span>GOLDEN STAR</span>
             </div>
             <div class="header-actions">
@@ -247,18 +287,18 @@
         <!-- HOME PAGE -->
         <div id="homePage" class="page">
             <div style="padding: 20px 20px 5px;">
-                <h1 style="font-size: 24px; margin-bottom: 5px;">Byenveni </h1>
+                <h1 style="font-size: 24px; margin-bottom: 5px;">Byenveni 👋</h1>
                 <p style="color: var(--text-gray); font-size: 13px;">Chwazi yon kategori</p>
             </div>
 
             <div class="sections-grid">
                 <div class="section-card correct" onclick="openSection('correct')">
-                    <div class="icon">🎯</div>
+                    <div class="icon"></div>
                     <div class="title">CORRECT SCORES</div>
                     <div class="count" id="countCorrect">0 prediksyon</div>
                 </div>
                 <div class="section-card draw" onclick="openSection('draw')">
-                    <div class="icon">⚖️</div>
+                    <div class="icon">️</div>
                     <div class="title">DRAW-WIN</div>
                     <div class="count" id="countDraw">0 prediksyon</div>
                 </div>
@@ -273,44 +313,42 @@
                     <div class="count" id="countOdds2">0 prediksyon</div>
                 </div>
             </div>
-
-            <div id="totalOddsSection"></div>
         </div>
 
         <!-- SECTIONS -->
         <div id="sectionCorrect" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(59,130,246,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <span class="icon-big">🎯</span>
-                <h2 style="color: var(--blue);">CORRECT SCORES</h2>
+                <h2 style="color: var(--blue);">🎯 CORRECT SCORES</h2>
             </div>
+            <div id="totalOddsCorrect"></div>
             <div id="correctList"></div>
         </div>
 
         <div id="sectionDraw" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(139,92,246,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <span class="icon-big">⚖️</span>
-                <h2 style="color: var(--purple);">DRAW-WIN</h2>
+                <h2 style="color: var(--purple);">⚖️ DRAW-WIN</h2>
             </div>
+            <div id="totalOddsDraw"></div>
             <div id="drawList"></div>
         </div>
 
         <div id="sectionOdds50" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(233,30,99,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <span class="icon-big"></span>
-                <h2 style="color: var(--red);">ODD'S 50</h2>
+                <h2 style="color: var(--red);">🔥 ODD'S 50</h2>
             </div>
+            <div id="totalOddsOdds50"></div>
             <div id="odds50List"></div>
         </div>
 
         <div id="sectionOdds2" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(255,215,0,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <span class="icon-big">⭐</span>
-                <h2 style="color: var(--gold);">ODD'S 2</h2>
+                <h2 style="color: var(--gold);">⭐ ODD'S 2</h2>
             </div>
+            <div id="totalOddsOdds2"></div>
             <div id="odds2List"></div>
         </div>
 
@@ -331,13 +369,13 @@
         <div id="adminPage" class="page hidden">
             <div style="padding: 20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                    <h2>️ Admin Panel</h2>
+                    <h2>🛡️ Admin Panel</h2>
                     <button onclick="showPage('home')" style="background:none; border:none; color:white; font-size:20px;">✕</button>
                 </div>
                 
                 <div class="admin-tabs">
                     <button class="tab-btn active" onclick="showAdminTab('users')">👥 Itilizatè</button>
-                    <button class="tab-btn" onclick="showAdminTab('matches')">⚽ Matchs</button>
+                    <button class="tab-btn" onclick="showAdminTab('matches')"> Matchs</button>
                     <button class="tab-btn" onclick="showAdminTab('settings')">⚙️ Paramèt</button>
                     <button class="tab-btn" onclick="showAdminTab('predCorrect')">🎯 Correct</button>
                     <button class="tab-btn" onclick="showAdminTab('predDraw')">⚖️ Draw</button>
@@ -360,10 +398,23 @@
                     <div id="usersList"></div>
                 </div>
 
-                <!-- SETTINGS TAB (NEW - Admin Code Change) -->
+                <!-- SETTINGS TAB -->
                 <div id="admSettings" class="admin-section hidden">
                     <h3>⚙️ Paramèt Administratè</h3>
                     
+                    <div class="admin-code-box">
+                        <label>🖼️ Logo Aplikasyon an</label>
+                        <div class="logo-upload-box" onclick="document.getElementById('logoUpload').click()">
+                            <div id="logoPreviewText">
+                                <i class="fas fa-cloud-upload-alt" style="font-size: 30px; color: var(--gold);"></i>
+                                <p style="margin-top: 10px; font-size: 13px;">Klike pou upload logo a</p>
+                            </div>
+                            <img id="logoPreview" class="hidden">
+                            <input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveLogo()">💾 Sove Logo a</button>
+                    </div>
+
                     <div class="admin-code-box">
                         <label> Chanje Kòd Admin (Modpas Admin)</label>
                         <input type="password" id="newAdminPass" placeholder="Nouvo modpas admin">
@@ -387,15 +438,15 @@
 
                 <!-- MATCHES TAB -->
                 <div id="admMatches" class="admin-section hidden">
-                    <h3>⚽ Ajouter un Match</h3>
+                    <h3> Ajouter un Match</h3>
                     <form onsubmit="addMatch(event)">
                         <input type="text" id="mHome" placeholder="Équipe Domicile" required>
-                        <input type="text" id="mHomeLogo" placeholder="Logo (Emoji)">
+                        <input type="text" id="mHomeLogo" placeholder="URL Logo Domicile (eg: https://...)" required>
                         <input type="text" id="mAway" placeholder="Équipe Extérieure" required>
-                        <input type="text" id="mAwayLogo" placeholder="Logo (Emoji)">
+                        <input type="text" id="mAwayLogo" placeholder="URL Logo Extérieure (eg: https://...)" required>
                         <input type="text" id="mCountry" placeholder="Peyi (eg: France, Espagne, Haiti)" required>
-                        <input type="text" id="mChampionship" placeholder="Championnat (eg: Ligue 1, La Liga, CONCACAF)" required>
-                        <input type="text" id="mDate" placeholder="Dat (eg: 28 Sept)">
+                        <input type="text" id="mChampionship" placeholder="Championnat (eg: Ligue 1, La Liga)" required>
+                        <input type="text" id="mDate" placeholder="Dat (eg: 28 Sept)" required>
                         <input type="time" id="mTime" required>
                         <button class="btn btn-primary">Enregistrer</button>
                     </form>
@@ -405,11 +456,11 @@
 
                 <!-- PREDICTIONS TABS -->
                 <div id="admPredCorrect" class="admin-section hidden">
-                    <h3>🎯 Ajouter Correct Score</h3>
+                    <h3> Ajouter Correct Score</h3>
                     <form onsubmit="addPrediction(event, 'correct')">
                         <label style="font-size:12px; color:#888;">Match:</label>
                         <select id="pMatchId_correct" required></select>
-                        <input type="text" id="pScore_correct" placeholder="Score (eg: 2-1)" required>
+                        <input type="text" id="pScore_correct" placeholder="Score Exact (eg: 2-1)" required>
                         <input type="number" step="0.01" id="pOdds_correct" placeholder="Cote" required>
                         <select id="pConf_correct">
                             <option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option><option value="2">★★</option><option value="1">★</option>
@@ -425,8 +476,8 @@
                     <form onsubmit="addPrediction(event, 'draw')">
                         <label style="font-size:12px; color:#888;">Match:</label>
                         <select id="pMatchId_draw" required></select>
-                        <input type="text" id="pType_draw" placeholder="Tip (1X2, Double Chance...)" required>
-                        <input type="text" id="pPick_draw" placeholder="Prediksyon" required>
+                        <input type="text" id="pType_draw" placeholder="Tip (Draw, 1X2...)" required>
+                        <input type="text" id="pPick_draw" placeholder="Prediksyon (eg: X, 1, 2)" required>
                         <input type="number" step="0.01" id="pOdds_draw" placeholder="Cote" required>
                         <select id="pConf_draw">
                             <option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option><option value="2">★★</option><option value="1">★</option>
@@ -492,6 +543,7 @@
             ],
             matches: JSON.parse(localStorage.getItem('gg_matches')) || [],
             predictions: JSON.parse(localStorage.getItem('gg_preds')) || [],
+            settings: JSON.parse(localStorage.getItem('gg_settings')) || { logo: null },
             currentUser: JSON.parse(localStorage.getItem('gg_currentUser')) || null,
             theme: localStorage.getItem('gg_theme') || 'dark'
         };
@@ -508,6 +560,55 @@
             localStorage.setItem('gg_theme', DB.theme);
         }
 
+        // LOGO HANDLING
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('logoPreview').src = e.target.result;
+                    document.getElementById('logoPreview').classList.remove('hidden');
+                    document.getElementById('logoPreviewText').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveLogo() {
+            const logoImg = document.getElementById('logoPreview').src;
+            if(!logoImg || logoImg === window.location.href) {
+                return alert('⚠️ Tanpri chwazi yon imaj dabò!');
+            }
+            DB.settings.logo = logoImg;
+            localStorage.setItem('gg_settings', JSON.stringify(DB.settings));
+            applyLogo();
+            alert('✅ Logo sove avèk siksè!');
+        }
+
+        function applyLogo() {
+            const logo = DB.settings.logo;
+            const accessLogoImg = document.getElementById('accessLogoImg');
+            const accessLogoText = document.getElementById('accessLogoText');
+            const headerLogoImg = document.getElementById('headerLogoImg');
+            const headerLogoPlaceholder = document.getElementById('headerLogoPlaceholder');
+
+            if(logo) {
+                accessLogoImg.src = logo;
+                accessLogoImg.classList.remove('hidden');
+                accessLogoText.classList.add('hidden');
+                
+                headerLogoImg.src = logo;
+                headerLogoImg.classList.remove('hidden');
+                headerLogoPlaceholder.classList.add('hidden');
+            } else {
+                accessLogoImg.classList.add('hidden');
+                accessLogoText.classList.remove('hidden');
+                
+                headerLogoImg.classList.add('hidden');
+                headerLogoPlaceholder.classList.remove('hidden');
+            }
+        }
+
         // AUTH
         function handleLogin() {
             const email = document.getElementById('loginEmail').value.trim();
@@ -520,7 +621,7 @@
             
             if(!user) { errorEl.innerText = '❌ Email oswa modpas pa kòrèk'; return; }
             if(user.status === 'pending') { errorEl.innerText = '⏳ Kont ou a ap tann validasyon Administratè a.'; return; }
-            if(user.status === 'rejected') { errorEl.innerText = '❌ Kont ou a te rejte. Kontakte admin.'; return; }
+            if(user.status === 'rejected') { errorEl.innerText = ' Kont ou a te rejte. Kontakte admin.'; return; }
 
             DB.currentUser = user;
             localStorage.setItem('gg_currentUser', JSON.stringify(user));
@@ -533,13 +634,15 @@
             
             if(DB.theme === 'light') { document.body.classList.add('light-mode'); document.getElementById('themeBtn').innerText = '☀️'; }
 
+            applyLogo();
+
             if(DB.currentUser.role === 'admin') {
                 document.getElementById('adminNavBtn').classList.remove('hidden');
             } else {
                 document.getElementById('adminNavBtn').classList.add('hidden');
             }
 
-            document.getElementById('userBadge').innerText = DB.currentUser.role === 'admin' ? '️ ADMIN' : '👤 USER';
+            document.getElementById('userBadge').innerText = DB.currentUser.role === 'admin' ? '🛡️ ADMIN' : '👤 USER';
             document.getElementById('profileName').innerText = DB.currentUser.name;
             document.getElementById('profileEmail').innerText = DB.currentUser.email;
             
@@ -588,7 +691,10 @@
             renderSection('draw');
             renderSection('odds50');
             renderSection('odds2');
-            renderTotalOdds();
+            renderTotalOdds('correct');
+            renderTotalOdds('draw');
+            renderTotalOdds('odds50');
+            renderTotalOdds('odds2');
             
             if(DB.currentUser?.role === 'admin') {
                 renderAdminUsers();
@@ -610,31 +716,23 @@
             document.getElementById('countOdds2').innerText = preds.filter(p => p.category === 'odds2').length + ' prediksyon';
         }
 
-        function renderTotalOdds() {
-            const container = document.getElementById('totalOddsSection');
-            const categories = ['correct', 'draw', 'odds50', 'odds2'];
-            let totalOdds = 1;
-            let hasPreds = false;
-
-            categories.forEach(cat => {
-                const preds = DB.predictions.filter(p => p.category === cat && p.result !== 'cancelled');
-                if(preds.length > 0) {
-                    const maxOdds = Math.max(...preds.map(p => parseFloat(p.odds)));
-                    totalOdds *= maxOdds;
-                    hasPreds = true;
-                }
-            });
-
-            if(hasPreds) {
-                container.innerHTML = `
-                    <div class="total-odds-card">
-                        <div class="total-odds-label">COTE TOTAL OTOMATIK</div>
-                        <div class="total-odds-value">${totalOdds.toFixed(2)}</div>
-                    </div>
-                `;
-            } else {
+        function renderTotalOdds(category) {
+            const container = document.getElementById('totalOdds' + category.charAt(0).toUpperCase() + category.slice(1));
+            const preds = DB.predictions.filter(p => p.category === category && p.result !== 'cancelled');
+            
+            if(preds.length === 0) {
                 container.innerHTML = '';
+                return;
             }
+
+            const totalOdds = preds.reduce((sum, p) => sum * parseFloat(p.odds), 1);
+
+            container.innerHTML = `
+                <div class="total-odds-card">
+                    <div class="total-odds-label">COTE TOTAL ${getCategoryLabel(category)}</div>
+                    <div class="total-odds-value">${totalOdds.toFixed(2)}</div>
+                </div>
+            `;
         }
 
         function renderSection(category) {
@@ -650,7 +748,7 @@
         }
 
         function renderPredCard(p, category) {
-            const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'', awayLogo:'⚽', date:'-', time:'-', country:'-', championship:'-'};
+            const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'', awayLogo:'', date:'-', time:'-', country:'-', championship:'-'};
             
             let resultBadge = '';
             if(p.result === 'won') resultBadge = '<div class="result-badge result-won">✅ GAGNÉ</div>';
@@ -659,21 +757,46 @@
             else resultBadge = '<div class="result-badge result-pending">⏳ EN ATTENTE</div>';
 
             const stars = '★'.repeat(p.confidence || 3) + '☆'.repeat(5 - (p.confidence || 3));
+            
             let pickDisplay = p.pick;
             let pickLabel = 'Prediksyon';
-            if(category === 'correct') pickLabel = 'Score Exact';
+            
+            if(category === 'correct') {
+                pickLabel = 'Score Exact';
+                pickDisplay = p.pick;
+            } else if(category === 'draw') {
+                pickLabel = 'Draw';
+                pickDisplay = p.pick;
+            }
+
+            const teamLogoHtml = (logoUrl, name) => {
+                if(logoUrl && logoUrl.startsWith('http')) {
+                    return `<img src="${logoUrl}" alt="${name}" class="team-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="team-logo-placeholder" style="display:none;">${name.substring(0,2).toUpperCase()}</div>`;
+                } else {
+                    return `<div class="team-logo-placeholder">${name.substring(0,2).toUpperCase()}</div>`;
+                }
+            };
 
             return `
                 <div class="pred-card">
                     <div class="pred-card-header">
                         <span class="pred-badge badge-${category}">${getCategoryLabel(category)}</span>
-                        <span style="font-size:11px; color:#888;">${m.date} • ${m.time}</span>
+                        <span style="font-size:11px; color:#888;">${m.date}</span>
                     </div>
-                    <div class="match-championship">🌍 ${m.country} •  ${m.championship}</div>
+                    <div class="match-datetime">
+                        <i class="far fa-clock"></i> ${m.time} •  ${m.country} • 🏆 ${m.championship}
+                    </div>
                     <div class="match-display">
-                        <div class="team-info"><span class="team-logo">${m.homeLogo || '⚽'}</span><span>${m.home}</span></div>
+                        <div class="team-info">
+                            ${teamLogoHtml(m.homeLogo, m.home)}
+                            <span>${m.home}</span>
+                        </div>
                         <span class="vs">VS</span>
-                        <div class="team-info" style="flex-direction: row-reverse;"><span class="team-logo">${m.awayLogo || '⚽'}</span><span>${m.away}</span></div>
+                        <div class="team-info" style="flex-direction: row-reverse; text-align: right;">
+                            ${teamLogoHtml(m.awayLogo, m.away)}
+                            <span>${m.away}</span>
+                        </div>
                     </div>
                     <div class="pick-box">
                         <div class="pick-label">${pickLabel}</div>
@@ -689,25 +812,31 @@
         }
 
         function getCategoryLabel(cat) {
-            const labels = { 'correct': '🎯 Correct Score', 'draw': '️ Draw-Win', 'odds50': '🔥 Odds 50', 'odds2': '⭐ Odds 2' };
+            const labels = { 'correct': '🎯 Correct Score', 'draw': '⚖️ Draw-Win', 'odds50': ' Odds 50', 'odds2': '⭐ Odds 2' };
             return labels[cat] || cat;
         }
 
-        // ADMIN: SETTINGS (CHANGE ADMIN CODE)
+        // ADMIN: SETTINGS
         function renderAdminSettings() {
             const admin = DB.users.find(u => u.role === 'admin');
             if(admin) {
                 document.getElementById('currentAdminEmail').innerText = admin.email;
                 document.getElementById('currentAdminPass').innerText = admin.password;
             }
+            
+            if(DB.settings.logo) {
+                document.getElementById('logoPreview').src = DB.settings.logo;
+                document.getElementById('logoPreview').classList.remove('hidden');
+                document.getElementById('logoPreviewText').classList.add('hidden');
+            }
         }
 
         function changeAdminPassword() {
             const newPass = document.getElementById('newAdminPass').value.trim();
             if(!newPass || newPass.length < 4) {
-                return alert('️ Modpas la dwe gen omwen 4 karaktè!');
+                return alert('⚠️ Modpas la dwe gen omwen 4 karaktè!');
             }
-            if(!confirm('⚠️ Ou sèten ou vle chanje modpas admin nan?')) return;
+            if(!confirm('️ Ou sèten ou vle chanje modpas admin nan?')) return;
             
             const admin = DB.users.find(u => u.role === 'admin');
             if(admin) {
@@ -733,7 +862,6 @@
             if(admin) {
                 admin.email = newEmail;
                 saveDB();
-                // Update current user if it's the admin
                 if(DB.currentUser && DB.currentUser.role === 'admin') {
                     DB.currentUser.email = newEmail;
                     localStorage.setItem('gg_currentUser', JSON.stringify(DB.currentUser));
@@ -752,7 +880,7 @@
             const password = document.getElementById('newUserPass').value;
 
             if(DB.users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-                return alert('️ Email sa a deja itilize!');
+                return alert('⚠️ Email sa a deja itilize!');
             }
 
             const newUser = {
@@ -799,7 +927,7 @@
             }
 
             container.innerHTML = users.map(u => {
-                let statusClass = 'status-pending', statusText = '⏳ Ap tann';
+                let statusClass = 'status-pending', statusText = ' Ap tann';
                 if(u.status === 'approved') { statusClass = 'status-approved'; statusText = '✅ Apwouve'; }
                 else if(u.status === 'rejected') { statusClass = 'status-rejected'; statusText = '❌ Rejte'; }
 
@@ -814,7 +942,7 @@
                         <div style="display:flex; gap:5px; flex-direction:column;">
                             ${u.status === 'pending' ? `
                                 <button class="btn btn-sm btn-primary" onclick="approveUser('${u.id}')">✅</button>
-                                <button class="btn btn-sm btn-danger" onclick="rejectUser('${u.id}')">❌</button>
+                                <button class="btn btn-sm btn-danger" onclick="rejectUser('${u.id}')"></button>
                             ` : `
                                 <button class="btn btn-sm btn-outline" onclick="deleteUser('${u.id}')" style="border-color:#EF4444; color:#EF4444;">🗑️</button>
                             `}
@@ -831,11 +959,11 @@
                 id: Date.now(),
                 home: document.getElementById('mHome').value,
                 away: document.getElementById('mAway').value,
-                homeLogo: document.getElementById('mHomeLogo').value || '',
-                awayLogo: document.getElementById('mAwayLogo').value || '⚽',
+                homeLogo: document.getElementById('mHomeLogo').value,
+                awayLogo: document.getElementById('mAwayLogo').value,
                 country: document.getElementById('mCountry').value,
                 championship: document.getElementById('mChampionship').value,
-                date: document.getElementById('mDate').value || 'Jodi a',
+                date: document.getElementById('mDate').value,
                 time: document.getElementById('mTime').value
             });
             saveDB(); e.target.reset(); renderAdminMatches(); populateAllMatchSelects();
@@ -855,9 +983,9 @@
             container.innerHTML = DB.matches.map(m => `
                 <div class="user-item">
                     <div class="user-info-text">
-                        <div class="user-name">${m.homeLogo} ${m.home} vs ${m.away} ${m.awayLogo}</div>
+                        <div class="user-name">${m.home} vs ${m.away}</div>
                         <div class="user-email">🌍 ${m.country} • 🏆 ${m.championship}</div>
-                        <div class="user-email">${m.date} • ${m.time}</div>
+                        <div class="user-email">📅 ${m.date} • 🕐 ${m.time}</div>
                     </div>
                     <button class="btn btn-sm btn-danger" onclick="deleteMatch(${m.id})">🗑️</button>
                 </div>
@@ -871,7 +999,7 @@
                 if(!sel) return;
                 sel.innerHTML = '<option value="">-- Chwazi yon match --</option>';
                 DB.matches.forEach(m => {
-                    sel.innerHTML += `<option value="${m.id}">${m.home} vs ${m.away} (${m.country} - ${m.championship})</option>`;
+                    sel.innerHTML += `<option value="${m.id}">${m.home} vs ${m.away} | ${m.date} ${m.time}</option>`;
                 });
             });
         }
@@ -883,8 +1011,11 @@
             if(!matchId) return alert('Chwazi yon match!');
 
             let pick = '';
-            if(category === 'correct') { pick = document.getElementById('pScore_' + category).value; } 
-            else { pick = document.getElementById('pType_' + category).value + ': ' + document.getElementById('pPick_' + category).value; }
+            if(category === 'correct') { 
+                pick = document.getElementById('pScore_' + category).value; 
+            } else { 
+                pick = document.getElementById('pPick_' + category).value; 
+            }
 
             DB.predictions.push({
                 id: Date.now(), category: category, matchId: parseInt(matchId), pick: pick,
@@ -892,20 +1023,20 @@
                 confidence: parseInt(document.getElementById('pConf_' + category).value),
                 result: 'pending', createdAt: Date.now()
             });
-            saveDB(); e.target.reset(); renderAdminPreds(category); renderCounts(); renderTotalOdds();
+            saveDB(); e.target.reset(); renderAdminPreds(category); renderCounts(); renderTotalOdds(category);
             alert('✅ Prediksyon publie!');
         }
 
         function setPredResult(id, result) {
             const p = DB.predictions.find(x => x.id === id);
-            if(p) { p.result = result; saveDB(); renderAdminPreds(p.category); renderSection(p.category); renderCounts(); renderTotalOdds(); }
+            if(p) { p.result = result; saveDB(); renderAdminPreds(p.category); renderSection(p.category); renderCounts(); renderTotalOdds(p.category); }
         }
 
         function deletePred(id) {
             if(!confirm('Efase prediksyon sa a?')) return;
             const p = DB.predictions.find(x => x.id === id);
             DB.predictions = DB.predictions.filter(x => x.id !== id);
-            saveDB(); if(p) renderAdminPreds(p.category); renderCounts(); renderTotalOdds();
+            saveDB(); if(p) renderAdminPreds(p.category); renderCounts(); renderTotalOdds(p.category);
         }
 
         function renderAdminPreds(category) {
@@ -914,11 +1045,15 @@
             if(preds.length === 0) { container.innerHTML = '<p style="color:#666; text-align:center;">Pa gen prediksyon.</p>'; return; }
 
             container.innerHTML = preds.map(p => {
-                const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', country:'-', championship:'-'};
-                let statusColor = '#888', statusText = ' En attente';
+                const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', date:'-', time:'-', country:'-', championship:'-'};
+                let statusColor = '#888', statusText = '⏳ En attente';
                 if(p.result === 'won') { statusColor = '#00C853'; statusText = '✅ GAGNÉ'; }
                 else if(p.result === 'lost') { statusColor = '#EF4444'; statusText = '❌ PERDU'; }
                 else if(p.result === 'cancelled') { statusColor = '#8B92A8'; statusText = '️ ANNULÉ'; }
+
+                let pickDisplay = p.pick;
+                if(category === 'correct') pickDisplay = 'Score Exact: ' + p.pick;
+                else if(category === 'draw') pickDisplay = 'Draw: ' + p.pick;
 
                 return `
                     <div class="pred-card" style="margin:10px 0;">
@@ -927,13 +1062,13 @@
                             <span style="color:${statusColor}; font-weight:bold; font-size:12px;">${statusText}</span>
                         </div>
                         <div style="font-size:13px; margin-bottom:4px;">${m.home} vs ${m.away}</div>
-                        <div style="font-size:11px; color:var(--text-gray); margin-bottom:6px;">🌍 ${m.country} • 🏆 ${m.championship}</div>
-                        <div style="font-size:14px; color:var(--gold); font-weight:bold;">${p.pick} <span style="color:var(--gold);">(${p.odds})</span></div>
+                        <div style="font-size:11px; color:var(--text-gray); margin-bottom:6px;">📅 ${m.date} • 🕐 ${m.time} • 🌍 ${m.country}</div>
+                        <div style="font-size:14px; color:var(--gold); font-weight:bold; margin-bottom:10px;">${pickDisplay} <span style="color:var(--gold);">(${p.odds})</span></div>
                         ${p.result === 'pending' ? `
                             <div style="display:flex; gap:5px; margin-top:10px; flex-wrap:wrap;">
                                 <button class="btn btn-sm btn-primary" onclick="setPredResult(${p.id}, 'won')">✅</button>
                                 <button class="btn btn-sm btn-danger" onclick="setPredResult(${p.id}, 'lost')">❌</button>
-                                <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'cancelled')" style="border-color:#888; color:#888;">⏸️</button>
+                                <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'cancelled')" style="border-color:#888; color:#888;">️</button>
                             </div>
                         ` : `<button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'pending')" style="margin-top:10px; width:100%;">↩️</button>`}
                         <button class="btn btn-sm btn-danger" onclick="deletePred(${p.id})" style="margin-top:6px; width:100%;">🗑️ Efase</button>
@@ -953,9 +1088,11 @@
             localStorage.setItem('gg_users', JSON.stringify(DB.users));
             localStorage.setItem('gg_matches', JSON.stringify(DB.matches));
             localStorage.setItem('gg_preds', JSON.stringify(DB.predictions));
+            localStorage.setItem('gg_settings', JSON.stringify(DB.settings));
         }
 
         // INIT
+        applyLogo();
         if(DB.currentUser) {
             const user = DB.users.find(u => u.id === DB.currentUser.id);
             if(user && (user.status === 'approved' || user.role === 'admin')) {
