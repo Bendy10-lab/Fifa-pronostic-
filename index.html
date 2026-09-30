@@ -99,7 +99,12 @@
         .logo-img { 
             width: 40px; height: 40px; border-radius: 10px; 
             object-fit: cover;
+        }
+        .logo-placeholder { 
+            width: 40px; height: 40px; border-radius: 10px;
             background: linear-gradient(135deg, var(--gold), #D4AF37);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
         }
         .header-actions { display: flex; gap: 10px; align-items: center; }
         .theme-toggle { background: none; border: none; color: var(--gold); font-size: 20px; cursor: pointer; }
@@ -150,14 +155,7 @@
 
         .match-display { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
         .team-info { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; flex: 1; }
-        .team-logo-img { width: 40px; height: 40px; object-fit: contain; }
-        .team-logo-placeholder { 
-            width: 40px; height: 40px; 
-            background: var(--border-dark); border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; color: var(--text-gray);
-        }
-        .vs { color: var(--text-gray); font-size: 12px; font-weight: bold; padding: 0 10px; }
+        .vs { color: var(--text-gray); font-size: 14px; font-weight: bold; padding: 0 15px; }
 
         .pick-box { background: #000; padding: 14px; border-radius: 12px; margin-top: 12px; border-left: 4px solid var(--gold); }
         .pick-label { font-size: 11px; color: var(--text-gray); margin-bottom: 6px; }
@@ -275,7 +273,7 @@
         <header>
             <div class="logo">
                 <img src="" alt="Logo" class="logo-img hidden" id="headerLogoImg">
-                <div class="logo-img" id="headerLogoPlaceholder" style="display: flex; align-items: center; justify-content: center; font-size: 20px;">⭐</div>
+                <div class="logo-placeholder" id="headerLogoPlaceholder">⭐</div>
                 <span>GOLDEN STAR</span>
             </div>
             <div class="header-actions">
@@ -284,13 +282,8 @@
             </div>
         </header>
 
-        <!-- HOME PAGE -->
+        <!-- HOME PAGE (No welcome message) -->
         <div id="homePage" class="page">
-            <div style="padding: 20px 20px 5px;">
-                <h1 style="font-size: 24px; margin-bottom: 5px;">Byenveni 👋</h1>
-                <p style="color: var(--text-gray); font-size: 13px;">Chwazi yon kategori</p>
-            </div>
-
             <div class="sections-grid">
                 <div class="section-card correct" onclick="openSection('correct')">
                     <div class="icon"></div>
@@ -337,7 +330,7 @@
         <div id="sectionOdds50" class="page hidden">
             <div class="section-header" style="background: linear-gradient(135deg, rgba(233,30,99,0.2), var(--bg-dark));">
                 <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <h2 style="color: var(--red);">🔥 ODD'S 50</h2>
+                <h2 style="color: var(--red);"> ODD'S 50</h2>
             </div>
             <div id="totalOddsOdds50"></div>
             <div id="odds50List"></div>
@@ -375,7 +368,7 @@
                 
                 <div class="admin-tabs">
                     <button class="tab-btn active" onclick="showAdminTab('users')">👥 Itilizatè</button>
-                    <button class="tab-btn" onclick="showAdminTab('matches')"> Matchs</button>
+                    <button class="tab-btn" onclick="showAdminTab('matches')">⚽ Matchs</button>
                     <button class="tab-btn" onclick="showAdminTab('settings')">⚙️ Paramèt</button>
                     <button class="tab-btn" onclick="showAdminTab('predCorrect')">🎯 Correct</button>
                     <button class="tab-btn" onclick="showAdminTab('predDraw')">⚖️ Draw</button>
@@ -394,7 +387,7 @@
                         <button class="btn btn-primary" type="submit">Kreye Kont lan</button>
                     </form>
 
-                    <h3 style="margin-top: 25px;">📋 Lis Itilizatè yo</h3>
+                    <h3 style="margin-top: 25px;"> Lis Itilizatè yo</h3>
                     <div id="usersList"></div>
                 </div>
 
@@ -403,7 +396,7 @@
                     <h3>⚙️ Paramèt Administratè</h3>
                     
                     <div class="admin-code-box">
-                        <label>🖼️ Logo Aplikasyon an</label>
+                        <label>🖼️ Logo Aplikasyon an (anplase etwal la)</label>
                         <div class="logo-upload-box" onclick="document.getElementById('logoUpload').click()">
                             <div id="logoPreviewText">
                                 <i class="fas fa-cloud-upload-alt" style="font-size: 30px; color: var(--gold);"></i>
@@ -416,7 +409,7 @@
                     </div>
 
                     <div class="admin-code-box">
-                        <label> Chanje Kòd Admin (Modpas Admin)</label>
+                        <label>🔑 Chanje Kòd Admin (Modpas Admin)</label>
                         <input type="password" id="newAdminPass" placeholder="Nouvo modpas admin">
                         <button class="btn btn-primary" onclick="changeAdminPassword()">Chanje Modpas Admin</button>
                     </div>
@@ -436,14 +429,12 @@
                     </div>
                 </div>
 
-                <!-- MATCHES TAB -->
+                <!-- MATCHES TAB (No logo fields) -->
                 <div id="admMatches" class="admin-section hidden">
-                    <h3> Ajouter un Match</h3>
+                    <h3>⚽ Ajouter un Match</h3>
                     <form onsubmit="addMatch(event)">
                         <input type="text" id="mHome" placeholder="Équipe Domicile" required>
-                        <input type="text" id="mHomeLogo" placeholder="URL Logo Domicile (eg: https://...)" required>
                         <input type="text" id="mAway" placeholder="Équipe Extérieure" required>
-                        <input type="text" id="mAwayLogo" placeholder="URL Logo Extérieure (eg: https://...)" required>
                         <input type="text" id="mCountry" placeholder="Peyi (eg: France, Espagne, Haiti)" required>
                         <input type="text" id="mChampionship" placeholder="Championnat (eg: Ligue 1, La Liga)" required>
                         <input type="text" id="mDate" placeholder="Dat (eg: 28 Sept)" required>
@@ -456,7 +447,7 @@
 
                 <!-- PREDICTIONS TABS -->
                 <div id="admPredCorrect" class="admin-section hidden">
-                    <h3> Ajouter Correct Score</h3>
+                    <h3>🎯 Ajouter Correct Score</h3>
                     <form onsubmit="addPrediction(event, 'correct')">
                         <label style="font-size:12px; color:#888;">Match:</label>
                         <select id="pMatchId_correct" required></select>
@@ -472,7 +463,7 @@
                 </div>
 
                 <div id="admPredDraw" class="admin-section hidden">
-                    <h3>⚖️ Ajouter Draw-Win</h3>
+                    <h3>️ Ajouter Draw-Win</h3>
                     <form onsubmit="addPrediction(event, 'draw')">
                         <label style="font-size:12px; color:#888;">Match:</label>
                         <select id="pMatchId_draw" required></select>
@@ -621,7 +612,7 @@
             
             if(!user) { errorEl.innerText = '❌ Email oswa modpas pa kòrèk'; return; }
             if(user.status === 'pending') { errorEl.innerText = '⏳ Kont ou a ap tann validasyon Administratè a.'; return; }
-            if(user.status === 'rejected') { errorEl.innerText = ' Kont ou a te rejte. Kontakte admin.'; return; }
+            if(user.status === 'rejected') { errorEl.innerText = '❌ Kont ou a te rejte. Kontakte admin.'; return; }
 
             DB.currentUser = user;
             localStorage.setItem('gg_currentUser', JSON.stringify(user));
@@ -632,7 +623,7 @@
             document.getElementById('accessScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
             
-            if(DB.theme === 'light') { document.body.classList.add('light-mode'); document.getElementById('themeBtn').innerText = '☀️'; }
+            if(DB.theme === 'light') { document.body.classList.add('light-mode'); document.getElementById('themeBtn').innerText = '️'; }
 
             applyLogo();
 
@@ -642,7 +633,7 @@
                 document.getElementById('adminNavBtn').classList.add('hidden');
             }
 
-            document.getElementById('userBadge').innerText = DB.currentUser.role === 'admin' ? '🛡️ ADMIN' : '👤 USER';
+            document.getElementById('userBadge').innerText = DB.currentUser.role === 'admin' ? '🛡️ ADMIN' : ' USER';
             document.getElementById('profileName').innerText = DB.currentUser.name;
             document.getElementById('profileEmail').innerText = DB.currentUser.email;
             
@@ -748,7 +739,7 @@
         }
 
         function renderPredCard(p, category) {
-            const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', homeLogo:'', awayLogo:'', date:'-', time:'-', country:'-', championship:'-'};
+            const m = DB.matches.find(x => x.id == p.matchId) || {home:'?', away:'?', date:'-', time:'-', country:'-', championship:'-'};
             
             let resultBadge = '';
             if(p.result === 'won') resultBadge = '<div class="result-badge result-won">✅ GAGNÉ</div>';
@@ -763,20 +754,9 @@
             
             if(category === 'correct') {
                 pickLabel = 'Score Exact';
-                pickDisplay = p.pick;
             } else if(category === 'draw') {
                 pickLabel = 'Draw';
-                pickDisplay = p.pick;
             }
-
-            const teamLogoHtml = (logoUrl, name) => {
-                if(logoUrl && logoUrl.startsWith('http')) {
-                    return `<img src="${logoUrl}" alt="${name}" class="team-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="team-logo-placeholder" style="display:none;">${name.substring(0,2).toUpperCase()}</div>`;
-                } else {
-                    return `<div class="team-logo-placeholder">${name.substring(0,2).toUpperCase()}</div>`;
-                }
-            };
 
             return `
                 <div class="pred-card">
@@ -785,16 +765,14 @@
                         <span style="font-size:11px; color:#888;">${m.date}</span>
                     </div>
                     <div class="match-datetime">
-                        <i class="far fa-clock"></i> ${m.time} •  ${m.country} • 🏆 ${m.championship}
+                        <i class="far fa-clock"></i> ${m.time} • 🌍 ${m.country} • 🏆 ${m.championship}
                     </div>
                     <div class="match-display">
                         <div class="team-info">
-                            ${teamLogoHtml(m.homeLogo, m.home)}
                             <span>${m.home}</span>
                         </div>
                         <span class="vs">VS</span>
                         <div class="team-info" style="flex-direction: row-reverse; text-align: right;">
-                            ${teamLogoHtml(m.awayLogo, m.away)}
                             <span>${m.away}</span>
                         </div>
                     </div>
@@ -812,7 +790,7 @@
         }
 
         function getCategoryLabel(cat) {
-            const labels = { 'correct': '🎯 Correct Score', 'draw': '⚖️ Draw-Win', 'odds50': ' Odds 50', 'odds2': '⭐ Odds 2' };
+            const labels = { 'correct': '🎯 Correct Score', 'draw': '️ Draw-Win', 'odds50': '🔥 Odds 50', 'odds2': '⭐ Odds 2' };
             return labels[cat] || cat;
         }
 
@@ -836,7 +814,7 @@
             if(!newPass || newPass.length < 4) {
                 return alert('⚠️ Modpas la dwe gen omwen 4 karaktè!');
             }
-            if(!confirm('️ Ou sèten ou vle chanje modpas admin nan?')) return;
+            if(!confirm('⚠️ Ou sèten ou vle chanje modpas admin nan?')) return;
             
             const admin = DB.users.find(u => u.role === 'admin');
             if(admin) {
@@ -927,7 +905,7 @@
             }
 
             container.innerHTML = users.map(u => {
-                let statusClass = 'status-pending', statusText = ' Ap tann';
+                let statusClass = 'status-pending', statusText = '⏳ Ap tann';
                 if(u.status === 'approved') { statusClass = 'status-approved'; statusText = '✅ Apwouve'; }
                 else if(u.status === 'rejected') { statusClass = 'status-rejected'; statusText = '❌ Rejte'; }
 
@@ -942,7 +920,7 @@
                         <div style="display:flex; gap:5px; flex-direction:column;">
                             ${u.status === 'pending' ? `
                                 <button class="btn btn-sm btn-primary" onclick="approveUser('${u.id}')">✅</button>
-                                <button class="btn btn-sm btn-danger" onclick="rejectUser('${u.id}')"></button>
+                                <button class="btn btn-sm btn-danger" onclick="rejectUser('${u.id}')">❌</button>
                             ` : `
                                 <button class="btn btn-sm btn-outline" onclick="deleteUser('${u.id}')" style="border-color:#EF4444; color:#EF4444;">🗑️</button>
                             `}
@@ -952,15 +930,13 @@
             }).join('');
         }
 
-        // ADMIN: MATCHES
+        // ADMIN: MATCHES (No logo fields)
         function addMatch(e) {
             e.preventDefault();
             DB.matches.push({
                 id: Date.now(),
                 home: document.getElementById('mHome').value,
                 away: document.getElementById('mAway').value,
-                homeLogo: document.getElementById('mHomeLogo').value,
-                awayLogo: document.getElementById('mAwayLogo').value,
                 country: document.getElementById('mCountry').value,
                 championship: document.getElementById('mChampionship').value,
                 date: document.getElementById('mDate').value,
@@ -984,8 +960,8 @@
                 <div class="user-item">
                     <div class="user-info-text">
                         <div class="user-name">${m.home} vs ${m.away}</div>
-                        <div class="user-email">🌍 ${m.country} • 🏆 ${m.championship}</div>
-                        <div class="user-email">📅 ${m.date} • 🕐 ${m.time}</div>
+                        <div class="user-email"> ${m.country} • 🏆 ${m.championship}</div>
+                        <div class="user-email">📅 ${m.date} •  ${m.time}</div>
                     </div>
                     <button class="btn btn-sm btn-danger" onclick="deleteMatch(${m.id})">🗑️</button>
                 </div>
@@ -1049,7 +1025,7 @@
                 let statusColor = '#888', statusText = '⏳ En attente';
                 if(p.result === 'won') { statusColor = '#00C853'; statusText = '✅ GAGNÉ'; }
                 else if(p.result === 'lost') { statusColor = '#EF4444'; statusText = '❌ PERDU'; }
-                else if(p.result === 'cancelled') { statusColor = '#8B92A8'; statusText = '️ ANNULÉ'; }
+                else if(p.result === 'cancelled') { statusColor = '#8B92A8'; statusText = '⏸️ ANNULÉ'; }
 
                 let pickDisplay = p.pick;
                 if(category === 'correct') pickDisplay = 'Score Exact: ' + p.pick;
@@ -1068,7 +1044,7 @@
                             <div style="display:flex; gap:5px; margin-top:10px; flex-wrap:wrap;">
                                 <button class="btn btn-sm btn-primary" onclick="setPredResult(${p.id}, 'won')">✅</button>
                                 <button class="btn btn-sm btn-danger" onclick="setPredResult(${p.id}, 'lost')">❌</button>
-                                <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'cancelled')" style="border-color:#888; color:#888;">️</button>
+                                <button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'cancelled')" style="border-color:#888; color:#888;">⏸️</button>
                             </div>
                         ` : `<button class="btn btn-sm btn-outline" onclick="setPredResult(${p.id}, 'pending')" style="margin-top:10px; width:100%;">↩️</button>`}
                         <button class="btn btn-sm btn-danger" onclick="deletePred(${p.id})" style="margin-top:6px; width:100%;">🗑️ Efase</button>
