@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GOLDEN STAR</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -140,7 +139,6 @@
         <span>Chajman GOLDEN STAR...</span>
     </div>
 
-    <!-- ACCESS SCREEN -->
     <div id="accessScreen" class="hidden">
         <div class="access-logo" id="accessLogo">
             <img src="" alt="Logo" id="accessLogoImg" class="hidden">
@@ -157,7 +155,6 @@
         </div>
     </div>
 
-    <!-- MAIN APP -->
     <div id="mainApp" class="hidden">
         <header>
             <div class="logo">
@@ -316,12 +313,8 @@
     </div>
 
     <script>
-        // ==========================================
-        // KONFIGIRASYON SUPABASE (AK KEY OU A)
-        // ==========================================
         const SUPABASE_URL = "https://yttobaqgarfdtzloidxq.supabase.co";
         const SUPABASE_KEY = "sb_publishable_zmXoMG_oF1Qwly8lZrYgkw_amZId50G";
-        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentUser = null;
@@ -339,21 +332,23 @@
 
         async function loadData() {
             try {
-                // N ap chèche nan tab ki rele 'users', 'matches', 'predictions', 'settings' (an miniskil)
-                const [usersRes, matchesRes, predsRes, settingsRes] = await Promise.all([
-                    supabaseClient.from('users').select('*'),
-                    supabaseClient.from('matches').select('*'),
-                    supabaseClient.from('predictions').select('*'),
-                    supabaseClient.from('settings').select('key, value')
-                ]);
+                // NOUVO: Chèche erè pou chak tab separeman pou w ka wè kisa ki pa mache
+                const { data: usersData, error: usersError } = await supabaseClient.from('users').select('*');
+                const { data: matchesData, error: matchesError } = await supabaseClient.from('matches').select('*');
+                const { data: predsData, error: predsError } = await supabaseClient.from('predictions').select('*');
+                const { data: settingsData, error: settingsError } = await supabaseClient.from('settings').select('key, value');
 
-                if(usersRes.error) throw usersRes.error;
-                appData.users = usersRes.data || [];
-                appData.matches = matchesRes.data || [];
-                appData.predictions = predsRes.data || [];
+                if (usersError) { console.error("Erè users:", usersError); alert("Erè baz done (users): " + usersError.message); }
+                if (matchesError) { console.error("Erè matches:", matchesError); alert("Erè baz done (matches): " + matchesError.message); }
+                if (predsError) { console.error("Erè predictions:", predsError); alert("Erè baz done (predictions): " + predsError.message + "\n\nAsire w ou fè kòd SQL la nan Supabase!"); }
+                if (settingsError) { console.error("Erè settings:", settingsError); }
+
+                appData.users = usersData || [];
+                appData.matches = matchesData || [];
+                appData.predictions = predsData || [];
                 
-                if(settingsRes.data) {
-                    settingsRes.data.forEach(s => { appData.settings[s.key] = s.value; });
+                if(settingsData) {
+                    settingsData.forEach(s => { appData.settings[s.key] = s.value; });
                 }
 
                 const savedUser = localStorage.getItem('gs_currentUser');
@@ -371,8 +366,8 @@
                     showAccessScreen();
                 }
             } catch (err) {
-                console.error("Erè chajman done:", err);
-                alert("Erè koneksyon ak baz done a. Tcheke si ou fè kòd SQL la nan Supabase pou kreye tab yo.");
+                console.error("Erè jeneral:", err);
+                alert("Erè koneksyon ak baz done a. Tcheke si ou fè kòd SQL la.");
                 document.getElementById('loadingScreen').classList.add('hidden');
                 showAccessScreen();
             }
@@ -685,7 +680,10 @@
             };
 
             const { error } = await supabaseClient.from('predictions').insert([newPred]);
-            if(error) return alert('Erè: ' + error.message);
+            if(error) {
+                console.error("Erè insert prediction:", error);
+                return alert('Erè: ' + error.message);
+            }
 
             appData.predictions.push(newPred);
             e.target.reset(); renderAdminPreds(category); renderCounts(); renderTotalOdds(category);
