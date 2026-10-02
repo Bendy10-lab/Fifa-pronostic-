@@ -5,6 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GOLDEN STAR</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK (Modilè v10) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBPBmbaJkwxcVaav48L8142japNjA7tn20",
+            authDomain: "nova-reach-f5beb.firebaseapp.com",
+            projectId: "nova-reach-f5beb",
+            storageBucket: "nova-reach-f5beb.firebasestorage.app",
+            messagingSenderId: "502299817600",
+            appId: "1:502299817600:web:f84c9cc6122128f24cd865",
+            measurementId: "G-5RB9GV73Q7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // Ekspoze db ak fonksyon Firebase yo nan fenèt global la pou kòd anba a ka itilize yo
+        window.db = db;
+        window.firebaseFuncs = { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc };
+        
+        // Lanse aplikasyon an apre Firebase chaje
+        window.initializeAppLogic();
+    </script>
+
     <style>
         :root {
             --bg-dark: #0A0E1A; --bg-card: #141927; --bg-light: #F8F9FA; --bg-card-light: #FFFFFF;
@@ -128,11 +157,17 @@
         .logo-upload-box { border: 2px dashed var(--gold); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px; cursor: pointer; }
         .logo-upload-box img { max-width: 150px; max-height: 150px; border-radius: 10px; margin-top: 10px; }
         .logo-upload-box input[type="file"] { display: none; }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(10,14,26,0.95); z-index: 10000; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 18px; flex-direction: column; gap: 15px; }
     </style>
 </head>
 <body>
 
-    <div id="accessScreen">
+    <div id="loadingScreen" class="loading-overlay">
+        <i class="fas fa-circle-notch fa-spin fa-2x"></i>
+        <span>Chajman GOLDEN STAR...</span>
+    </div>
+
+    <div id="accessScreen" class="hidden">
         <div class="access-logo" id="accessLogo">
             <img src="" alt="Logo" id="accessLogoImg" class="hidden">
             <span id="accessLogoText" style="font-size: 50px;">⭐</span>
@@ -144,9 +179,7 @@
             <input type="password" id="loginPassword" class="access-input" placeholder="Modpas" autocomplete="off">
             <button class="access-btn" onclick="handleLogin()">KONEKTE</button>
             <div class="access-error" id="accessError"></div>
-            <div class="access-info">
-                <i class="fas fa-info-circle"></i> Admin: admin@goldenstar.com / admin123
-            </div>
+            <div class="access-info"><i class="fas fa-info-circle"></i> Ou pa ka kreye kont tèt ou. Kontakte Administratè a.</div>
         </div>
     </div>
 
@@ -229,6 +262,10 @@
                         <input type="password" id="newAdminPass" placeholder="Nouvo modpas admin">
                         <button class="btn btn-primary" onclick="changeAdminPassword()">Chanje Modpas</button>
                     </div>
+                    <div class="admin-code-box">
+                        <label>ℹ️ Enfòmasyon Aktyèl</label>
+                        <p style="font-size:13px; color:var(--gold); margin-top:5px;">Email: <strong id="currentAdminEmail">-</strong><br>Modpas: <strong id="currentAdminPass">-</strong></p>
+                    </div>
                 </div>
 
                 <div id="admMatches" class="admin-section hidden">
@@ -304,61 +341,67 @@
     </div>
 
     <script>
-        // --- LOCALSTORAGE DATABASE SYSTEM ---
-        const DB_KEYS = {
-            users: 'gs_users',
-            matches: 'gs_matches',
-            predictions: 'gs_predictions',
-            settings: 'gs_settings',
-            theme: 'gs_theme',
-            currentUser: 'gs_currentUser'
-        };
-
         let currentUser = null;
         let appData = { users: [], matches: [], predictions: [], settings: { logo: null } };
 
-        function initDB() {
-            // Initialize default admin if no users exist
-            let users = JSON.parse(localStorage.getItem(DB_KEYS.users)) || [];
-            if (users.length === 0) {
-                users.push({
-                    id: 'admin_1',
-                    name: 'Administrateur',
-                    email: 'admin@goldenstar.com',
-                    password: 'admin123',
-                    role: 'admin',
-                    status: 'approved'
-                });
-                localStorage.setItem(DB_KEYS.users, JSON.stringify(users));
-            }
-            appData.users = users;
-            appData.matches = JSON.parse(localStorage.getItem(DB_KEYS.matches)) || [];
-            appData.predictions = JSON.parse(localStorage.getItem(DB_KEYS.predictions)) || [];
-            appData.settings = JSON.parse(localStorage.getItem(DB_KEYS.settings)) || { logo: null };
-        }
-
-        function saveDB() {
-            localStorage.setItem(DB_KEYS.users, JSON.stringify(appData.users));
-            localStorage.setItem(DB_KEYS.matches, JSON.stringify(appData.matches));
-            localStorage.setItem(DB_KEYS.predictions, JSON.stringify(appData.predictions));
-            localStorage.setItem(DB_KEYS.settings, JSON.stringify(appData.settings));
-        }
+        // Fonksyon sa a ap rele otomatikman pa script modilè Firebase la anwo a
+        window.initializeAppLogic = async function() {
+            await loadData();
+        };
 
         function toggleTheme() {
             const body = document.body;
             const btn = document.getElementById('themeBtn');
             if(body.classList.contains('light-mode')) {
-                body.classList.remove('light-mode'); btn.innerText = '🌙'; localStorage.setItem(DB_KEYS.theme, 'dark');
+                body.classList.remove('light-mode'); btn.innerText = '🌙'; localStorage.setItem('gs_theme', 'dark');
             } else {
-                body.classList.add('light-mode'); btn.innerText = '☀️'; localStorage.setItem(DB_KEYS.theme, 'light');
+                body.classList.add('light-mode'); btn.innerText = '☀️'; localStorage.setItem('gs_theme', 'light');
             }
         }
 
-        function applyTheme() {
-            if(localStorage.getItem(DB_KEYS.theme) === 'light') {
-                document.body.classList.add('light-mode');
-                document.getElementById('themeBtn').innerText = '☀️';
+        async function loadData() {
+            try {
+                const { collection, getDocs } = window.firebaseFuncs;
+                const db = window.db;
+
+                const usersSnap = await getDocs(collection(db, "users"));
+                const matchesSnap = await getDocs(collection(db, "matches"));
+                const predsSnap = await getDocs(collection(db, "predictions"));
+                const settingsSnap = await getDocs(collection(db, "settings"));
+
+                appData.users = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                appData.matches = matchesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                appData.predictions = predsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                
+                appData.settings = { logo: null };
+                settingsSnap.docs.forEach(d => { appData.settings[d.id] = d.data().value; });
+
+                const savedUser = localStorage.getItem('gs_currentUser');
+                if(savedUser) {
+                    currentUser = JSON.parse(savedUser);
+                    const freshUser = appData.users.find(u => u.id === currentUser.id);
+                    if(freshUser && (freshUser.status === 'approved' || freshUser.role === 'admin')) {
+                        currentUser = freshUser;
+                        enterApp();
+                    } else {
+                        localStorage.removeItem('gs_currentUser');
+                        showAccessScreen();
+                    }
+                } else {
+                    showAccessScreen();
+                }
+            } catch (err) {
+                console.error("Erè chajman done:", err);
+                alert("Erè koneksyon ak Firebase. Asire w ou kreye Firestore Database la epi mete l an 'Test Mode'.");
+                document.getElementById('loadingScreen').classList.add('hidden');
+                showAccessScreen();
             }
+        }
+
+        function showAccessScreen() {
+            document.getElementById('loadingScreen').classList.add('hidden');
+            document.getElementById('accessScreen').classList.remove('hidden');
+            applyLogo();
         }
 
         function applyLogo() {
@@ -390,14 +433,15 @@
             if(user.status === 'rejected') { errorEl.innerText = '❌ Kont ou a te rejte.'; return; }
 
             currentUser = user;
-            localStorage.setItem(DB_KEYS.currentUser, JSON.stringify(user));
+            localStorage.setItem('gs_currentUser', JSON.stringify(user));
             enterApp();
         }
 
         function enterApp() {
             document.getElementById('accessScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
-            applyTheme();
+            
+            if(localStorage.getItem('gs_theme') === 'light') { document.body.classList.add('light-mode'); document.getElementById('themeBtn').innerText = '☀️'; }
             applyLogo();
 
             if(currentUser.role === 'admin') document.getElementById('adminNavBtn').classList.remove('hidden');
@@ -413,7 +457,7 @@
 
         function logout() {
             currentUser = null;
-            localStorage.removeItem(DB_KEYS.currentUser);
+            localStorage.removeItem('gs_currentUser');
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('accessScreen').classList.remove('hidden');
             document.getElementById('loginEmail').value = '';
@@ -434,7 +478,7 @@
 
         function openSection(section) { showPage('section' + section.charAt(0).toUpperCase() + section.slice(1)); }
 
-        function renderAll() {
+        async function renderAll() {
             renderCounts();
             renderSection('correct'); renderSection('draw'); renderSection('odds50'); renderSection('odds2');
             renderTotalOdds('correct'); renderTotalOdds('draw'); renderTotalOdds('odds50'); renderTotalOdds('odds2');
@@ -469,7 +513,7 @@
         }
 
         function renderPredCard(p, category) {
-            const m = appData.matches.find(x => x.id === p.match_id) || {home:'?', away:'?', date:'-', time:'-', country:'-', championship:'-'};
+            const m = appData.matches.find(x => x.id == p.match_id) || {home:'?', away:'?', date:'-', time:'-', country:'-', championship:'-'};
             let resultBadge = '';
             if(p.result === 'won') resultBadge = '<div class="result-badge result-won">✅ GAGNÉ</div>';
             else if(p.result === 'lost') resultBadge = '<div class="result-badge result-lost">❌ PERDU</div>';
@@ -496,8 +540,8 @@
         }
 
         function renderAdminSettings() {
-            document.getElementById('currentAdminEmail').innerText = currentUser.email;
-            document.getElementById('currentAdminPass').innerText = currentUser.password;
+            const admin = appData.users.find(u => u.role === 'admin');
+            if(admin) { document.getElementById('currentAdminEmail').innerText = admin.email; document.getElementById('currentAdminPass').innerText = admin.password; }
             if(appData.settings.logo) {
                 document.getElementById('logoPreview').src = appData.settings.logo;
                 document.getElementById('logoPreview').classList.remove('hidden');
@@ -518,33 +562,40 @@
             }
         }
 
-        function saveLogo() {
+        async function saveLogo() {
             const logoImg = document.getElementById('logoPreview').src;
             if(!logoImg || logoImg === window.location.href) return alert('⚠️ Tanpri chwazi yon imaj dabò!');
-            appData.settings.logo = logoImg;
-            saveDB();
-            applyLogo();
-            alert('✅ Logo sove avèk siksè!');
+            
+            try {
+                const { setDoc, doc } = window.firebaseFuncs;
+                await setDoc(doc(window.db, "settings", "logo"), { value: logoImg });
+                appData.settings.logo = logoImg;
+                applyLogo();
+                alert('✅ Logo sove avèk siksè!');
+            } catch (err) {
+                alert('Erè sove logo: ' + err.message);
+            }
         }
 
-        function changeAdminPassword() {
+        async function changeAdminPassword() {
             const newPass = document.getElementById('newAdminPass').value.trim();
             if(!newPass || newPass.length < 4) return alert('⚠️ Modpas la dwe gen omwen 4 karaktè!');
             if(!confirm('⚠️ Ou sèten ou vle chanje modpas admin nan?')) return;
             
-            const adminIdx = appData.users.findIndex(u => u.id === currentUser.id);
-            if(adminIdx !== -1) {
-                appData.users[adminIdx].password = newPass;
-                currentUser.password = newPass;
-                localStorage.setItem(DB_KEYS.currentUser, JSON.stringify(currentUser));
-                saveDB();
+            try {
+                const admin = appData.users.find(u => u.role === 'admin');
+                const { updateDoc, doc } = window.firebaseFuncs;
+                await updateDoc(doc(window.db, "users", admin.id), { password: newPass });
+                admin.password = newPass;
                 document.getElementById('newAdminPass').value = '';
                 renderAdminSettings();
                 alert('✅ Modpas admin chanje avèk siksè!');
+            } catch (err) {
+                alert('Erè: ' + err.message);
             }
         }
 
-        function createUser(e) {
+        async function createUser(e) {
             e.preventDefault();
             const name = document.getElementById('newUserName').value.trim();
             const email = document.getElementById('newUserEmail').value.trim();
@@ -552,29 +603,45 @@
 
             if(appData.users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase())) return alert('⚠️ Email sa a deja itilize!');
 
-            const newUser = { id: 'user_' + Date.now(), name, email, password, role: 'user', status: 'pending' };
-            appData.users.push(newUser);
-            saveDB();
-            e.target.reset();
-            renderAdminUsers();
-            alert('✅ Kont kreye avèk siksè!');
+            const newUser = { name, email, password, role: 'user', status: 'pending' };
+            try {
+                const { addDoc, collection } = window.firebaseFuncs;
+                const docRef = await addDoc(collection(window.db, "users"), newUser);
+                appData.users.push({ id: docRef.id, ...newUser });
+                e.target.reset();
+                renderAdminUsers();
+                alert('✅ Kont kreye avèk siksè!');
+            } catch (err) {
+                alert('Erè: ' + err.message);
+            }
         }
 
-        function approveUser(id) {
-            const u = appData.users.find(x => x.id === id); 
-            if(u) { u.status = 'approved'; saveDB(); renderAdminUsers(); alert('✅ Itilizatè apwouve!'); }
+        async function approveUser(id) {
+            try {
+                const { updateDoc, doc } = window.firebaseFuncs;
+                await updateDoc(doc(window.db, "users", id), { status: 'approved' });
+                const u = appData.users.find(x => x.id === id); if(u) u.status = 'approved';
+                renderAdminUsers(); alert('✅ Itilizatè apwouve!');
+            } catch (err) { alert('Erè: ' + err.message); }
         }
 
-        function rejectUser(id) {
-            const u = appData.users.find(x => x.id === id); 
-            if(u) { u.status = 'rejected'; saveDB(); renderAdminUsers(); alert('❌ Itilizatè rejte!'); }
+        async function rejectUser(id) {
+            try {
+                const { updateDoc, doc } = window.firebaseFuncs;
+                await updateDoc(doc(window.db, "users", id), { status: 'rejected' });
+                const u = appData.users.find(x => x.id === id); if(u) u.status = 'rejected';
+                renderAdminUsers(); alert('❌ Itilizatè rejte!');
+            } catch (err) { alert('Erè: ' + err.message); }
         }
 
-        function deleteUser(id) {
+        async function deleteUser(id) {
             if(!confirm('Efase itilizatè sa a nèt?')) return;
-            appData.users = appData.users.filter(u => u.id !== id);
-            saveDB();
-            renderAdminUsers();
+            try {
+                const { deleteDoc, doc } = window.firebaseFuncs;
+                await deleteDoc(doc(window.db, "users", id));
+                appData.users = appData.users.filter(u => u.id !== id);
+                renderAdminUsers();
+            } catch (err) { alert('Erè: ' + err.message); }
         }
 
         function renderAdminUsers() {
@@ -590,10 +657,9 @@
             }).join('');
         }
 
-        function addMatch(e) {
+        async function addMatch(e) {
             e.preventDefault();
             const newMatch = {
-                id: 'match_' + Date.now(),
                 home: document.getElementById('mHome').value,
                 away: document.getElementById('mAway').value,
                 country: document.getElementById('mCountry').value,
@@ -601,17 +667,32 @@
                 date: document.getElementById('mDate').value,
                 time: document.getElementById('mTime').value
             };
-            appData.matches.push(newMatch);
-            saveDB();
-            e.target.reset(); renderAdminMatches(); populateAllMatchSelects();
-            alert('✅ Match ajoute!');
+            try {
+                const { addDoc, collection } = window.firebaseFuncs;
+                const docRef = await addDoc(collection(window.db, "matches"), newMatch);
+                appData.matches.push({ id: docRef.id, ...newMatch });
+                e.target.reset(); renderAdminMatches(); populateAllMatchSelects();
+                alert('✅ Match ajoute!');
+            } catch (err) { alert('Erè: ' + err.message); }
         }
 
-        function deleteMatch(id) {
+        async function deleteMatch(id) {
             if(!confirm('Efase match sa a?')) return;
-            appData.matches = appData.matches.filter(m => m.id !== id);
-            appData.predictions = appData.predictions.filter(p => p.match_id !== id);
-            saveDB(); renderAdminMatches(); populateAllMatchSelects();
+            try {
+                const { deleteDoc, doc, collection, getDocs, query, where } = window.firebaseFuncs;
+                await deleteDoc(doc(window.db, "matches", id));
+                
+                // Efase prediksyon ki lye ak match sa a
+                const q = query(collection(window.db, "predictions"), where("match_id", "==", id));
+                const snapshot = await getDocs(q);
+                snapshot.forEach(async (d) => {
+                    await deleteDoc(doc(window.db, "predictions", d.id));
+                });
+
+                appData.matches = appData.matches.filter(m => m.id !== id);
+                appData.predictions = appData.predictions.filter(p => p.match_id !== id);
+                renderAdminMatches(); populateAllMatchSelects();
+            } catch (err) { alert('Erè: ' + err.message); }
         }
 
         function renderAdminMatches() {
@@ -630,7 +711,7 @@
             });
         }
 
-        function addPrediction(e, category) {
+        async function addPrediction(e, category) {
             e.preventDefault();
             const matchId = document.getElementById('pMatchId_' + category).value;
             if(!matchId) return alert('Chwazi yon match!');
@@ -638,37 +719,39 @@
             let pick = category === 'correct' ? document.getElementById('pScore_' + category).value : document.getElementById('pPick_' + category).value;
 
             const newPred = {
-                id: 'pred_' + Date.now(),
                 category, match_id: matchId, pick,
                 odds: parseFloat(document.getElementById('pOdds_' + category).value),
                 confidence: parseInt(document.getElementById('pConf_' + category).value),
                 result: 'pending'
             };
 
-            appData.predictions.push(newPred);
-            saveDB();
-            e.target.reset(); renderAdminPreds(category); renderCounts(); renderTotalOdds(category);
-            alert('✅ Prediksyon publie!');
+            try {
+                const { addDoc, collection } = window.firebaseFuncs;
+                const docRef = await addDoc(collection(window.db, "predictions"), newPred);
+                appData.predictions.push({ id: docRef.id, ...newPred });
+                e.target.reset(); renderAdminPreds(category); renderCounts(); renderTotalOdds(category);
+                alert('✅ Prediksyon publie!');
+            } catch (err) { alert('Erè: ' + err.message); }
         }
 
-        function setPredResult(id, result) {
-            const p = appData.predictions.find(x => x.id === id);
-            if(p) { 
-                p.result = result; 
-                saveDB(); 
-                renderAdminPreds(p.category); 
-                renderSection(p.category); 
-                renderCounts(); 
-                renderTotalOdds(p.category); 
-            }
+        async function setPredResult(id, result) {
+            try {
+                const { updateDoc, doc } = window.firebaseFuncs;
+                await updateDoc(doc(window.db, "predictions", id), { result });
+                const p = appData.predictions.find(x => x.id === id);
+                if(p) { p.result = result; renderAdminPreds(p.category); renderSection(p.category); renderCounts(); renderTotalOdds(p.category); }
+            } catch (err) { alert('Erè: ' + err.message); }
         }
 
-        function deletePred(id) {
+        async function deletePred(id) {
             if(!confirm('Efase prediksyon sa a?')) return;
-            const p = appData.predictions.find(x => x.id === id);
-            appData.predictions = appData.predictions.filter(x => x.id !== id);
-            saveDB();
-            if(p) { renderAdminPreds(p.category); renderCounts(); renderTotalOdds(p.category); }
+            try {
+                const { deleteDoc, doc } = window.firebaseFuncs;
+                await deleteDoc(doc(window.db, "predictions", id));
+                const p = appData.predictions.find(x => x.id === id);
+                appData.predictions = appData.predictions.filter(x => x.id !== id);
+                if(p) { renderAdminPreds(p.category); renderCounts(); renderTotalOdds(p.category); }
+            } catch (err) { alert('Erè: ' + err.message); }
         }
 
         function renderAdminPreds(category) {
@@ -677,7 +760,7 @@
             if(preds.length === 0) { container.innerHTML = '<p style="color:#666; text-align:center;">Pa gen prediksyon.</p>'; return; }
 
             container.innerHTML = preds.map(p => {
-                const m = appData.matches.find(x => x.id === p.match_id) || {home:'?', away:'?', date:'-', time:'-', country:'-', championship:'-'};
+                const m = appData.matches.find(x => x.id == p.match_id) || {home:'?', away:'?', date:'-', time:'-', country:'-', championship:'-'};
                 let statusColor = '#888', statusText = '⏳ En attente';
                 if(p.result === 'won') { statusColor = '#00C853'; statusText = '✅ GAGNÉ'; }
                 else if(p.result === 'lost') { statusColor = '#EF4444'; statusText = '❌ PERDU'; }
@@ -706,22 +789,6 @@
         }
 
         document.getElementById('loginPassword').addEventListener('keypress', function(e) { if(e.key === 'Enter') handleLogin(); });
-
-        // START APP
-        initDB();
-        applyTheme();
-        
-        const savedUser = localStorage.getItem(DB_KEYS.currentUser);
-        if(savedUser) {
-            currentUser = JSON.parse(savedUser);
-            const freshUser = appData.users.find(u => u.id === currentUser.id);
-            if(freshUser && (freshUser.status === 'approved' || freshUser.role === 'admin')) {
-                currentUser = freshUser;
-                enterApp();
-            } else {
-                localStorage.removeItem(DB_KEYS.currentUser);
-            }
-        }
     </script>
 </body>
 </html>
